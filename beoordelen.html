@@ -19,7 +19,7 @@
 html,body{margin:0}
 body{background:linear-gradient(180deg,#BDE3F2 0%,#DDEFF6 30%,#F7E7CC 100%) fixed;color:var(--inkt);
   font-family:Nunito,system-ui,sans-serif;font-size:16px;line-height:1.5;
-  min-height:100dvh;padding-block:16px 40px;padding-left:16px;padding-right:16px;-webkit-font-smoothing:antialiased}
+  min-height:100dvh;padding-block:16px calc(env(safe-area-inset-bottom,0px) + 96px);padding-left:16px;padding-right:16px;-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:"Baloo 2",sans-serif;font-weight:800;margin:0;text-wrap:balance}
 .wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -36,6 +36,8 @@ h1{font-size:1.45rem;color:var(--clay)} h1 small{display:block;font-family:Nunit
 .knop.rood{background:var(--rood);color:#fff;box-shadow:0 4px 0 var(--rood-deep)} .knop.rood:active{box-shadow:0 1px 0 var(--rood-deep)}
 .knop.klein{font-size:.85rem;min-height:36px;padding:6px 12px}
 .knop.speelt{outline:3px solid var(--tile)}
+.tri{display:inline-block;width:0;height:0;border-style:solid;border-width:5px 0 5px 9px;border-color:transparent transparent transparent currentColor;flex:none}
+.knop.speelt .tri{border-width:0;width:9px;height:10px;background:currentColor}
 .tabs{display:flex;gap:8px;flex-wrap:wrap}
 .tabs .knop{font-size:.85rem;min-height:36px;padding:6px 12px;background:#fff;box-shadow:0 3px 0 rgba(59,42,12,.15)}
 .tabs .knop[aria-pressed="true"]{background:var(--brass);box-shadow:0 3px 0 var(--brass-dark)}
@@ -82,6 +84,15 @@ textarea{font:inherit;width:100%;min-height:56px;padding:8px 12px;border:1.5px s
 
   <div class="status stil" id="status">Even ophalen wat er is&hellip;</div>
 
+  <div class="kaart" id="sleutelvak" hidden>
+    <h3 style="font-size:1rem;margin-bottom:6px">Keuren aanzetten</h3>
+    <p class="klein-tekst" style="margin:0 0 10px">Luisteren kan altijd. Om te kunnen keuren heeft deze browser de keursleutel nodig; die staat in de keurlink van het bureau (het stuk na <b>#s=</b>). Elke browser vraagt er één keer om.</p>
+    <div class="rij">
+      <input id="sleutelin" type="text" placeholder="keursleutel" autocomplete="off" autocapitalize="off" spellcheck="false" style="flex:1;min-width:12em;font:inherit;padding:10px 12px;border:1.5px solid var(--rand);border-radius:12px;background:#fff;color:var(--inkt)">
+      <button class="knop" id="sleutelok" type="button">Aanzetten</button>
+    </div>
+  </div>
+
   <div id="lijst" style="display:flex;flex-direction:column;gap:12px"></div>
 
   <div class="kaart dun">
@@ -104,6 +115,18 @@ var SLEUTEL=(function(){
   try{ return localStorage.getItem('stemkeur-sleutel')||''; }catch(e){ return ''; }
 })();
 var DOOR=(function(){ try{ return localStorage.getItem('stemkeur-naam')||''; }catch(e){ return ''; } })();
+function sleutelBewaren(k){ SLEUTEL=k; try{ k?localStorage.setItem('stemkeur-sleutel',k):localStorage.removeItem('stemkeur-sleutel'); }catch(e){} }
+/* kijken of een sleutel klopt zonder iets te schrijven: met een onmogelijk
+   oordeel geeft de opslag "oordeel moet goed of opnieuw zijn" bij een goede
+   sleutel, en "geen geldige keursleutel" bij een verkeerde */
+async function sleutelKlopt(k){
+  try{
+    var r=await fetch(OPSLAG.url+'/rest/v1/rpc/stem_beoordeel',{method:'POST',headers:koppen({'Content-Type':'application/json'}),
+      body:JSON.stringify({p_sleutel:k,p_regel:'toets',p_take:'',p_oordeel:'toets'})});
+    var t=await r.text();
+    return !/keursleutel/.test(t);
+  }catch(e){ return false; }
+}
 
 var cloud={takes:{},alle:{},oordeel:{},ok:false};   /* takes: laatste take per regel; alle: alle takes per regel; oordeel: laatste oordeel per regel */
 var tab='wacht', spelend=null, blobs={};
@@ -125,7 +148,8 @@ async function laad(){
     uit[0].forEach(function(x){ if(!cloud.takes[x.regel_id])cloud.takes[x.regel_id]=x; (cloud.alle[x.regel_id]=cloud.alle[x.regel_id]||[]).push(x); });
     uit[1].forEach(function(x){ if(!cloud.oordeel[x.regel_id])cloud.oordeel[x.regel_id]=x; });
     cloud.ok=true;
-    status(SLEUTEL?'Verbonden. Luister en keur.':'Je kunt luisteren, maar niet keuren: open de link met sleutel die je van het bureau kreeg.',SLEUTEL?'ok':'fout');
+    status(SLEUTEL?'Verbonden. Luister en keur.':'Luisteren kan; keuren nog niet — vul de keursleutel hieronder in.',SLEUTEL?'ok':'stil');
+    E('sleutelvak').hidden=!!SLEUTEL;
   }catch(e){ cloud.ok=false; status('Ophalen lukte niet: '+(e&&e.message?e.message:'?'),'fout'); }
 }
 /* dezelfde regels als in de studio */
@@ -189,7 +213,8 @@ async function keur(r,take,oordeel,aanwijzing){
     return true;
   }catch(e){
     var m=(e&&e.message)||'';
-    status(/keursleutel|42501|401|403/.test(m)?'De sleutel in deze link klopt niet (meer). Vraag het bureau om een nieuwe keurlink.':'Opslaan lukte niet: '+m,'fout');
+    if(/keursleutel|42501|401|403/.test(m)){ sleutelBewaren(''); E('sleutelvak').hidden=false; status('De keursleutel klopt niet (meer). Vul hem hieronder opnieuw in.','fout'); teken(); }
+    else status('Opslaan lukte niet: '+m,'fout');
     return false;
   }
 }
@@ -213,11 +238,11 @@ function kaart(r){
   b.appendChild(st);
   var rij=el('div','rij');
   if(t){
-    var p=el('button','knop licht klein'); p.type='button'; p.innerHTML='&#9654; Nieuwe opname'; p.onclick=function(){speel(p,t.pad);}; rij.appendChild(p);
+    var p=el('button','knop licht klein'); p.type='button'; p.innerHTML='<i class="tri"></i> Nieuwe opname'; p.onclick=function(){speel(p,t.pad);}; rij.appendChild(p);
     var v=el('span','van',naam(t.sessie)+' · '+datum(t.gemaakt)+((cloud.alle[r.id]||[]).length>1?' · take '+(cloud.alle[r.id]||[]).length:''));
     rij.appendChild(v);
   }
-  if(VOORBEELD[r.id]){ var q=el('button','knop licht klein'); q.type='button'; q.innerHTML='&#9654; Nu in het spel'; q.onclick=function(){speel(q,VOORBEELD[r.id]);}; rij.appendChild(q); }
+  if(VOORBEELD[r.id]){ var q=el('button','knop licht klein'); q.type='button'; q.innerHTML='<i class="tri"></i> Nu in het spel'; q.onclick=function(){speel(q,VOORBEELD[r.id]);}; rij.appendChild(q); }
   b.appendChild(rij);
 
   /* keuren */
@@ -242,11 +267,11 @@ function kaart(r){
     keurbox.appendChild(open);
   }
   if(s.code==='wacht'||s.code==='goed'||s.code==='opnieuw'){
-    if(t&&s.code!=='goed'){ var g=el('button','knop goed','Goed ✓'); g.type='button'; g.disabled=!SLEUTEL; g.onclick=async function(){ g.disabled=true; if(await keur(r,t.pad,'goed',''))teken(); else g.disabled=false; }; knoppen.appendChild(g); }
-    if(s.code!=='opnieuw'){ var n=el('button','knop rood','Opnieuw ↺'); n.type='button'; n.disabled=!SLEUTEL; n.onclick=opnieuwVak; knoppen.appendChild(n); }
+    if(t&&s.code!=='goed'){ var g=el('button','knop goed','Goed ✓'); g.type='button'; g.disabled=!SLEUTEL; if(!SLEUTEL)g.title='Vul eerst de keursleutel in'; g.onclick=async function(){ g.disabled=true; if(await keur(r,t.pad,'goed',''))teken(); else g.disabled=false; }; knoppen.appendChild(g); }
+    if(s.code!=='opnieuw'){ var n=el('button','knop rood','Opnieuw ↺'); n.type='button'; n.disabled=!SLEUTEL; if(!SLEUTEL)n.title='Vul eerst de keursleutel in'; n.onclick=opnieuwVak; knoppen.appendChild(n); }
     else if(t&&s.take!==t.pad){ /* opnieuw gevraagd, maar er is een nieuwere take: staat dan onder Te keuren */ }
   }else if(s.code==='spel'||s.code==='open'){
-    var n2=el('button','knop licht klein','Opnieuw laten inspreken ↺'); n2.type='button'; n2.disabled=!SLEUTEL; n2.onclick=opnieuwVak; knoppen.appendChild(n2);
+    var n2=el('button','knop licht klein','Opnieuw laten inspreken ↺'); n2.type='button'; n2.disabled=!SLEUTEL; if(!SLEUTEL)n2.title='Vul eerst de keursleutel in'; n2.onclick=opnieuwVak; knoppen.appendChild(n2);
   }
   if(!knoppen.childNodes.length)keurbox.remove();
   return k;
@@ -263,6 +288,19 @@ document.querySelectorAll('.tabs [data-tab]').forEach(function(b){ b.onclick=fun
   b.setAttribute('aria-pressed','true'); tab=b.dataset.tab; teken(); window.scrollTo({top:0}); }; });
 document.addEventListener('visibilitychange',function(){ if(!document.hidden)laad().then(teken); });
 
+E('sleutelok').onclick=async function(){
+  var k=E('sleutelin').value.trim().replace(/^.*#s=/,'');
+  if(!k){ E('sleutelin').focus(); return; }
+  E('sleutelok').disabled=true; status('Even kijken of de sleutel klopt…','stil');
+  if(await sleutelKlopt(k)){
+    sleutelBewaren(k); E('sleutelvak').hidden=true; E('sleutelin').value='';
+    status('Keuren staat aan. Luister en keur.','ok'); teken();
+  }else{
+    status('Die sleutel klopt niet. Kijk in de keurlink naar het stuk na #s=','fout');
+  }
+  E('sleutelok').disabled=false;
+};
+E('sleutelin').onkeydown=function(e){ if(e.key==='Enter')E('sleutelok').click(); };
 E('door').value=DOOR;
 E('door').oninput=function(){ DOOR=E('door').value.trim().slice(0,40); try{localStorage.setItem('stemkeur-naam',DOOR);}catch(e){} };
 (async function(){ await laad(); teken(); })();

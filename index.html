@@ -19,7 +19,7 @@
 html,body{margin:0}
 body{background:linear-gradient(180deg,#BDE3F2 0%,#DDEFF6 30%,#F7E7CC 100%) fixed;color:var(--inkt);
   font-family:Nunito,system-ui,sans-serif;font-size:16px;line-height:1.5;
-  min-height:100dvh;padding-block:16px 40px;padding-left:16px;padding-right:16px;-webkit-font-smoothing:antialiased}
+  min-height:100dvh;padding-block:16px calc(env(safe-area-inset-bottom,0px) + 96px);padding-left:16px;padding-right:16px;-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:"Baloo 2",sans-serif;font-weight:800;margin:0;text-wrap:balance}
 .wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -76,8 +76,10 @@ input.mist{border-color:var(--rood);box-shadow:0 0 0 3px rgba(226,87,76,.2)}
 /* na de opname */
 .take{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
 .take .speel{font-size:1.1rem;min-height:52px;padding:12px 22px}
-.take .speel .ico{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--tile);color:#fff;font-size:.8rem}
+.take .speel .ico{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--tile);color:#fff}
 .take .speel.speelt .ico{background:var(--rood)}
+.tri{display:inline-block;width:0;height:0;border-style:solid;border-width:5px 0 5px 9px;border-color:transparent transparent transparent currentColor;flex:none}
+.speelt .tri{border-width:0;width:9px;height:10px;background:currentColor}
 .take .duur{font-weight:600;color:var(--inkt-zacht);font-size:.9rem}
 .loop{width:100%;max-width:320px;height:6px;border-radius:99px;background:rgba(59,42,12,.12);overflow:hidden}
 .loop i{display:block;height:100%;width:0;background:var(--tile)}
@@ -132,7 +134,7 @@ details p{margin:8px 0 0;font-size:.95rem} details ol{margin:8px 0 0;padding-lef
       <div class="regie" id="regie"></div>
       <div class="stand" id="stand"></div>
       <div class="rij">
-        <button class="knop licht klein" id="voorbeeld" type="button">&#9654; Luister hoe het nu klinkt</button>
+        <button class="knop licht klein" id="voorbeeld" type="button"><i class="tri"></i> Luister hoe het nu klinkt</button>
       </div>
       <div class="opname">
         <div class="ring">
@@ -143,7 +145,7 @@ details p{margin:8px 0 0;font-size:.95rem} details ol{margin:8px 0 0;padding-lef
         <div class="tijd" id="tijd"></div>
       </div>
       <div class="take" id="take" hidden>
-        <button class="knop licht speel" id="speel" type="button"><span class="ico">&#9654;</span> Luister terug <span class="duur" id="duur"></span></button>
+        <button class="knop licht speel" id="speel" type="button"><span class="ico"><i class="tri"></i></span> Luister terug <span class="duur" id="duur"></span></button>
         <div class="loop"><i id="loop"></i></div>
         <div class="rij">
           <button class="knop licht" id="opnieuw" type="button">&#8635; Nog een keer</button>
