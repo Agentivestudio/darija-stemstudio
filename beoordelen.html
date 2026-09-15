@@ -143,22 +143,37 @@ function datum(iso){ var d=new Date(iso); if(isNaN(d))return ''; return d.toLoca
 function naam(s){ return (s||'').replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();}); }
 
 /* ---------- luisteren ---------- */
-var speler=new Audio();
+/* Takes spelen via de audio-motor, op gelijk volume (piek op -1 dB): zo hoor je
+   een zachte telefoonopname net zo hard als wat er nu in het spel zit. */
+var speler=new Audio(), ac=null, bron=null, pcm={};
+function stopAlles(){
+  speler.pause();
+  if(bron){ try{bron.stop();}catch(e){} bron=null; }
+  if(spelend)spelend.classList.remove('speelt'); spelend=null;
+}
 async function speel(knop,src){
-  if(spelend===knop){ speler.pause(); spelend.classList.remove('speelt'); spelend=null; return; }
-  if(spelend)spelend.classList.remove('speelt');
+  if(spelend===knop){ stopAlles(); return; }
+  stopAlles();
   spelend=knop; knop.classList.add('speelt');
   try{
-    var url=src;
     if(src.indexOf('takes/')===0){
-      if(!blobs[src]){
+      if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();
+      if(ac.state==='suspended')await ac.resume();
+      if(!pcm[src]){
         var r=await fetch(OPSLAG.url+'/storage/v1/object/authenticated/'+OPSLAG.bucket+'/'+src,{headers:koppen()});
         if(!r.ok)throw new Error('ophalen lukte niet ('+r.status+')');
-        blobs[src]=URL.createObjectURL(await r.blob());
+        var buf=await ac.decodeAudioData(await r.arrayBuffer()), x=buf.getChannelData(0), pk=0, i;
+        for(i=0;i<x.length;i++){ var v=Math.abs(x[i]); if(v>pk)pk=v; }
+        pcm[src]={buf:buf,gain:Math.min(Math.pow(10,30/20), pk>0?Math.pow(10,-1/20)/pk:1)};
       }
-      url=blobs[src];
+      if(spelend!==knop)return;
+      var b=ac.createBufferSource(), g=ac.createGain(); b.buffer=pcm[src].buf; g.gain.value=pcm[src].gain;
+      b.connect(g); g.connect(ac.destination); bron=b;
+      b.onended=function(){ if(bron===b){ bron=null; if(spelend===knop){knop.classList.remove('speelt'); spelend=null;} } };
+      b.start();
+    }else{
+      speler.src=src; await speler.play();
     }
-    speler.src=url; await speler.play();
   }catch(e){ status('Afspelen lukte niet: '+(e&&e.message?e.message:'?'),'fout'); knop.classList.remove('speelt'); spelend=null; }
 }
 speler.onended=function(){ if(spelend)spelend.classList.remove('speelt'); spelend=null; };

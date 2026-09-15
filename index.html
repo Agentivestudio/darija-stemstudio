@@ -75,7 +75,12 @@ input.mist{border-color:var(--rood);box-shadow:0 0 0 3px rgba(226,87,76,.2)}
 
 /* na de opname */
 .take{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
-audio{width:100%;max-width:420px}
+.take .speel{font-size:1.1rem;min-height:52px;padding:12px 22px}
+.take .speel .ico{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--tile);color:#fff;font-size:.8rem}
+.take .speel.speelt .ico{background:var(--rood)}
+.take .duur{font-weight:600;color:var(--inkt-zacht);font-size:.9rem}
+.loop{width:100%;max-width:320px;height:6px;border-radius:99px;background:rgba(59,42,12,.12);overflow:hidden}
+.loop i{display:block;height:100%;width:0;background:var(--tile)}
 .status{font-size:.9rem;padding:10px 14px;border-radius:12px;background:#E3F5F3;color:var(--tile-deep);font-weight:700}
 .status.fout{background:#FBE3E0;color:#8E2B22}
 .status.stil{background:var(--zand);color:var(--inkt-zacht)}
@@ -138,9 +143,10 @@ details p{margin:8px 0 0;font-size:.95rem} details ol{margin:8px 0 0;padding-lef
         <div class="tijd" id="tijd"></div>
       </div>
       <div class="take" id="take" hidden>
-        <audio id="speler" controls preload="auto"></audio>
+        <button class="knop licht speel" id="speel" type="button"><span class="ico">&#9654;</span> Luister terug <span class="duur" id="duur"></span></button>
+        <div class="loop"><i id="loop"></i></div>
         <div class="rij">
-          <button class="knop licht" id="opnieuw" type="button">Nog een keer</button>
+          <button class="knop licht" id="opnieuw" type="button">&#8635; Nog een keer</button>
           <button class="knop teal" id="goed" type="button">Goed zo &rarr; volgende</button>
         </div>
       </div>
@@ -171,7 +177,7 @@ details p{margin:8px 0 0;font-size:.95rem} details ol{margin:8px 0 0;padding-lef
         <li><b>Even stil</b> voor en na elke regel: tik, adem, zeg het, wacht een tel, tik.</li>
         <li><b>Praat tegen één kind van vier</b> dat naast je zit. Warm, rustig, met een lachje. Niet tegen een klas, niet als een omroeper.</li>
         <li><b>De Darija-woorden</b> zeg je zoals thuis, één keer, gewoon tempo. Geen uitleg erbij.</li>
-        <li><b>Fout gezegd?</b> Geen probleem: tik op <i>Nog een keer</i>. Alleen de laatste opname telt.</li>
+        <li><b>Luister terug</b> met de grote knop. Fout gezegd? Tik op <i>Nog een keer</i>. Alleen de laatste opname telt.</li>
         <li><b>Staat er "Graag opnieuw" bij een regel?</b> Dan heeft het bureau geluisterd en wil het die net iets anders. De aanwijzing staat erbij.</li>
         <li>Je hoeft niet alles in één keer te doen. Kom je later terug, dan staat alles er nog.</li>
       </ol>
@@ -191,8 +197,10 @@ if(!OPSLAG||typeof OPSLAG!=='object')OPSLAG={url:"",sleutel:"",bucket:"stem"};
 
 var E=function(id){return document.getElementById(id);};
 var takes={}, huidig=0, rolFilter='alles', alleenOpen=true, vastId=null;  /* vastId: net opgenomen, blijft staan tot 'Goed zo' */
-var stream=null, ac=null, analyser=null, rec=null, chunks=[], bezig=false, t0=0, tikker=null, raf=null;
+var stream=null, ac=null, analyser=null, proc=null, stukken=[], bezig=false, t0=0, tikker=null, raf=null;
 var frames=[], piek=0, kamer=null;              /* geluidsniveau per beeldje tijdens de opname; kamer = ruis vooraf in dB */
+var pcm={};                                     /* per regel de opname als getallen (voor terugluisteren) */
+var speler={bron:null,gain:null,start:0,duur:0,raf:null};
 var cloud={takes:{},oordeel:{},ok:false,fout:''}; /* wat er in de opslag van het spel staat */
 
 /* ---------- de stand van een regel ---------- */
@@ -249,7 +257,8 @@ function toonTake(r){
   var t=takes[r.id], s=stand(r);
   if(t&&s.code==='opnieuw'&&r.id!==vastId)t=null;   /* oude take na "graag opnieuw": niet meer laten zien, anders lijkt hij klaar */
   E('take').hidden=!t;
-  if(t){ E('speler').src=t.url; hint(t.let||'Luister even terug. Goed? Dan door naar de volgende.',!!t.let); }
+  stopSpelen();
+  if(t){ E('duur').textContent=(t.ms/1000).toFixed(1)+' s'; hint(t.let||'Luister even terug. Goed? Dan door naar de volgende.',!!t.let); }
   else if(s.code==='opnieuw') hint('Neem deze nog een keer op, met de aanwijzing hierboven.');
   else hint('Tik op de rode knop, zeg het, tik nog eens.');
 }
@@ -356,12 +365,16 @@ async function start(){
     status(m,'fout'); return;
   }
   if(eerste){ piek=0; await kamerCheck(); }
-  chunks=[]; frames=[]; piek=0;
-  try{ rec=new MediaRecorder(stream,{audioBitsPerSecond:128000}); }
-  catch(e){ try{ rec=new MediaRecorder(stream); }catch(e2){ status('Opnemen lukt niet in deze browser. Probeer Chrome of Safari.','fout'); return; } }
-  rec.ondataavailable=function(ev){ if(ev.data&&ev.data.size)chunks.push(ev.data); };
-  rec.onstop=klaar;
-  rec.start(); bezig=true; t0=Date.now();
+  stopSpelen();
+  stukken=[]; frames=[]; piek=0;
+  /* de opname zelf: de getallen rechtstreeks van de microfoon (verliesvrij), geen
+     compressie onderweg; daarna zetten we het volume gelijk en maken we er een wav van */
+  if(!proc){
+    proc=ac.createScriptProcessor(4096,1,1);
+    proc.onaudioprocess=function(ev){ if(!bezig)return; var d=ev.inputBuffer.getChannelData(0); stukken.push(new Float32Array(d)); };
+    analyser.connect(proc); proc.connect(ac.destination);   /* de processor moet ergens op aangesloten zijn om te draaien; hij geeft zelf geen geluid door */
+  }
+  bezig=true; t0=Date.now();
   E('knop').classList.add('bezig'); E('knop').setAttribute('aria-label','Stoppen');
   document.querySelector('.ring').classList.add('aan');
   hint('Ik luister…'); E('take').hidden=true;
@@ -369,29 +382,84 @@ async function start(){
   meet();
 }
 function stop(){
-  if(!rec||rec.state==='inactive')return;
-  rec.stop(); bezig=false; clearInterval(tikker); tikker=null; cancelAnimationFrame(raf);
+  if(!bezig)return;
+  bezig=false; clearInterval(tikker); tikker=null; cancelAnimationFrame(raf);
   E('niveau').setAttribute('stroke-dashoffset','377');
   document.querySelector('.ring').classList.remove('aan');
   E('knop').classList.remove('bezig'); E('knop').setAttribute('aria-label','Opnemen'); E('tijd').textContent='';
+  setTimeout(klaar,120);   /* het laatste stukje van de processor even laten binnenkomen */
+}
+/* de opname afmaken: samenvoegen, meten, op volume zetten, wav maken */
+function samen(){
+  var n=0,i; for(i=0;i<stukken.length;i++)n+=stukken[i].length;
+  var x=new Float32Array(n), p=0; for(i=0;i<stukken.length;i++){ x.set(stukken[i],p); p+=stukken[i].length; }
+  return x;
+}
+function meetPcm(x,sr){
+  var fr=Math.max(1,Math.floor(sr*0.02)), rms=[], pk=0, klem=0, i, j;
+  for(i=0;i<x.length;i++){ var v=Math.abs(x[i]); if(v>pk)pk=v; if(v>=0.99)klem++; }
+  for(i=0;i+fr<=x.length;i+=fr){ var s=0; for(j=i;j<i+fr;j++)s+=x[j]*x[j]; rms.push(Math.sqrt(s/fr)); }
+  rms.sort(function(a,b){return a-b;});
+  var ruis=rms.length?rms[Math.floor(rms.length*0.1)]:0, spraak=rms.length?rms[Math.floor(rms.length*0.9)]:0;
+  return {piek:pk,klem:klem,ruis:dB(ruis),spraak:dB(spraak),snr:dB(spraak)-dB(ruis)};
+}
+function wav(x,sr){
+  var n=x.length, b=new ArrayBuffer(44+n*2), v=new DataView(b), i;
+  function str(o,t){ for(var k=0;k<t.length;k++)v.setUint8(o+k,t.charCodeAt(k)); }
+  str(0,'RIFF'); v.setUint32(4,36+n*2,true); str(8,'WAVE'); str(12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,sr,true); v.setUint32(28,sr*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true); str(36,'data'); v.setUint32(40,n*2,true);
+  for(i=0;i<n;i++){ var q=Math.max(-1,Math.min(1,x[i])); v.setInt16(44+i*2,q<0?q*32768:q*32767,true); }
+  return new Blob([b],{type:'audio/wav'});
 }
 async function klaar(){
   var ms=Date.now()-t0, r=regelNu(); if(!r)return;
-  var blob=new Blob(chunks,{type:(rec&&rec.mimeType)||'audio/webm'});
-  if(!blob.size||ms<300){ status('Er kwam geen geluid binnen. Probeer nog eens.','fout'); return; }
-  var k=kwaliteit(), let_='';
-  if(k.piek>0.98) let_='Dat was te hard: houd de telefoon iets verder van je mond en probeer het nog eens.';
-  else if(k.snr!==null&&k.snr<14) let_='Het klinkt rumoerig. Is het stil in de kamer? Probeer het nog eens.';
-  else if(k.piek<0.05) let_='Dat was heel zacht. Iets dichterbij, of iets luider, en nog eens.';
+  var sr=ac.sampleRate, x=samen();
+  if(x.length<sr*0.3||ms<300){ status('Er kwam geen geluid binnen. Probeer nog eens.','fout'); return; }
+  var k=meetPcm(x,sr), let_='';
+  if(k.klem>20) let_='Dat was te hard (vervormd): houd de telefoon iets verder van je mond en probeer het nog eens.';
+  else if(k.piek<0.01) let_='Er kwam bijna geen geluid binnen. Staat de microfoon aan? Probeer het nog eens.';
+  else if(k.snr<14) let_='Het klinkt rumoerig. Is het stil in de kamer? Probeer het nog eens.';
+  else if(k.spraak<-45) let_='Dat was heel zacht. Iets dichterbij, of iets luider, en nog eens.';
+  /* volume gelijk zetten: de piek op -1 dB, hoogstens 30 dB erbij */
+  var g=Math.min(Math.pow(10,30/20), k.piek>0?Math.pow(10,-1/20)/k.piek:1), i;
+  for(i=0;i<x.length;i++)x[i]*=g;
+  var blob=wav(x,sr);
   if(takes[r.id]&&takes[r.id].url)URL.revokeObjectURL(takes[r.id].url);
-  takes[r.id]={ms:ms,url:URL.createObjectURL(blob),mime:blob.type,blob:blob,sessie:E('sessie').value.trim(),datum:new Date().toISOString(),
-               piek:Math.round(k.piek*100)/100,ruis:k.ruis,snr:k.snr,kamer:kamer===null?null:Math.round(kamer),let:let_,pad:''};
+  takes[r.id]={ms:Math.round(x.length/sr*1000),url:URL.createObjectURL(blob),mime:'audio/wav',blob:blob,sessie:E('sessie').value.trim(),datum:new Date().toISOString(),
+               piek:Math.round(k.piek*100)/100,ruis:Math.round(k.ruis),snr:Math.round(k.snr),kamer:kamer===null?null:Math.round(kamer),let:let_,pad:''};
+  pcm[r.id]={x:x,sr:sr};
   vastId=r.id;
-  toonTake(r); E('speler').play().catch(function(){});
+  toonTake(r); speel(r.id);
   await bewaar(r.id,takes[r.id]);
   toon();
   await stuur(r.id,takes[r.id]);
   toon();
+}
+
+/* ---------- terugluisteren (via de audio-motor, dus ook meteen na het stoppen op een iPhone) ---------- */
+function stopSpelen(){
+  if(speler.bron){ try{speler.bron.stop();}catch(e){} speler.bron=null; }
+  cancelAnimationFrame(speler.raf); E('loop').style.width='0'; E('speel').classList.remove('speelt');
+}
+async function pcmVan(id){
+  if(pcm[id])return pcm[id];
+  var t=takes[id]; if(!t||!t.blob)return null;
+  if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();
+  if(ac.state==='suspended')await ac.resume();
+  var buf=await ac.decodeAudioData(await t.blob.arrayBuffer());
+  pcm[id]={x:buf.getChannelData(0),sr:buf.sampleRate}; return pcm[id];
+}
+async function speel(id){
+  if(speler.bron){ stopSpelen(); return; }
+  var d=await pcmVan(id); if(!d)return;
+  if(ac.state==='suspended')await ac.resume();
+  var buf=ac.createBuffer(1,d.x.length,d.sr); buf.getChannelData(0).set(d.x);
+  var bron=ac.createBufferSource(); bron.buffer=buf; bron.connect(ac.destination);
+  speler.bron=bron; speler.start=ac.currentTime; speler.duur=buf.duration;
+  E('speel').classList.add('speelt');
+  bron.onended=function(){ if(speler.bron===bron)stopSpelen(); };
+  bron.start();
+  (function lus(){ if(speler.bron!==bron)return; E('loop').style.width=Math.min(100,100*(ac.currentTime-speler.start)/speler.duur)+'%'; speler.raf=requestAnimationFrame(lus); })();
 }
 
 /* ---------- bewaren op dit apparaat ---------- */
@@ -425,7 +493,7 @@ async function opslagLezen(){
 }
 
 /* ---------- de opslag van het spel ---------- */
-function ext(mime){ return /mp4|m4a|aac/.test(mime||'')?'m4a':(/ogg/.test(mime||'')?'ogg':'webm'); }
+function ext(mime){ return /wav/.test(mime||'')?'wav':(/mp4|m4a|aac/.test(mime||'')?'m4a':(/ogg/.test(mime||'')?'ogg':'webm')); }
 function koppen(extra){ var h={'apikey':OPSLAG.sleutel,'Authorization':'Bearer '+OPSLAG.sleutel}; for(var k in (extra||{}))h[k]=extra[k]; return h; }
 async function api(pad){
   var r=await fetch(OPSLAG.url+pad,{headers:koppen({'Accept':'application/json'})});
@@ -514,6 +582,7 @@ E('knop').onclick=function(){ bezig?stop():start(); };
 document.addEventListener('keydown',function(e){ if(e.code==='Space'&&e.target.tagName!=='BUTTON'&&e.target.tagName!=='INPUT'){e.preventDefault();bezig?stop():start();} });
 E('voorbeeld').onclick=function(){ var r=regelNu(); if(!r||!VOORBEELD[r.id])return; var a=new Audio(VOORBEELD[r.id]); a.play().catch(function(){}); };
 E('opnieuw').onclick=function(){ var r=regelNu(); if(!r)return; start(); };
+E('speel').onclick=function(){ var r=regelNu(); if(r)speel(r.id); };
 E('goed').onclick=function(){ vastId=null; if(!alleenOpen)huidig++; huidig=Math.max(0,Math.min(huidig,zichtbaar().length-1)); toon(); window.scrollTo({top:0,behavior:'smooth'}); };
 E('volgende').onclick=function(){ vastId=null; huidig++; toon(); };
 E('vorige').onclick=function(){ vastId=null; huidig=Math.max(0,huidig-1); toon(); };
