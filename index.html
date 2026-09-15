@@ -345,16 +345,18 @@ async function start(){
   var r=regelNu(); if(!r)return;
   if(!E('sessie').value.trim()){ status('Vul eerst je voornaam in, bovenaan. Dan weten we van wie de opnames zijn.','fout'); E('sessie').classList.add('mist'); E('sessie').focus(); return; }
   var eerste=!stream;
+  /* de audio-motor meteen bij de tik aanzetten (vóór er gewacht wordt): een iPhone
+     laat hem anders niet lopen, en zonder motor komt er geen opname binnen */
+  try{ if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)(); if(ac.state==='suspended')ac.resume(); }catch(e){}
   try{
     if(!stream){
       /* rauw opnemen: geen ruisonderdrukking of automatische versterking van de
          browser; dat doet het bureau achteraf, netjes en voor alle opnames gelijk */
       stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,channelCount:1}});
-      ac=new (window.AudioContext||window.webkitAudioContext)();
       var src=ac.createMediaStreamSource(stream);
       analyser=ac.createAnalyser(); analyser.fftSize=2048; src.connect(analyser);
     }
-    if(ac&&ac.state==='suspended')await ac.resume();
+    if(ac.state==='suspended')await ac.resume();
   }catch(e){
     var naam=(e&&e.name)||'', m;
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) m='Deze pagina krijgt de microfoon niet. Open hem als gewone tab in Chrome of Safari.';
