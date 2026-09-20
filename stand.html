@@ -16,7 +16,7 @@ a{color:var(--tile-deep);word-break:break-all}code{background:rgba(59,42,12,.08)
 b{color:var(--inkt)}
 </style></head><body><main>
 <h1>Darija Avontuur — stand van zaken</h1>
-<p>Bijgewerkt: 21 september 2026, 00:30. Dit is het ene overzicht: wat er is gedaan, wat er in de studio ligt, waar Omar naar moet kijken en wat er nog komt. Het bureau werkt dit bij bij elke oplevering; de pagina staat op <a href="https://agentivestudio.github.io/darija-stemstudio/stand.html">agentivestudio.github.io/darija-stemstudio/stand.html</a></p>
+<p>Bijgewerkt: 20 september 2026, 18:15. Dit is het ene overzicht: wat er is gedaan, wat er in de studio ligt, waar Omar naar moet kijken en wat er nog komt. Het bureau werkt dit bij bij elke oplevering; de pagina staat op <a href="https://agentivestudio.github.io/darija-stemstudio/stand.html">agentivestudio.github.io/darija-stemstudio/stand.html</a></p>
 <h2>Links</h2>
 <ul>
 <li>Voorpagina (voor ouders): <a href="https://darija-avontuur.vercel.app">darija-avontuur.vercel.app</a></li>
@@ -26,6 +26,15 @@ b{color:var(--inkt)}
 <li>Feedback van de spreekster: tabblad <i>Opmerkingen</i> op de keurpagina; ook elke nacht in <code>stem/opmerkingen.md</code></li>
 </ul>
 <h2>Wacht op Omar</h2>
+<ul>
+<li class="todo"><b>De namen op het plein</b> — overal staat nu eerst het Nederlandse woord en dan het Darija-woord, met een puntje ertussen: <i>De bakker · megbaza</i>. Kijk of je het eens bent met deze lijst (plek → naam):</li>
+</ul>
+<p>      bakker · megbaza · poort · l-bab · huis · dar · schooltje · l-medrasa · markt · souk · tuin · jnan · toren · l-borj · dierentuin · l-hadiqa · timmerman · n-najjar · moskee · l-masjid · sapjesverkoper · moul l-asir · bieb · l-mektaba.       Twee dingen wil ik van je horen: (1) jij schreef <i>Poort</i> en <i>Sapjesverkoper</i> zonder lidwoord en de rest met; ik heb overal een lidwoord gezet (<i>De poort</i>, <i>De sapjesverkoper</i>) zodat het één rij is — akkoord? (2) <i>majid</i> heb ik als <i>l-masjid</i> geschreven, dat leek me een typefout.</p>
+<ul>
+<li class="todo"><b>De najjar</b> — nieuwe plek onderaan plein 1, tussen de bieb en de sapkar. Acht meubelwoorden (tbla, korsi, khzana, namoussya, seddari, bab, serjem, mraya) en een nieuw spel: juf zegt wat je maakt, je tikt de goede plank, en dan sla je drie spijkers erin. Kloppen de woorden en de uitspraak (nu nog AI-Darija van Ghizlane)?</li>
+<li class="todo"><b>De boekjes</b> — de witte plaat met de titel is weg. Alle vier de omslagen hebben de titel nu in de tekening gedrukt, zoals bij <i>Zayn</i>. Kijk in de bieb of dit is wat je bedoelde.</li>
+<li class="todo"><b>Twee darija-namen wil ik door Faysal laten nakijken</b> — <i>Tellen en kleuren · l-hsab w l-lwan</i> en <i>Grote woorden · s-sifat</i>. Die twee heb ik zelf bedacht omdat er geen plek bij hoort; de rest komt uit jouw lijst of uit het spel.</li>
+</ul>
 <ul>
 <li class="todo"><b>De inlogpagina bekijken</b> — het voorstel met vijf schermen staat als mockup klaar (link in de chat van 20 sep, en <code>bron/ontwerp/inlog-mockup.html</code>). Nodig: akkoord op e-mail met code, wanneer het spel erom vraagt, en onder welke naam het account valt.</li>
 <li class="todo"><b>Naar de app-winkels</b> — <code>NATIVE.md</code> lezen. Jij regelt: Apple Developer Program (€ 99 per jaar, als organisatie; D-U-N-S-nummer duurt 1–2 weken, dus dat eerst), Google Play Console (eenmalig $ 25, ook als organisatie), handelaarsgegevens voor de EU, een privacyverklaring op een webadres en een contact-e-mailadres.</li>
@@ -46,6 +55,12 @@ b{color:var(--inkt)}
 <li class="todo"><b>Spreekster</b> — wanneer is de opnamesessie? 87 woorden, 64 zinnen en 36 bladzijden van de boekjes staan klaar in de studio.</li>
 </ul>
 <h2>Vandaag gedaan (20 september)</h2>
+<ul>
+<li><b>Eén systematiek voor alle namen</b>: eerst het Nederlandse woord, dan het Darija-woord — op het kaartje van een plek, op het aankomstscherm, boven het leerscherm, op de uitslag en in de woordenlijst voor ouders. Het Darija-woord staat schuin en iets lichter achter een puntje. <i>Bij de bakker</i> heet nu <i>De bakker · megbaza</i>, <i>In de souk</i> werd <i>De markt · souk</i>, <i>Salam!</i> werd <i>Hallo zeggen · salam</i>, en het <i>Huis van juf Amina</i> werd <i>Het huis · dar</i>. De opnamestudio zet dezelfde naam boven de groepen woorden</li>
+<li><b>De najjar (wereld 9)</b>: werkplaats van de timmerman, onderaan plein 1. Acht woorden met eigen plaatjes, een eigen achtergrond, en het nieuwe spel <i>timmeren</i>: de juf zegt wat je maakt, drie planken liggen klaar, de goede plank gaat op de werkbank en dan sla je er drie spijkers in — elke tik een hamerslag. Daarna de zoekplaat en raden. Proef <code>bron/test/najjar.mjs</code></li>
+<li><b>De boekjes zonder witte plaat</b>: <i>L-bhar</i>, <i>Adam f-l-bled</i> en <i>Salma w l-qitta</i> hebben nieuwe omslagen gekregen met de titel in de tekening geschilderd en een zellige-rand eromheen, in dezelfde stijl als <i>Zayn ou l-kenz</i>. Het witte plaatje met tekst eroverheen is weg</li>
+<li><b>Nieuwe proef <code>bron/test/juf-zinnen.py</code></b>: controleert dat elke zin die juf Amina uitspreekt ook echt een opname heeft. Zonder opname valt de app terug op de stem van de telefoon — precies waar het eerder misging. Nu: 69 zinnen, allemaal met opname</li>
+</ul>
 <ul>
 <li><b>Een hekje voor de ouder</b>: <i>Voor ouders</i> in het menu gaat nu pas open na een som (&quot;Hoeveel is vier plus zes?&quot;). Vijf minuten geldig, daarna weer. Dat is wat Apple (kinderrubriek) en Google (Families) vragen voor alles wat van het kind weg leidt, en het is de deur waarachter straks het inloggen komt. Proef <code>bron/test/hekje.mjs</code></li>
 <li><b>Inlogpagina ontworpen</b>: vijf schermen (hekje, e-mailadres, code van zes cijfers, gelukt, beheer) in de stijl van het spel, met de uitleg waarom. Mockup in <code>bron/ontwerp/inlog-mockup.html</code> en als pagina in de chat</li>
