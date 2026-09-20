@@ -16,7 +16,7 @@ a{color:var(--tile-deep);word-break:break-all}code{background:rgba(59,42,12,.08)
 b{color:var(--inkt)}
 </style></head><body><main>
 <h1>Darija Avontuur — stand van zaken</h1>
-<p>Bijgewerkt: 20 september 2026, 22:10. Dit is het ene overzicht: wat er is gedaan, wat er in de studio ligt, waar Omar naar moet kijken en wat er nog komt. Het bureau werkt dit bij bij elke oplevering; de pagina staat op <a href="https://agentivestudio.github.io/darija-stemstudio/stand.html">agentivestudio.github.io/darija-stemstudio/stand.html</a></p>
+<p>Bijgewerkt: 21 september 2026, 00:30. Dit is het ene overzicht: wat er is gedaan, wat er in de studio ligt, waar Omar naar moet kijken en wat er nog komt. Het bureau werkt dit bij bij elke oplevering; de pagina staat op <a href="https://agentivestudio.github.io/darija-stemstudio/stand.html">agentivestudio.github.io/darija-stemstudio/stand.html</a></p>
 <h2>Links</h2>
 <ul>
 <li>Voorpagina (voor ouders): <a href="https://darija-avontuur.vercel.app">darija-avontuur.vercel.app</a></li>
@@ -27,6 +27,8 @@ b{color:var(--inkt)}
 </ul>
 <h2>Wacht op Omar</h2>
 <ul>
+<li class="todo"><b>De inlogpagina bekijken</b> — het voorstel met vijf schermen staat als mockup klaar (link in de chat van 20 sep, en <code>bron/ontwerp/inlog-mockup.html</code>). Nodig: akkoord op e-mail met code, wanneer het spel erom vraagt, en onder welke naam het account valt.</li>
+<li class="todo"><b>Naar de app-winkels</b> — <code>NATIVE.md</code> lezen. Jij regelt: Apple Developer Program (€ 99 per jaar, als organisatie; D-U-N-S-nummer duurt 1–2 weken, dus dat eerst), Google Play Console (eenmalig $ 25, ook als organisatie), handelaarsgegevens voor de EU, een privacyverklaring op een webadres en een contact-e-mailadres.</li>
 <li class="todo"><b>Alles weer dichtzetten na het testen</b> — menu → Voor ouders → <i>Alles open: aan</i> nog één keer tikken. Zeg het ook hier, dan haal ik het knopje weg als je het niet meer nodig hebt.</li>
 <li class="todo"><b>De bieb</b> — op plein 1 (bij de masjid) links, of via het menu <i>Naar de bieb</i>. Een kast met twee planken: 4 tot 8 (<i>Zayn ou l-kenz</i>, <i>L-bhar</i>) en 8 tot 12 (<i>Adam f-l-bled</i>, <i>Salma w l-qitta</i>, twee nieuwe verhalen van het bureau). Tik een boekje en het komt uit de kast. Voorlezen door Ghizlane (AI-Darija). Graag met Faysal nakijken: kloppen de Darija-zinnen van de twee nieuwe verhalen (ze staan ook in de studio onder <i>Boekjes</i>)? Klopt de uitspraak?</li>
 <li class="todo"><b>De dierentuin</b> — plek 8, linksonder op plein 1 (na een ster bij <i>Grote woorden</i>, of meteen bij 8 tot 12). Acht dieren: sba3, fil, jmel, debb, hensh, timsah, qerd, zarafa. Kloppen de woorden en de uitspraak (Ghizlane)? Zoekplaat en omdraaien, dan raden.</li>
@@ -45,6 +47,12 @@ b{color:var(--inkt)}
 </ul>
 <h2>Vandaag gedaan (20 september)</h2>
 <ul>
+<li><b>Een hekje voor de ouder</b>: <i>Voor ouders</i> in het menu gaat nu pas open na een som (&quot;Hoeveel is vier plus zes?&quot;). Vijf minuten geldig, daarna weer. Dat is wat Apple (kinderrubriek) en Google (Families) vragen voor alles wat van het kind weg leidt, en het is de deur waarachter straks het inloggen komt. Proef <code>bron/test/hekje.mjs</code></li>
+<li><b>Inlogpagina ontworpen</b>: vijf schermen (hekje, e-mailadres, code van zes cijfers, gelukt, beheer) in de stijl van het spel, met de uitleg waarom. Mockup in <code>bron/ontwerp/inlog-mockup.html</code> en als pagina in de chat</li>
+<li><b>Plan voor de app-winkels</b>: <code>NATIVE.md</code> — de route (Capacitor-schil om hetzelfde spel), wat het kost (€ 99 per jaar plus $ 25 eenmalig), de regels voor kinderapps bij Apple en Google, wat ik alvast in het spel verander en wat jij moet regelen</li>
+<li><b>De muziek pompt niet meer</b> (Omar: &quot;de juf zegt wat, het wordt zachter, dan weer harder, en meteen weer zachter&quot;): tijdens een oefening of spel staat het muziektapijtje sowieso veel zachter (een derde van op het plein), en na een zin blijft het nog anderhalve seconde zacht en komt het daarna in bijna twee seconden rustig terug. Praat de juf binnen die tijd weer, dan hoor je niets veranderen. Gemeten met <code>bron/test/muziek.mjs</code>: op het leerscherm van de bakker nul keer op en neer (was: bij elke zin)</li>
+<li><b>In de bieb is het stil</b> (Omar: het is een rustige plek): de muziek zakt weg zodra je de mektaba binnenkomt en komt terug als je naar het plein loopt</li>
+<li><b>De kast beter leesbaar</b>: de titels staan nu op het omslag zelf (twee regels, nooit meer afgekapt), de boekjes staan gecentreerd op de plank en de kast past ook liggend netjes in beeld. De hele bieb doorgelopen in de proef (<code>bron/test/bieb-doorlopen.mjs</code>): vier boekjes, elke bladzijde, vegen heen en terug, dicht, ander boekje, terug naar het plein, staand en liggend; geen fouten</li>
 <li><b>Alles open om te testen</b> (Omar): in het menu (huisje linksboven) → <i>Voor ouders</i> → <b>Alles open: uit/aan</b>. Aan: alle acht plekken zijn los te spelen zonder eerst een ster te halen. Het staat per kind opgeslagen, dus je zet het aan op het toestel waarmee je test en later weer uit; er gaat niets verloren, de sterren blijven staan. Proef <code>bron/test/alles-open.mjs</code></li>
 <li><b>De dierentuin</b> (Faysal, plek 1 uit het voorstel; Omar: bouw door): wereld 8, een pad linksonder op plein 1 met een bordje met de leeuw. Acht dieren met plaatjes in de stickerstijl van het spel (8 credits), een dierentuin-achtergrond in de stijl van de tuin (1 credit), acht woordopnames (Ghizlane), de juf: &quot;Dit is de dierentuin. Kijk, een leeuw!&quot; en &quot;We oefenen de dieren van de dierentuin&quot;; bij 8 tot 12 ook <i>yallah nshufu l-hayawanat!</i> Ronde: zoekplaat (de dieren in hun hokken), omdraaien, raden. Op beide niveaus helemaal doorgespeeld in de proef (<code>bron/test/dierentuin.mjs</code>): geen fouten, niets afgekapt. Gaat open na een ster bij <i>Grote woorden</i>, zoals alle plekken op volgorde</li>
 <li><b>De bieb, vervolg</b> (Omar: boekjes voor 4 tot 8 én 8 tot 12, uit de kast pakken, ruimte voor meer): de plank is een kast geworden met twee planken, 4 tot 8 en 8 tot 12; de boekjes staan rechtop, tik erop en het komt uit de kast; past er meer op een plank, dan schuift hij opzij. Twee nieuwe verhalen voor 8 tot 12, geschreven door het bureau (langere zinnen, meer Darija): <i>Adam f-l-bled</i> (Adam op vakantie bij oma in Marokko: vliegtuig, blauwe deur, thee met munt, de ezel Zitoun, tajine, de sterren) en <i>Salma w l-qitta</i> (Salma vindt een katje in de medina en mag het houden: Louza). Tien bladzijden elk, plaatjes met de helden uit het spel (18 credits), voorgelezen door Ghizlane</li>
@@ -107,6 +115,7 @@ b{color:var(--inkt)}
 <li><b>Zoekplaat 2.0</b> (sprint 10): verstoppertje met drie niveaus en een hint; woorden koraa, tajine, berrad, kas, tabsi, bisklita</li>
 <li><b>Dar</b> (sprint 11): naambord, dirhamteller, kledingwinkel, boekenkast</li>
 <li><b>Inlog voor ouders</b> (na akkoord op het plan): e-mail + code, kinderen en sterren op meerdere apparaten hetzelfde; zonder account blijft spelen mogelijk</li>
+<li><b>Naar de app-winkels</b> (zie <code>NATIVE.md</code>): Capacitor-schil, icoon en opstartscherm, geluid volgens iOS, TestFlight, winkelpagina&#x27;s — zodra de twee ontwikkelaarsaccounts er zijn</li>
 <li><b>Animaties, vervolg</b>: de helden zelf (rust, zwaai, blij, spring: 16 clips, ±450 credits, Higgsfield bijvullen; lopen is klaar) op het plein, in het renspel en bij de uitslag; dan de vriendjes van de speeltuin (na Omars keuzes)</li>
 <li>Later: promofilm opnieuw oppakken</li>
 </ol>
