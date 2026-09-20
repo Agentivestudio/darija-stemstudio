@@ -16,7 +16,7 @@ a{color:var(--tile-deep);word-break:break-all}code{background:rgba(59,42,12,.08)
 b{color:var(--inkt)}
 </style></head><body><main>
 <h1>Darija Avontuur — stand van zaken</h1>
-<p>Bijgewerkt: 20 september 2026, 18:15. Dit is het ene overzicht: wat er is gedaan, wat er in de studio ligt, waar Omar naar moet kijken en wat er nog komt. Het bureau werkt dit bij bij elke oplevering; de pagina staat op <a href="https://agentivestudio.github.io/darija-stemstudio/stand.html">agentivestudio.github.io/darija-stemstudio/stand.html</a></p>
+<p>Bijgewerkt: 20 september 2026, 20:00. Dit is het ene overzicht: wat er is gedaan, wat er in de studio ligt, waar Omar naar moet kijken en wat er nog komt. Het bureau werkt dit bij bij elke oplevering; de pagina staat op <a href="https://agentivestudio.github.io/darija-stemstudio/stand.html">agentivestudio.github.io/darija-stemstudio/stand.html</a></p>
 <h2>Links</h2>
 <ul>
 <li>Voorpagina (voor ouders): <a href="https://darija-avontuur.vercel.app">darija-avontuur.vercel.app</a></li>
@@ -26,6 +26,9 @@ b{color:var(--inkt)}
 <li>Feedback van de spreekster: tabblad <i>Opmerkingen</i> op de keurpagina; ook elke nacht in <code>stem/opmerkingen.md</code></li>
 </ul>
 <h2>Wacht op Omar</h2>
+<ul>
+<li class="todo"><b>Het nieuwe dorp bekijken</b> — beide pleinen zijn opnieuw getekend, staand, zodat het dorp bijna het hele telefoonscherm vult. Elke plek heeft nu een eigen deur die naar het plein toe staat en er ligt een stenen paadje van de fontein naar elke deur. Je held loopt over die paadjes (nooit meer dwars door een muur), de deur gaat echt open voordat hij naar binnen stapt, en het steegje begint bij een boog in de muur. Loop op beide pleinen even alle plekken af: ziet het er natuurlijk uit, staat er niets raar, mist er iets?</li>
+</ul>
 <ul>
 <li class="todo"><b>De namen op het plein</b> — overal staat nu eerst het Nederlandse woord en dan het Darija-woord, met een puntje ertussen: <i>De bakker · megbaza</i>. Kijk of je het eens bent met deze lijst (plek → naam):</li>
 </ul>
@@ -55,6 +58,10 @@ b{color:var(--inkt)}
 <li class="todo"><b>Spreekster</b> — wanneer is de opnamesessie? 87 woorden, 64 zinnen en 36 bladzijden van de boekjes staan klaar in de studio.</li>
 </ul>
 <h2>Vandaag gedaan (20 september)</h2>
+<ul>
+<li><b>Het dorp opnieuw ingedeeld</b> (Omar: &quot;er zijn nu veel plekken, maak het groter, overzichtelijker en logischer; zorg dat er paden zijn en deuren opengaan&quot;):</li>
+</ul>
+<p>  - <b>Twee nieuwe pleintekeningen</b>, staand in plaats van vierkant. Op een telefoon is het dorp daarmee een derde groter; de lege wazige banden boven en onder zijn grotendeels weg. Plein 1: de bakker, de poort, het huis, het schooltje, de souk en de toren. Plein 2: de moskee, de bieb, de tuin, de timmerman, de dierentuin en de sapjesverkoper. Elke plek staat los, met zand ertussen, en kijkt naar het plein toe.   - <b>Paden.</b> Er ligt nu een padennet over elk plein: knooppunten op het zand met lijntjes ertussen, precies de stenen paadjes die je in de tekening ziet. Je held zoekt de kortste weg over dat net. Daarmee is het oude probleem weg dat hij in een rechte lijn dwars door een huis liep. Proef <code>bron/test/dorp-paden.mjs</code> loopt alle twaalf plekken af en valt erover zodra de held ook maar één meting binnen een gebouw staat.   - <b>Deuren gaan open.</b> Bij aankomst knipt het spel de twee deurhelften uit de tekening zelf en draait ze weg; daarachter komt warm lamplicht. Zo gaat precies de deur open die het kind ziet staan, en is er niets nagetekend. Zes plekken hebben een geschilderde deur (poort, huis, bakker, schooltje, moskee, bieb, tuin, timmerman); de souk, de toren, de dierentuin en de sapkar hebben er geen, daar loopt hij gewoon naar binnen.   - <b>Het steegje</b> begint nu bij een echte boog in de muur — rechtsboven op plein 1, linksonder op plein 2 — in plaats van dat je kind het beeld uit loopt. Die boogdeur gaat ook open.   - De held is iets kleiner en krimpt sterker naar achteren, zodat hij bij een deur verderop niet groter is dan de deur.</p>
 <ul>
 <li><b>Eén systematiek voor alle namen</b>: eerst het Nederlandse woord, dan het Darija-woord — op het kaartje van een plek, op het aankomstscherm, boven het leerscherm, op de uitslag en in de woordenlijst voor ouders. Het Darija-woord staat schuin en iets lichter achter een puntje. <i>Bij de bakker</i> heet nu <i>De bakker · megbaza</i>, <i>In de souk</i> werd <i>De markt · souk</i>, <i>Salam!</i> werd <i>Hallo zeggen · salam</i>, en het <i>Huis van juf Amina</i> werd <i>Het huis · dar</i>. De opnamestudio zet dezelfde naam boven de groepen woorden</li>
 <li><b>De najjar (wereld 9)</b>: werkplaats van de timmerman, onderaan plein 1. Acht woorden met eigen plaatjes, een eigen achtergrond, en het nieuwe spel <i>timmeren</i>: de juf zegt wat je maakt, drie planken liggen klaar, de goede plank gaat op de werkbank en dan sla je er drie spijkers in — elke tik een hamerslag. Daarna de zoekplaat en raden. Proef <code>bron/test/najjar.mjs</code></li>
