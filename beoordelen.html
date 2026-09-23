@@ -62,6 +62,34 @@ h1{font-size:1.45rem;color:var(--clay)} h1 small{display:block;font-family:Nunit
 .chips button[aria-pressed="true"]{background:var(--zand);border-color:var(--clay)}
 textarea{font:inherit;width:100%;min-height:56px;padding:8px 12px;border:1.5px solid var(--rand);border-radius:12px;background:#fff;color:var(--inkt);resize:vertical}
 .klein-tekst{font-size:.8rem;color:var(--inkt-zacht)}
+/* wie keurt: rechtsboven als chip, en een vak dat om de naam vraagt zolang die er niet is */
+.wie-chip{display:inline-flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--brass);border-radius:999px;padding:6px 8px 6px 14px;font-weight:800;box-shadow:0 3px 0 var(--brass-dark)}
+.wie-chip small{font-weight:700;color:var(--inkt-zacht);font-size:.78rem;letter-spacing:.04em;text-transform:uppercase}
+.wie-chip button{font:inherit;font-size:.8rem;font-weight:800;border:0;background:var(--zand);color:var(--inkt);border-radius:999px;padding:5px 10px;cursor:pointer}
+.wie-chip.leeg{border-color:var(--rood);box-shadow:0 3px 0 var(--rood-deep);color:#8E2B22}
+#naamvak{border:3px solid var(--brass);box-shadow:0 10px 30px rgba(80,50,20,.14),0 0 0 6px rgba(240,178,63,.22)}
+#naamvak.schud{animation:schud .5s}
+@keyframes schud{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+#naamin{font:inherit;font-size:1.15rem;font-weight:800;flex:1;min-width:10em;padding:12px 14px;border:2px solid var(--rand);border-radius:14px;background:#fff;color:var(--inkt)}
+/* de drie stappen */
+.stappen{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0;padding:0;list-style:none}
+.stappen li{background:var(--zand);border-radius:14px;padding:10px 12px;font-size:.85rem;line-height:1.35}
+.stappen li b{display:block;font-family:"Baloo 2",sans-serif;font-size:1.05rem;color:var(--clay)}
+@media (max-width:440px){.stappen{grid-template-columns:1fr}}
+/* zoeken en filteren */
+.zoek{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.zoek input{font:inherit;flex:1;min-width:11em;padding:8px 12px;border:1.5px solid var(--rand);border-radius:12px;background:#fff;color:var(--inkt)}
+.zoek .chips button[aria-pressed="true"]{background:var(--tile);border-color:var(--tile-deep);color:#fff}
+/* per regel: twee duidelijke luisterrijen, te keuren en ter vergelijking */
+.luister{display:flex;flex-direction:column;gap:6px;background:rgba(59,42,12,.04);border-radius:14px;padding:10px 12px}
+.luister .lbl{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--inkt-zacht)}
+.luister.nieuw{background:#FFF1E4;border:1.5px solid #F0C9A6} .luister.nieuw .lbl{color:var(--clay)}
+.luister .rij{align-items:center}
+.luister .knop{background:#fff}
+.luister.nieuw .knop{background:var(--brass);box-shadow:0 4px 0 var(--brass-dark)}
+.luister .uitleg{font-size:.85rem;color:var(--inkt-zacht)}
+.knop.goed small,.knop.rood small{display:block;font-family:Nunito;font-weight:700;font-size:.72rem;opacity:.9;line-height:1.1}
+.knop.goed,.knop.rood{flex-direction:column;align-items:flex-start;gap:0;padding:8px 18px}
 .leeg{text-align:center;color:var(--inkt-zacht);padding:24px 0}
 /* opmerkingen van de spreekster */
 .regel .opmerking{background:#FFF1E4;border:1px solid #F0C9A6;color:var(--inkt);border-radius:12px;padding:8px 12px;font-size:.9rem}
@@ -79,17 +107,43 @@ textarea{font:inherit;width:100%;min-height:56px;padding:8px 12px;border:1.5px s
 <body>
 <div class="wrap">
   <header>
-    <h1>Keuren<small>Darija Avontuur · stemopnames</small></h1>
-    <label class="klein-tekst" style="display:flex;align-items:center;gap:6px">Je keurt als <input id="door" placeholder="je voornaam" autocomplete="off" style="font:inherit;font-weight:700;padding:6px 10px;border:1.5px solid var(--rand);border-radius:10px;background:#fff;color:var(--inkt);width:9em"></label>
+    <h1>Keuren<small>Darija Avontuur · opnames van de spreekster</small></h1>
+    <div class="wie-chip leeg" id="wie"><small>Je keurt als</small><span id="wie-naam">nog geen naam</span><button type="button" id="wie-wijzig">wijzig</button></div>
   </header>
+
+  <div class="kaart" id="naamvak">
+    <h3 style="font-size:1.1rem;margin-bottom:4px">Eerst even: wie keurt er?</h3>
+    <p class="klein-tekst" style="margin:0 0 10px">Je voornaam komt bij elk oordeel te staan, zodat we zien wie wat heeft gekeurd. Dit vraagt de pagina één keer per telefoon.</p>
+    <div class="rij">
+      <input id="naamin" placeholder="je voornaam" autocomplete="given-name" autocapitalize="words" maxlength="40">
+      <button class="knop" id="naamok" type="button">Verder</button>
+    </div>
+  </div>
+
+  <div class="kaart">
+    <ol class="stappen">
+      <li><b>1 · Luister</b>naar de <b style="display:inline;font:inherit;color:var(--inkt)">nieuwe opname</b>: dat is wat de spreekster heeft ingesproken en wat gekeurd moet worden.</li>
+      <li><b>2 · Vergelijk</b>met <b style="display:inline;font:inherit;color:var(--inkt)">zo klinkt het nu in het spel</b>: de stem die er nu in zit (meestal de AI-stem).</li>
+      <li><b>3 · Keur</b><b style="display:inline;font:inherit;color:var(--ok-deep)">Goed</b> = deze opname komt in het spel. <b style="display:inline;font:inherit;color:#8E2B22">Opnieuw</b> = nog een keer inspreken, met een aanwijzing.</li>
+    </ol>
+  </div>
 
   <div class="kaart dun">
     <div class="tabs" role="tablist">
-      <button class="knop" data-tab="wacht" aria-pressed="true" type="button">Te keuren <b id="n-wacht">0</b></button>
+      <button class="knop" data-tab="wacht" aria-pressed="true" type="button">Te keuren: nieuwe opnames <b id="n-wacht">0</b></button>
       <button class="knop" data-tab="opnieuw" aria-pressed="false" type="button">Opnieuw gevraagd <b id="n-opnieuw">0</b></button>
       <button class="knop" data-tab="goed" aria-pressed="false" type="button">Goedgekeurd <b id="n-goed">0</b></button>
-      <button class="knop" data-tab="alles" aria-pressed="false" type="button">Alles <b id="n-alles">0</b></button>
-      <button class="knop" data-tab="opm" aria-pressed="false" type="button">Opmerkingen <b id="n-opm">0</b></button>
+      <button class="knop" data-tab="alles" aria-pressed="false" type="button">Alle regels <b id="n-alles">0</b></button>
+      <button class="knop" data-tab="opm" aria-pressed="false" type="button">Opmerkingen van de spreekster <b id="n-opm">0</b></button>
+    </div>
+    <div class="zoek" id="zoekvak" style="margin-top:10px">
+      <input id="zoekin" type="search" placeholder="Zoek een woord of zin…" autocomplete="off">
+      <div class="chips" id="rolchips">
+        <button type="button" data-rol="" aria-pressed="true">alles</button>
+        <button type="button" data-rol="juf" aria-pressed="false">juf Amina</button>
+        <button type="button" data-rol="woord" aria-pressed="false">Darija</button>
+        <button type="button" data-rol="boek" aria-pressed="false">boekjes</button>
+      </div>
     </div>
   </div>
 
@@ -107,7 +161,7 @@ textarea{font:inherit;width:100%;min-height:56px;padding:8px 12px;border:1.5px s
   <div id="lijst" style="display:flex;flex-direction:column;gap:12px"></div>
 
   <div class="kaart dun">
-    <p class="klein-tekst" style="margin:0"><b>Zo werkt het.</b> Elke opname van de spreekster komt hier binnen. Luister, vergelijk met hoe het nu in het spel klinkt, en tik <b>Goed</b> of <b>Opnieuw</b>. Bij Opnieuw kies je een aanwijzing; die ziet de spreekster meteen in haar studio, bij die regel. Wat je goedkeurt, haalt het bureau binnen, maakt het schoon en zet het in het spel. Bij <b>Alles</b> kun je ook een regel die al in het spel zit opnieuw laten inspreken. Vindt de spreekster dat een woord niet klopt, dan tikt ze dat in haar studio aan; dat komt hier onder <b>Opmerkingen</b> binnen. Lees, tik <b>Kopieer alles</b> en stuur het naar het bureau, en zet elke opmerking op <b>Verwerkt</b> zodra dat gedaan is. Het bureau haalt de open opmerkingen elke nacht ook zelf op.</p>
+    <p class="klein-tekst" style="margin:0"><b>Goed om te weten.</b> Elke opname die de spreekster in haar studio instuurt, komt hier onder <b>Te keuren</b> binnen. Bij <b>Opnieuw</b> kies je een aanwijzing; die ziet zij meteen in haar studio bij die regel. Wat je goedkeurt, haalt het bureau binnen, maakt het schoon en zet het in het spel. Onder <b>Alle regels</b> kun je ook een regel die al in het spel zit opnieuw laten inspreken. Vindt de spreekster dat een woord niet klopt, dan tikt ze dat in haar studio aan; dat komt hier onder <b>Opmerkingen van de spreekster</b> binnen: lees, tik <b>Kopieer alles</b>, stuur het naar het bureau en zet elke opmerking op <b>Verwerkt</b>. Meerdere mensen mogen keuren: iedereen met de keurlink vult zijn eigen naam in, en elk oordeel staat meteen bij iedereen op de pagina.</p>
   </div>
 </div>
 
@@ -125,7 +179,22 @@ var SLEUTEL=(function(){
   if(m){ try{localStorage.setItem('stemkeur-sleutel',decodeURIComponent(m[1]));}catch(e){} history.replaceState(null,'',location.pathname+location.search); }
   try{ return localStorage.getItem('stemkeur-sleutel')||''; }catch(e){ return ''; }
 })();
-var DOOR=(function(){ try{ return localStorage.getItem('stemkeur-naam')||''; }catch(e){ return ''; } })();
+var DOOR=(function(){ try{ return (localStorage.getItem('stemkeur-naam')||'').trim(); }catch(e){ return ''; } })();
+/* de naam is verplicht: zonder naam geen oordeel. Rechtsboven staat wie er keurt;
+   zolang er geen naam is, staat het naamvak bovenaan open. */
+function naamToon(){
+  var chip=E('wie'); E('wie-naam').textContent=DOOR||'nog geen naam'; chip.className='wie-chip'+(DOOR?'':' leeg');
+  E('naamvak').hidden=!!DOOR;
+}
+function naamZet(n){ DOOR=(n||'').trim().slice(0,40); try{ DOOR?localStorage.setItem('stemkeur-naam',DOOR):localStorage.removeItem('stemkeur-naam'); }catch(e){} naamToon(); }
+/* mag er gekeurd worden? anders het naamvak laten zien en even schudden */
+function naamNodig(){
+  if(DOOR)return false;
+  E('naamvak').hidden=false; E('naamvak').classList.remove('schud'); void E('naamvak').offsetWidth; E('naamvak').classList.add('schud');
+  E('naamvak').scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(function(){ E('naamin').focus(); },350);
+  status('Vul eerst je voornaam in (bovenaan), dan kun je keuren.','fout');
+  return true;
+}
 function sleutelBewaren(k){ SLEUTEL=k; try{ k?localStorage.setItem('stemkeur-sleutel',k):localStorage.removeItem('stemkeur-sleutel'); }catch(e){} }
 /* kijken of een sleutel klopt zonder iets te schrijven: met een onmogelijk
    oordeel geeft de opslag "oordeel moet goed of opnieuw zijn" bij een goede
@@ -220,6 +289,7 @@ speler.onended=function(){ if(spelend)spelend.classList.remove('speelt'); spelen
 /* ---------- keuren ---------- */
 async function keur(r,take,oordeel,aanwijzing){
   if(!SLEUTEL){ status('Keuren kan alleen met de link met sleutel.','fout'); return false; }
+  if(naamNodig())return false;
   try{
     await api('/rest/v1/rpc/stem_beoordeel',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({p_sleutel:SLEUTEL,p_regel:r.id,p_take:take||'',p_oordeel:oordeel,p_aanwijzing:aanwijzing||'',p_door:DOOR||''})});
@@ -240,11 +310,13 @@ function tel(){
   REGELS.forEach(function(r){ var c=stand(r).code; if(n[c]!==undefined)n[c]++; });
   E('n-wacht').textContent=n.wacht; E('n-opnieuw').textContent=n.opnieuw; E('n-goed').textContent=n.goed; E('n-alles').textContent=n.alles; E('n-opm').textContent=n.opm;
 }
+/* het kopje boven een regel: wie spreekt, en waar hij bij hoort (niet twee keer hetzelfde) */
+function kopje(r){ var wie=(r.rol==='juf'?'Juf Amina':(r.rol==='boek'?'Voorlezen':'Darija')); var g=r.groep||''; return (g&&g!==wie)?wie+' · '+g:wie; }
 function el(tag,cls,tekst){ var e=document.createElement(tag); if(cls)e.className=cls; if(tekst!==undefined)e.textContent=tekst; return e; }
 function kaart(r){
   var s=stand(r), t=cloud.takes[r.id], o=cloud.oordeel[r.id];
   var k=el('div','kaart'), b=el('div','regel'); k.appendChild(b);
-  var waar=el('div','waar'); waar.appendChild(el('span','',(r.rol==='juf'?'Juf Amina · ':(r.rol==='boek'?'Voorlezen · ':'Darija · '))+r.groep)); waar.appendChild(el('span','','#'+r.nr)); b.appendChild(waar);
+  var waar=el('div','waar'); waar.appendChild(el('span','',kopje(r))); waar.appendChild(el('span','','#'+r.nr)); b.appendChild(waar);
   b.appendChild(el('div','tekst',r.tekst));
   if(r.arabisch)b.appendChild(el('div','ar',r.arabisch));
   if(r.rol==='woord'){ var z=el('div','zeg'); z.innerHTML='klinkt als <b>'+r.uitspraak+'</b> · betekent <b>'+r.betekenis+'</b>'; b.appendChild(z); }
@@ -253,14 +325,23 @@ function kaart(r){
   var m=cloud.opm[r.id]; if(m){ var om=el('div','opmerking'); om.innerHTML='<b>Opmerking van '+esc(m.door||'de spreekster')+':</b> '+esc(SOORT[m.soort]||m.soort)+(m.tekst?' \u2014 \u201c'+esc(m.tekst)+'\u201d':'')+' <span class="klein-tekst">(zie Opmerkingen)</span>'; b.appendChild(om); }
   var st=el('div','stand '+s.code,STANDNAAM[s.code]+(s.code==='opnieuw'&&s.aanwijzing?' · '+s.aanwijzing:'')+(o&&o.door&&(s.code==='goed'||s.code==='opnieuw')?' · '+o.door:''));
   b.appendChild(st);
-  var rij=el('div','rij');
+  /* 1. de nieuwe opname van de spreekster (dit is wat gekeurd wordt) */
   if(t){
-    var p=el('button','knop licht klein'); p.type='button'; p.innerHTML='<i class="tri"></i> Nieuwe opname'; p.onclick=function(){speel(p,t.pad);}; rij.appendChild(p);
-    var v=el('span','van',naam(t.sessie)+' · '+datum(t.gemaakt)+((cloud.alle[r.id]||[]).length>1?' · take '+(cloud.alle[r.id]||[]).length:''));
-    rij.appendChild(v);
+    var L1=el('div','luister nieuw'); L1.appendChild(el('div','lbl',s.code==='wacht'?'Te keuren · nieuwe opname van de spreekster':'Opname van de spreekster'));
+    var rij=el('div','rij');
+    var p=el('button','knop klein'); p.type='button'; p.innerHTML='<i class="tri"></i> Luister naar de opname'; p.onclick=function(){speel(p,t.pad);}; rij.appendChild(p);
+    rij.appendChild(el('span','van','ingesproken door '+naam(t.sessie)+' · '+datum(t.gemaakt)+((cloud.alle[r.id]||[]).length>1?' · take '+(cloud.alle[r.id]||[]).length:'')));
+    L1.appendChild(rij); b.appendChild(L1);
   }
-  if(VOORBEELD[r.id]){ var q=el('button','knop licht klein'); q.type='button'; q.innerHTML='<i class="tri"></i> Nu in het spel'; q.onclick=function(){speel(q,VOORBEELD[r.id]);}; rij.appendChild(q); }
-  b.appendChild(rij);
+  /* 2. ter vergelijking: zo klinkt het nu in het spel */
+  var L2=el('div','luister'); L2.appendChild(el('div','lbl','Ter vergelijking · zo klinkt het nu in het spel'));
+  if(VOORBEELD[r.id]){
+    var rij2=el('div','rij');
+    var q=el('button','knop licht klein'); q.type='button'; q.innerHTML='<i class="tri"></i> Zo klinkt het nu in het spel'; q.onclick=function(){speel(q,VOORBEELD[r.id]);}; rij2.appendChild(q);
+    rij2.appendChild(el('span','uitleg',r.status==='in spel'?'de opname die nu in het spel zit':'de AI-stem die er nu in zit, tot de spreekster het heeft ingesproken'));
+    L2.appendChild(rij2);
+  }else L2.appendChild(el('div','uitleg','Nog niets in het spel voor deze regel.'));
+  b.appendChild(L2);
 
   /* keuren */
   var keurbox=el('div','keur'); b.appendChild(keurbox);
@@ -284,11 +365,11 @@ function kaart(r){
     keurbox.appendChild(open);
   }
   if(s.code==='wacht'||s.code==='goed'||s.code==='opnieuw'){
-    if(t&&s.code!=='goed'){ var g=el('button','knop goed','Goed ✓'); g.type='button'; g.disabled=!SLEUTEL; if(!SLEUTEL)g.title='Vul eerst de keursleutel in'; g.onclick=async function(){ g.disabled=true; if(await keur(r,t.pad,'goed',''))teken(); else g.disabled=false; }; knoppen.appendChild(g); }
-    if(s.code!=='opnieuw'){ var n=el('button','knop rood','Opnieuw ↺'); n.type='button'; n.disabled=!SLEUTEL; if(!SLEUTEL)n.title='Vul eerst de keursleutel in'; n.onclick=opnieuwVak; knoppen.appendChild(n); }
+    if(t&&s.code!=='goed'){ var g=el('button','knop goed'); g.type='button'; g.innerHTML='Goed \u2713<small>deze opname komt in het spel</small>'; g.disabled=!SLEUTEL; if(!SLEUTEL)g.title='Vul eerst de keursleutel in'; g.onclick=async function(){ if(naamNodig())return; g.disabled=true; if(await keur(r,t.pad,'goed',''))teken(); else g.disabled=false; }; knoppen.appendChild(g); }
+    if(s.code!=='opnieuw'){ var n=el('button','knop rood'); n.type='button'; n.innerHTML='Opnieuw \u21ba<small>nog een keer inspreken</small>'; n.disabled=!SLEUTEL; if(!SLEUTEL)n.title='Vul eerst de keursleutel in'; n.onclick=function(){ if(naamNodig())return; opnieuwVak(); }; knoppen.appendChild(n); }
     else if(t&&s.take!==t.pad){ /* opnieuw gevraagd, maar er is een nieuwere take: staat dan onder Te keuren */ }
   }else if(s.code==='spel'||s.code==='open'){
-    var n2=el('button','knop licht klein','Opnieuw laten inspreken ↺'); n2.type='button'; n2.disabled=!SLEUTEL; if(!SLEUTEL)n2.title='Vul eerst de keursleutel in'; n2.onclick=opnieuwVak; knoppen.appendChild(n2);
+    var n2=el('button','knop licht klein','Opnieuw laten inspreken ↺'); n2.type='button'; n2.disabled=!SLEUTEL; if(!SLEUTEL)n2.title='Vul eerst de keursleutel in'; n2.onclick=function(){ if(naamNodig())return; opnieuwVak(); }; knoppen.appendChild(n2);
   }
   if(!knoppen.childNodes.length)keurbox.remove();
   return k;
@@ -307,6 +388,7 @@ function opmAlles(){
 }
 async function opmAf(m,antwoord){
   if(!SLEUTEL){ status('Verwerkt zetten kan alleen met de link met sleutel.','fout'); return false; }
+  if(naamNodig())return false;
   try{
     await api('/rest/v1/rpc/stem_opmerking_af',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({p_sleutel:SLEUTEL,p_id:m.id,p_antwoord:antwoord||''})});
@@ -338,7 +420,7 @@ function tekenOpm(box){
   open.concat(af.slice(0,20)).forEach(function(m){
     var r=REGEL[m.regel_id]||{tekst:m.regel_id,nr:'?',rol:'',groep:''};
     var k=el('div','kaart opm-item'+(m.verwerkt?' af':'')), b=el('div','regel'); k.appendChild(b);
-    var waar=el('div','waar'); waar.appendChild(el('span','',(r.rol==='juf'?'Juf Amina · ':(r.rol==='boek'?'Voorlezen · ':'Darija · '))+(r.groep||''))); waar.appendChild(el('span','','#'+r.nr)); b.appendChild(waar);
+    var waar=el('div','waar'); waar.appendChild(el('span','',kopje(r))); waar.appendChild(el('span','','#'+r.nr)); b.appendChild(waar);
     b.appendChild(el('div','tekst',r.tekst));
     if(r.arabisch)b.appendChild(el('div','ar',r.arabisch));
     if(r.rol==='woord'){ var z=el('div','zeg'); z.innerHTML='klinkt als <b>'+esc(r.uitspraak)+'</b> · betekent <b>'+esc(r.betekenis)+'</b>'; b.appendChild(z); }
@@ -346,8 +428,8 @@ function tekenOpm(box){
     if(m.tekst)b.appendChild(el('div','quote','\u201c'+m.tekst+'\u201d'));
     b.appendChild(el('div','wie',(m.door||'?')+' · '+datum(m.gemaakt)+(m.verwerkt?' · verwerkt '+datum(m.verwerkt):'')));
     var rij2=el('div','rij');
-    if(VOORBEELD[m.regel_id]){ var q=el('button','knop licht klein'); q.type='button'; q.innerHTML='<i class="tri"></i> Nu in het spel'; q.onclick=function(){speel(q,VOORBEELD[m.regel_id]);}; rij2.appendChild(q); }
-    var t=cloud.takes[m.regel_id]; if(t){ var p=el('button','knop licht klein'); p.type='button'; p.innerHTML='<i class="tri"></i> Opname'; p.onclick=function(){speel(p,t.pad);}; rij2.appendChild(p); }
+    if(VOORBEELD[m.regel_id]){ var q=el('button','knop licht klein'); q.type='button'; q.innerHTML='<i class="tri"></i> Zo klinkt het nu in het spel'; q.onclick=function(){speel(q,VOORBEELD[m.regel_id]);}; rij2.appendChild(q); }
+    var t=cloud.takes[m.regel_id]; if(t){ var p=el('button','knop licht klein'); p.type='button'; p.innerHTML='<i class="tri"></i> Opname van de spreekster'; p.onclick=function(){speel(p,t.pad);}; rij2.appendChild(p); }
     if(rij2.childNodes.length)b.appendChild(rij2);
     if(!m.verwerkt){
       var kb=el('div','keur'), rij3=el('div','rij'); kb.appendChild(rij3);
@@ -363,9 +445,13 @@ function tekenOpm(box){
 function teken(){
   tel();
   var box=E('lijst'); box.innerHTML='';
+  E('zoekvak').hidden=(tab==='opm');
   if(tab==='opm'){ tekenOpm(box); return; }
   var rs=REGELS.filter(function(r){ return tab==='alles'||stand(r).code===tab; });
-  if(!rs.length){ box.appendChild(el('div','kaart leeg',tab==='wacht'?'Niets te keuren. Alles wat binnenkwam is bekeken.':'Niets hier.')); return; }
+  if(ROL)rs=rs.filter(function(r){ return r.rol===ROL; });
+  if(ZOEK)rs=rs.filter(function(r){ return ((r.tekst||'')+' '+(r.uitspraak||'')+' '+(r.betekenis||'')+' '+(r.groep||'')+' '+(r.arabisch||'')).toLowerCase().indexOf(ZOEK)>=0; });
+  if(!rs.length){ box.appendChild(el('div','kaart leeg',(ZOEK||ROL)?'Niets gevonden met dit zoekwoord of filter.':(tab==='wacht'?'Niets te keuren. Alles wat de spreekster instuurde, is bekeken.':'Niets hier.'))); return; }
+  if(rs.length>150){ box.appendChild(el('div','kaart leeg',rs.length+' regels; de eerste 150 staan hieronder. Zoek of filter om er sneller bij te zijn.')); rs=rs.slice(0,150); }
   rs.forEach(function(r){ box.appendChild(kaart(r)); });
 }
 document.querySelectorAll('.tabs [data-tab]').forEach(function(b){ b.onclick=function(){
@@ -386,8 +472,16 @@ E('sleutelok').onclick=async function(){
   E('sleutelok').disabled=false;
 };
 E('sleutelin').onkeydown=function(e){ if(e.key==='Enter')E('sleutelok').click(); };
-E('door').value=DOOR;
-E('door').oninput=function(){ DOOR=E('door').value.trim().slice(0,40); try{localStorage.setItem('stemkeur-naam',DOOR);}catch(e){} };
+E('naamin').value=DOOR; naamToon();
+E('naamok').onclick=function(){ var n=E('naamin').value.trim(); if(!n){ E('naamin').focus(); return; } naamZet(n); status('Dank je, '+DOOR+'. Luister en keur.','ok'); teken(); };
+E('naamin').onkeydown=function(e){ if(e.key==='Enter')E('naamok').click(); };
+E('wie-wijzig').onclick=function(){ E('naamvak').hidden=false; E('naamin').value=DOOR; E('naamvak').scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(function(){ E('naamin').focus(); E('naamin').select(); },350); };
+/* zoeken en filteren */
+var ZOEK='', ROL='';
+E('zoekin').oninput=function(){ ZOEK=E('zoekin').value.trim().toLowerCase(); teken(); };
+document.querySelectorAll('#rolchips button').forEach(function(b){ b.onclick=function(){
+  document.querySelectorAll('#rolchips button').forEach(function(x){x.setAttribute('aria-pressed','false');});
+  b.setAttribute('aria-pressed','true'); ROL=b.dataset.rol; teken(); }; });
 (async function(){ await laad(); teken(); })();
 </script>
 </body>
