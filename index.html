@@ -108,7 +108,7 @@ input.mist{border-color:var(--rood);box-shadow:0 0 0 3px rgba(226,87,76,.2)}
 .onder{display:flex;justify-content:space-between;align-items:center;gap:4px;margin-top:auto}
 
 /* melding (verdwijnt vanzelf) */
-.status{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);width:min(480px,calc(100% - 32px));
+.status{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 64px);transform:translateX(-50%);width:min(480px,calc(100% - 32px));
   background:var(--inkt);color:#fff;border-radius:14px;padding:12px 16px;font-size:.92rem;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:30;transition:opacity .3s}
 .status.fout{background:#8E2B22}
 .status.weg{opacity:0;pointer-events:none}
@@ -422,7 +422,7 @@ function toon(){
   zeg.hidden=!bet; zeg.textContent=bet?'= '+bet:'';
   E('terug').hidden=s.code!=='opnieuw'; E('terug').textContent=s.code==='opnieuw'?(s.aanwijzing||L('nog een keer, alsjeblieft','one more time, please')):'';
   var tip=tipVan(r,en); E('regie').hidden=!tip; E('regie').textContent=tip;
-  E('stand').textContent=standTekst(s);
+  E('stand').textContent=PROEFMODUS?'':standTekst(s);   /* bij de proef: geen oordelen van anderen tonen */
   toonOpm(r);
   toonTake(r);
   bouwPlank();
