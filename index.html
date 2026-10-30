@@ -371,7 +371,7 @@ function stand(r){
   var ot=o?Date.parse(o.gemaakt)||0:0;
   if(o&&ot>tt) return o.oordeel==='opnieuw'?{code:'opnieuw',aanwijzing:o.aanwijzing||''}:{code:'goed'};
   if(tt) return {code:'wacht'};
-  if(r.status==='in spel') return {code:'spel'};
+  if(r.status==='in spel'&&!PROEFMODUS) return {code:'spel'};
   return {code:'open'};
 }
 function standTekst(s){
@@ -765,6 +765,14 @@ async function laadCloud(){
       api('/rest/v1/stem_oordeel?select=regel_id,take,oordeel,aanwijzing,gemaakt&order=gemaakt.desc&limit=1000'),
       api('/rest/v1/stem_opmerking?select=regel_id,door,soort,tekst,gemaakt,verwerkt,antwoord&order=gemaakt.desc&limit=500')]);
     var t={},o={},m={};
+    /* bij de proefopname begint iedereen met een lege lijst: alleen je eigen opnames,
+       oordelen en opmerkingen tellen, niet wat anderen (of de AI-stem) al hebben gedaan */
+    if(PROEFMODUS){
+      var wie=sessieNaam();
+      uit[0]=uit[0].filter(function(x){ return x.sessie===wie; });
+      uit[1]=uit[1].filter(function(x){ return (x.take||'').indexOf('takes/'+wie+'/')===0; });
+      uit[2]=uit[2].filter(function(x){ return (x.door||'').toLowerCase().replace(/[^a-z0-9\-]/g,'_')===wie; });
+    }
     uit[0].forEach(function(x){ if(!t[x.regel_id])t[x.regel_id]=x; });   /* nieuwste eerst: de eerste die we zien is de laatste take */
     uit[1].forEach(function(x){ if(!o[x.regel_id])o[x.regel_id]=x; });
     uit[2].forEach(function(x){ if(!m[x.regel_id])m[x.regel_id]=x; });   /* laatste opmerking per regel */
@@ -868,6 +876,7 @@ function startNaam(){
   var n=E('sessie').value.trim();
   if(!n){ E('sessie').classList.add('mist'); E('sessie').focus(); return; }
   schrijf('stemstudio-sessie',n); E('menu-naam').textContent=n; naarWerk(); toon(); window.scrollTo({top:0});
+  if(PROEFMODUS) laadCloud().then(toon);   /* met de naam: alleen je eigen werk telt */
 }
 E('start-knop').onclick=startNaam;
 E('sessie').onkeydown=function(e){ if(e.key==='Enter')startNaam(); };
