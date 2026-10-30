@@ -8,293 +8,300 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700;800&family=Amiri:wght@400;700&display=swap">
 <style>
-/* Dezelfde wereld als het spel: daglicht, zand, messing, zellige. Eén regel
-   tegelijk, één grote knop. Wie inspreekt hoeft niets te weten van
-   bestanden of instellingen. */
+/* Eenvoudig: één regel per scherm, één grote knop. Alles wat je niet elke
+   regel nodig hebt (de lijst, de uitleg, de zip, een bericht) zit achter het
+   menu. Dezelfde wereld als het spel: zand, messing, zellige. */
 :root{
-  --lucht:#BDE3F2; --zand:#F7E7CC; --papier:#FFFAF0; --inkt:#3B2A0C; --inkt-zacht:#6B5744;
-  --brass:#F0B23F; --brass-dark:#B07D1E; --tile:#2AA79E; --tile-deep:#12706C; --clay:#C4643C;
-  --rood:#E2574C; --ok:#5FBF6A; --rand:rgba(59,42,12,.16);
+  --zand:#F7E7CC; --papier:#FFFAF0; --inkt:#3B2A0C; --zacht:#7A6652;
+  --brass:#F0B23F; --brass-d:#B07D1E; --tile:#2AA79E; --tile-d:#12706C; --clay:#C4643C;
+  --rood:#E2574C; --rood-d:#B03F35; --ok:#5FBF6A; --rand:rgba(59,42,12,.14);
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{margin:0}
-body{background:linear-gradient(180deg,#BDE3F2 0%,#DDEFF6 30%,#F7E7CC 100%) fixed;color:var(--inkt);
-  font-family:Nunito,system-ui,sans-serif;font-size:16px;line-height:1.5;
-  min-height:100dvh;padding-block:16px calc(env(safe-area-inset-bottom,0px) + 96px);padding-left:16px;padding-right:16px;-webkit-font-smoothing:antialiased}
+html,body{margin:0;height:100%}
+body{background:linear-gradient(180deg,#CFEAF4 0%,#F7E7CC 70%) fixed;color:var(--inkt);font-family:Nunito,system-ui,sans-serif;font-size:17px;line-height:1.45;
+  -webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:"Baloo 2",sans-serif;font-weight:800;margin:0;text-wrap:balance}
-.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-h1{font-size:1.45rem;color:var(--clay)} h1 small{display:block;font-family:Nunito;font-weight:700;font-size:.8rem;color:var(--inkt-zacht);letter-spacing:.06em;text-transform:uppercase}
-.kaart{background:var(--papier);border-radius:20px;padding:18px 20px;box-shadow:0 10px 30px rgba(80,50,20,.14)}
-.kaart.dun{padding:12px 16px}
-.rij{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.knop{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:1rem;color:var(--inkt);background:var(--brass);border:0;border-radius:999px;
-  padding:10px 18px;cursor:pointer;min-height:44px;box-shadow:0 4px 0 var(--brass-dark);display:inline-flex;align-items:center;gap:8px;transition:transform .1s,box-shadow .1s}
-.knop:active{transform:translateY(3px);box-shadow:0 1px 0 var(--brass-dark)}
-.knop:disabled{opacity:.4;cursor:default}
-.knop.licht{background:#fff;box-shadow:0 4px 0 rgba(59,42,12,.2)} .knop.licht:active{box-shadow:0 1px 0 rgba(59,42,12,.2)}
-.knop.teal{background:var(--tile);color:#fff;box-shadow:0 4px 0 var(--tile-deep)} .knop.teal:active{box-shadow:0 1px 0 var(--tile-deep)}
-.knop.klein{font-size:.85rem;min-height:36px;padding:6px 12px}
-input,select{font:inherit;padding:8px 12px;border:1.5px solid var(--rand);border-radius:12px;background:#fff;color:var(--inkt);min-height:40px}
-label.veld{display:flex;flex-direction:column;gap:4px;font-size:.8rem;font-weight:700;color:var(--inkt-zacht);text-transform:uppercase;letter-spacing:.06em}
+button{font:inherit;color:inherit}
+.app{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top,0px) + 10px) 16px calc(env(safe-area-inset-bottom,0px) + 16px)}
+
+/* bovenbalk */
+.top{display:flex;align-items:center;gap:10px}
+.ikoon{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.75);display:grid;place-items:center;cursor:pointer;flex:none}
+.ikoon:focus-visible,.knop:focus-visible,.link:focus-visible{outline:3px solid var(--tile);outline-offset:2px}
+.burger,.burger::before,.burger::after{display:block;width:18px;height:2px;border-radius:2px;background:var(--inkt);position:relative}
+.burger::before,.burger::after{content:"";position:absolute;left:0} .burger::before{top:-6px} .burger::after{top:6px}
+.voortgang{flex:1;min-width:0}
+.balk{height:8px;border-radius:99px;background:rgba(59,42,12,.1);overflow:hidden}
+.balk i{display:block;height:100%;width:0;background:var(--tile);transition:width .3s}
+.tel{font-size:.8rem;font-weight:800;color:var(--zacht);margin-top:4px;font-variant-numeric:tabular-nums}
+.taal{display:inline-flex;border-radius:999px;background:rgba(255,255,255,.75);padding:3px;flex:none}
+.taal button{border:0;background:none;border-radius:999px;padding:6px 10px;min-height:36px;font-weight:800;font-size:.8rem;cursor:pointer;color:var(--zacht)}
+.taal button[aria-pressed="true"]{background:var(--tile);color:#fff}
+
+/* knoppen */
+.knop{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:1.05rem;border:0;border-radius:16px;padding:12px 18px;min-height:52px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--brass);box-shadow:0 4px 0 var(--brass-d);transition:transform .1s,box-shadow .1s}
+.knop:active{transform:translateY(3px);box-shadow:0 1px 0 var(--brass-d)}
+.knop:disabled{opacity:.45;cursor:default}
+.knop.wit{background:#fff;box-shadow:0 4px 0 rgba(59,42,12,.18)}
+.knop.groen{background:var(--tile);color:#fff;box-shadow:0 4px 0 var(--tile-d)}
+.knop.klein{font-size:.9rem;min-height:40px;padding:8px 14px;border-radius:12px}
+.link{border:0;background:none;color:var(--zacht);font-weight:700;font-size:.9rem;padding:10px 6px;min-height:44px;cursor:pointer;border-radius:10px}
+.link:hover{color:var(--inkt)}
+input,textarea{font:inherit;width:100%;padding:12px 14px;border:1.5px solid var(--rand);border-radius:14px;background:#fff;color:var(--inkt)}
+textarea{min-height:90px;resize:vertical}
 input.mist{border-color:var(--rood);box-shadow:0 0 0 3px rgba(226,87,76,.2)}
 
-/* voortgang */
-.balk{height:12px;border-radius:99px;background:rgba(59,42,12,.1);overflow:hidden}
-.balk i{display:block;height:100%;background:linear-gradient(90deg,var(--tile),var(--ok));width:0;transition:width .3s}
-.tel{font-variant-numeric:tabular-nums;font-weight:800;color:var(--inkt-zacht);font-size:.9rem}
-.tel b{color:var(--tile-deep)}
+/* het startscherm */
+.start{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px;padding-block:24px}
+.start h1{font-size:2rem;color:var(--clay);line-height:1.1}
+.start .sub{margin:0;color:var(--zacht);font-size:1.05rem}
+.stappen{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.stappen li{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.7);border-radius:16px;padding:12px 14px;font-weight:700}
+.stappen .nr{width:32px;height:32px;border-radius:50%;background:var(--tile);color:#fff;display:grid;place-items:center;font-family:"Baloo 2";flex:none}
+.start label{font-weight:800;font-size:.9rem;color:var(--zacht);display:flex;flex-direction:column;gap:6px}
 
 /* de regel */
-.regel{display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center}
-.regel .waar{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tile-deep);font-weight:800}
-.regel .tekst{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:clamp(1.5rem,5.5vw,2.2rem);line-height:1.15;color:var(--inkt)}
-.regel .ar{font-family:Amiri,serif;font-size:1.6rem;color:var(--tile-deep);direction:rtl}
-.regel .zeg{font-size:.95rem;color:var(--inkt-zacht)} .regel .zeg b{color:var(--inkt)}
-.regel .regie{background:var(--zand);border-radius:14px;padding:10px 14px;font-size:.95rem;color:var(--inkt);max-width:46ch}
-.regel .regie::before{content:"Regie · ";font-weight:800;color:var(--clay)}
-html[lang="en"] .regel .regie::before{content:"Direction · "}
-html[lang="en"] .regel .terug::before{content:"Please record again · "}
-.regel .terug{background:#FBE3E0;color:#8E2B22;border-radius:14px;padding:10px 14px;font-size:.95rem;max-width:46ch;font-weight:700}
-.regel .terug::before{content:"Graag opnieuw · ";font-weight:800}
-.regel .stand{font-size:.85rem;color:var(--inkt-zacht);font-weight:700}
-/* opmerking van wie inspreekt: "klopt dit niet?" */
-.opm{width:100%;max-width:46ch;display:flex;flex-direction:column;gap:8px;align-items:center}
-.opm[hidden],.opm-paneel[hidden],.opm-klaar[hidden],.opm-open[hidden]{display:none}
-.opm-open{background:none;border:0;color:var(--inkt-zacht);font:inherit;font-size:.9rem;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer;padding:4px 8px;border-radius:8px}
-.opm-open:hover,.opm-open:focus-visible{color:var(--clay);outline:none}
-.opm-paneel{width:100%;background:#fff;border:1px solid var(--rand);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px;text-align:left}
-.opm-paneel .kop{font-weight:800;font-size:.95rem}
-.opm-kies{display:flex;gap:8px;flex-wrap:wrap}
-.opm-kies .knop[aria-pressed="true"]{background:var(--brass);box-shadow:0 3px 0 var(--brass-dark)}
-.opm-paneel input{width:100%;font:inherit;font-size:1rem;padding:10px 12px;border:1px solid var(--rand);border-radius:12px;background:var(--papier)}
-.opm-klaar{background:#E6F5EA;color:#1F5E2C;border-radius:14px;padding:10px 14px;font-size:.9rem;font-weight:700;max-width:46ch}
+.werk{flex:1;display:flex;flex-direction:column;gap:14px;padding-top:14px}
+.kaart{background:var(--papier);border-radius:24px;padding:22px 18px;box-shadow:0 10px 30px rgba(80,50,20,.12)}
+.regel{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+.waar{font-size:.75rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--tile-d)}
+.tekst{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:clamp(1.7rem,7vw,2.4rem);line-height:1.15}
+.ar{font-family:Amiri,serif;font-size:1.7rem;color:var(--tile-d);direction:rtl;line-height:1.5}
+.zeg{font-size:.95rem;color:var(--zacht)} .zeg b{color:var(--inkt)}
+.tip{font-size:.9rem;background:var(--zand);border-radius:12px;padding:8px 12px;max-width:40ch}
+.terug{font-size:.95rem;background:#FBE3E0;color:#8E2B22;border-radius:12px;padding:8px 12px;font-weight:700;max-width:40ch}
+.stand{font-size:.8rem;font-weight:800;color:var(--tile-d)}
+.opm-klaar{font-size:.85rem;font-weight:700;color:#1F5E2C;background:#E6F5EA;border-radius:12px;padding:6px 10px;max-width:40ch}
 .opm-klaar.bureau{background:var(--zand);color:var(--inkt)}
-.plank .vink.vraag{background:var(--clay)}
-
-/* de opnameknop */
-.opname{display:flex;flex-direction:column;align-items:center;gap:8px}
-.ring{position:relative;width:132px;height:132px}
-.ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
-.ring circle{fill:none;stroke-width:8}
-.ring .spoor{stroke:rgba(59,42,12,.12)} .ring .niveau{stroke:var(--tile);stroke-linecap:round;stroke-dasharray:377;stroke-dashoffset:377;transition:stroke-dashoffset .08s linear}
-.ring.aan .niveau{stroke:var(--rood)}
-#knop{position:absolute;inset:14px;border-radius:50%;border:0;background:var(--rood);color:#fff;font-family:"Baloo 2",sans-serif;font-weight:800;font-size:1.05rem;
-  cursor:pointer;box-shadow:0 6px 0 #B03F35,0 12px 26px rgba(80,50,20,.25);display:grid;place-items:center;transition:transform .1s}
-#knop:active{transform:translateY(4px);box-shadow:0 1px 0 #B03F35}
-#knop.bezig{background:var(--inkt);box-shadow:0 6px 0 #1a1206}
-#knop.luistert{background:var(--tile);box-shadow:0 6px 0 var(--tile-deep)}
-#knop .bol{width:34px;height:34px;border-radius:50%;background:#fff;opacity:.9} #knop.bezig .bol{border-radius:6px;width:26px;height:26px}
-.hint{font-size:.9rem;color:var(--inkt-zacht);min-height:1.4em;max-width:40ch}
-.hint.let{color:#8E2B22;font-weight:700}
-.tijd{font-variant-numeric:tabular-nums;font-weight:800;color:var(--rood)}
-
-/* na de opname */
-.take{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
-.take .speel{font-size:1.1rem;min-height:52px;padding:12px 22px}
-.take .speel .ico{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--tile);color:#fff}
-.take .speel.speelt .ico{background:var(--rood)}
+.vb{border:0;background:none;color:var(--tile-d);font-weight:800;font-size:.85rem;cursor:pointer;padding:6px 10px;min-height:36px;border-radius:10px;display:inline-flex;gap:6px;align-items:center}
 .tri{display:inline-block;width:0;height:0;border-style:solid;border-width:5px 0 5px 9px;border-color:transparent transparent transparent currentColor;flex:none}
 .speelt .tri{border-width:0;width:9px;height:10px;background:currentColor}
-.take .duur{font-weight:600;color:var(--inkt-zacht);font-size:.9rem}
-.loop{width:100%;max-width:320px;height:6px;border-radius:99px;background:rgba(59,42,12,.12);overflow:hidden}
-.loop i{display:block;height:100%;width:0;background:var(--tile)}
-.status{font-size:.9rem;padding:10px 14px;border-radius:12px;background:#E3F5F3;color:var(--tile-deep);font-weight:700}
-.status.fout{background:#FBE3E0;color:#8E2B22}
-.status.stil{background:var(--zand);color:var(--inkt-zacht)}
 
-/* de plank met alle regels */
-.plank{display:flex;flex-direction:column;gap:4px;max-height:300px;overflow-y:auto;padding-right:4px}
-.plank button{text-align:left;border:0;background:#fff;border-radius:10px;padding:8px 12px;font:inherit;color:var(--inkt);cursor:pointer;display:flex;gap:10px;align-items:center}
+/* opnemen */
+.opname{display:flex;flex-direction:column;align-items:center;gap:6px}
+.ring{position:relative;width:128px;height:128px}
+.ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:8}
+.ring .spoor{stroke:rgba(59,42,12,.1)} .ring .niveau{stroke:var(--tile);stroke-linecap:round;stroke-dasharray:377;stroke-dashoffset:377;transition:stroke-dashoffset .08s linear}
+.ring.aan .niveau{stroke:var(--rood)}
+#knop{position:absolute;inset:14px;border-radius:50%;border:0;background:var(--rood);cursor:pointer;box-shadow:0 6px 0 var(--rood-d),0 12px 26px rgba(80,50,20,.22);display:grid;place-items:center;transition:transform .1s}
+#knop:active{transform:translateY(4px);box-shadow:0 1px 0 var(--rood-d)}
+#knop.bezig{background:var(--inkt);box-shadow:0 6px 0 #1a1206}
+#knop.luistert{background:var(--tile);box-shadow:0 6px 0 var(--tile-d)}
+#knop .bol{width:34px;height:34px;border-radius:50%;background:#fff} #knop.bezig .bol{border-radius:6px;width:26px;height:26px}
+.hint{font-weight:700;color:var(--zacht);min-height:1.4em;text-align:center;max-width:36ch}
+.hint.let{color:#8E2B22}
+.tijd{font-variant-numeric:tabular-nums;font-weight:800;color:var(--rood);min-height:1.2em}
+
+/* na de opname */
+.take{display:flex;flex-direction:column;align-items:center;gap:12px}
+.speel{border:0;background:#fff;border-radius:999px;padding:10px 18px;min-height:48px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:10px;box-shadow:0 3px 0 rgba(59,42,12,.15)}
+.speel .ico{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--tile);color:#fff}
+.speel.speelt .ico{background:var(--rood)}
+.duur{font-weight:600;color:var(--zacht);font-size:.85rem}
+.loop{width:180px;height:4px;border-radius:99px;background:rgba(59,42,12,.1);overflow:hidden} .loop i{display:block;height:100%;width:0;background:var(--tile)}
+.twee{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;width:100%}
+
+/* onderste rij */
+.onder{display:flex;justify-content:space-between;align-items:center;gap:4px;margin-top:auto}
+
+/* melding (verdwijnt vanzelf) */
+.status{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);width:min(480px,calc(100% - 32px));
+  background:var(--inkt);color:#fff;border-radius:14px;padding:12px 16px;font-size:.92rem;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:30;transition:opacity .3s}
+.status.fout{background:#8E2B22}
+.status.weg{opacity:0;pointer-events:none}
+
+/* menu en blad (schuiven over het scherm) */
+.scherm{position:fixed;inset:0;z-index:20;background:rgba(40,28,10,.35);display:flex}
+.la{background:var(--papier);width:min(440px,100%);height:100%;overflow-y:auto;padding:calc(env(safe-area-inset-top,0px) + 14px) 18px calc(env(safe-area-inset-bottom,0px) + 24px);display:flex;flex-direction:column;gap:18px}
+.la-kop{display:flex;justify-content:space-between;align-items:center}
+.la-kop h2{font-size:1.3rem}
+.kruis{font-size:1.4rem;line-height:1}
+.la section{display:flex;flex-direction:column;gap:8px}
+.la h3{font-size:1rem;color:var(--clay)}
+.la p,.la li{font-size:.92rem;margin:0}
+.la ol,.la ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.letters{display:flex;flex-wrap:wrap;gap:6px}
+.letters span{background:var(--zand);border-radius:10px;padding:4px 10px;font-weight:700;font-size:.9rem}
+.letters b{font-family:Amiri,serif;font-size:1.1rem;color:var(--tile-d);margin-left:4px}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{border:0;border-radius:999px;padding:6px 12px;min-height:36px;font-weight:800;font-size:.85rem;background:#fff;box-shadow:0 2px 0 rgba(59,42,12,.15);cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--brass)}
+.plank{display:flex;flex-direction:column;gap:4px;max-height:44vh;overflow-y:auto}
+.plank button{text-align:left;border:0;background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;display:flex;gap:10px;align-items:center}
 .plank button.nu{outline:2px solid var(--tile)}
 .plank .vink{width:20px;height:20px;border-radius:50%;flex:none;background:rgba(59,42,12,.1);display:grid;place-items:center;font-size:12px;color:#fff;font-weight:800}
-.plank .vink.wacht{background:#9DB8C7} .plank .vink.goed{background:var(--ok)} .plank .vink.spel{background:var(--tile)} .plank .vink.opnieuw{background:var(--rood)}
+.plank .vink.wacht{background:#9DB8C7} .plank .vink.goed{background:var(--ok)} .plank .vink.spel{background:var(--tile)} .plank .vink.opnieuw{background:var(--rood)} .plank .vink.vraag{background:var(--clay)}
 .plank .naam{font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.plank .grp{font-size:.72rem;color:var(--inkt-zacht);text-transform:uppercase;letter-spacing:.06em;flex:none}
-details summary{cursor:pointer;font-weight:800;font-family:"Baloo 2",sans-serif;font-size:1.05rem;color:var(--clay)}
-details p{margin:8px 0 0;font-size:.95rem} details ol{margin:8px 0 0;padding-left:20px;font-size:.95rem} details li{margin-bottom:4px}
-.klein-tekst{font-size:.8rem;color:var(--inkt-zacht)}
-.filters{display:flex;gap:8px;flex-wrap:wrap} .filters .knop{font-size:.85rem;min-height:36px;padding:6px 12px;background:#fff;box-shadow:0 3px 0 rgba(59,42,12,.15)} .filters .knop[aria-pressed="true"]{background:var(--brass);box-shadow:0 3px 0 var(--brass-dark)}
-.wolk{font-size:.8rem;font-weight:700;color:var(--inkt-zacht)} .wolk b{color:var(--tile-deep)}
-/* taalkeuze, welkom, proefopname */
-.taal{display:inline-flex;border-radius:999px;background:#fff;box-shadow:0 3px 0 rgba(59,42,12,.15);padding:3px;gap:2px}
-.taal button{font:inherit;font-weight:800;font-size:.85rem;border:0;background:none;border-radius:999px;padding:6px 12px;min-height:34px;cursor:pointer;color:var(--inkt-zacht)}
-.taal button[aria-pressed="true"]{background:var(--tile);color:#fff}
-.kopr{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.welkom h2{font-size:1.25rem;color:var(--tile-deep)}
-.welkom p{margin:8px 0 0;font-size:.97rem}
-.welkom ul{margin:8px 0 0;padding-left:20px;font-size:.95rem} .welkom li{margin-bottom:4px}
-.letters{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.letters span{background:var(--zand);border-radius:10px;padding:4px 10px;font-weight:700;font-size:.9rem}
-.letters b{font-family:Amiri,serif;font-size:1.15rem;color:var(--tile-deep);margin-left:4px}
-.proefkop{background:linear-gradient(135deg,#12706C,#2AA79E);color:#fff}
-.proefkop h2{font-size:1.3rem;color:#fff} .proefkop p{margin:6px 0 0;font-size:.97rem;color:#EAF7F5}
-.proefkop .knop{margin-top:10px}
-.einde{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
-.einde h2{font-size:1.5rem;color:var(--tile-deep)}
-textarea{font:inherit;font-size:1rem;width:100%;min-height:96px;padding:10px 12px;border:1.5px solid var(--rand);border-radius:12px;background:#fff;color:var(--inkt);resize:vertical}
-.algemeen{display:flex;flex-direction:column;gap:8px}
-.algemeen h3{font-size:1.05rem;color:var(--clay)}
-.algemeen p{margin:0;font-size:.92rem;color:var(--inkt-zacht)}
-.regel .zeg.en b{color:var(--tile-deep)}
+.plank .grp{font-size:.7rem;color:var(--zacht);text-transform:uppercase;letter-spacing:.06em;flex:none}
+.klein{font-size:.82rem;color:var(--zacht)}
+.blad{align-items:flex-end;justify-content:center}
+.blad .la{height:auto;max-height:90%;border-radius:24px 24px 0 0;width:min(520px,100%)}
+.kies{display:flex;flex-wrap:wrap;gap:8px}
+.kies button{border:1.5px solid var(--rand);background:#fff;border-radius:999px;padding:8px 14px;min-height:42px;font-weight:700;cursor:pointer}
+.kies button[aria-pressed="true"]{background:var(--brass);border-color:var(--brass-d)}
+
+/* klaar met de proefopname */
+.einde{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.einde h2{font-size:1.6rem;color:var(--tile-d)}
+.einde p{margin:0}
+.einde .algemeen{width:100%;text-align:left}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1><span data-en="Voice studio">Stemstudio</span><small><span data-en="Darija Adventure · list of">Darija Avontuur · lijst van</span> 2026-10-30</small></h1>
-    <div class="kopr">
-      <div class="tel"><b id="tel-klaar">0</b> <span data-en="of">van</span> <span id="tel-totaal">0</span> <span data-en="done">klaar</span></div>
-      <div class="taal" role="group" aria-label="Taal / Language">
-        <button type="button" data-taal="nl" aria-pressed="true" lang="nl">NL</button>
-        <button type="button" data-taal="en" aria-pressed="false" lang="en">EN</button>
-      </div>
+<div class="app">
+  <div class="top">
+    <button class="ikoon" id="menu-open" type="button" aria-label="Menu"><span class="burger"></span></button>
+    <div class="voortgang">
+      <div class="balk"><i id="balk"></i></div>
+      <div class="tel"><b id="tel-klaar">0</b> / <span id="tel-totaal">0</span> <span data-en="done">klaar</span></div>
     </div>
-  </header>
-
-  <div class="kaart proefkop" id="proefkop" hidden>
-    <h2 data-en="Audition: 14 short lines">Proefopname: 14 korte regels</h2>
-    <p data-en="Before the real work starts, we would love to hear your voice. These 14 lines are a little bit of everything in the game: single words, a short sentence, a question, a place name and three pages from a storybook. It takes about ten minutes.">Voordat het echte werk begint, horen we graag je stem. Deze 14 regels zijn van alles een beetje: losse woorden, een zinnetje, een vraag, een plek en drie bladzijden uit een boekje. Het duurt ongeveer tien minuten.</p>
-    <p data-en="Each recording is sent to us straight away. We listen, and get back to you. Is a word or spelling not how you would say it? Tap &quot;Something not right?&quot; under the line: your feedback is just as valuable as your voice.">Elke opname komt meteen bij ons binnen. Wij luisteren en laten van ons horen. Klopt een woord of de schrijfwijze niet? Tik op "Klopt dit niet?" onder de regel: je feedback is net zo waardevol als je stem.</p>
-  </div>
-
-  <div class="kaart welkom" id="welkom" hidden>
-    <details id="welkom-d" open>
-      <summary>Welcome! Please read this first</summary>
-      <p><b>Darija Avontuur</b> is a game for Dutch-Moroccan children aged 4 to 12 who are learning Moroccan Darija. Every word they hear in the game should sound the way it is said at home in Morocco. That's where you come in.</p>
-      <ul>
-        <li><b>You record the Darija only:</b> single words, short sentences, place names and storybook pages. The Dutch lines (Juf Amina, the teacher) are recorded by someone else, so you won't see them here.</li>
-        <li>Each line shows the Darija in Latin letters, the same in <b>Arabic script</b>, and what it <b>means in English</b>. The English is only there so you know the meaning: never say it out loud.</li>
-        <li>Read whichever script you find easiest. In the Latin spelling, numbers stand for Arabic sounds:</li>
-      </ul>
-      <div class="letters"><span>3 <b>ع</b></span><span>7 <b>ح</b></span><span>gh <b>غ</b></span><span>kh <b>خ</b></span><span>q <b>ق</b></span><span>sh / ch <b>ش</b></span><span>l- = <b>ال</b></span></div>
-      <ul>
-        <li><b>You are the expert.</b> If a word, the spelling or the meaning isn't right, or you would say it differently, tap <b>Something not right?</b> under the line. Then record it the way you would naturally say it, and tell us what you changed.</li>
-        <li>Imagine you are talking to <b>one four-year-old</b> sitting next to you: warm, calm, with a little smile. Not like a newsreader, not to a whole class.</li>
-      </ul>
-    </details>
-  </div>
-
-  <div class="kaart dun">
-    <div class="rij" style="justify-content:space-between">
-      <label class="veld"><span data-en="Your first name">Wie spreekt in?</span> <input id="sessie" placeholder="je voornaam" data-en-ph="your first name" autocomplete="off" style="text-transform:none;letter-spacing:0;font-weight:600"></label>
-      <div class="filters" id="filters" role="group" aria-label="Wat wil je zien">
-        <button class="knop" data-rol="alles" aria-pressed="true" type="button" data-en="Everything">Alles</button>
-        <button class="knop" data-rol="juf" aria-pressed="false" type="button">Juf Amina</button>
-        <button class="knop" data-rol="woord" aria-pressed="false" type="button" data-en="Words &amp; sentences">Darija-woorden</button>
-        <button class="knop" data-rol="boek" aria-pressed="false" type="button" data-en="Storybooks">Boekjes</button>
-        <button class="knop" id="alleen-open" aria-pressed="true" type="button" data-en="Still to do">Nog te doen</button>
-      </div>
+    <div class="taal" role="group" aria-label="Taal / Language">
+      <button type="button" data-taal="nl" aria-pressed="true" lang="nl">NL</button>
+      <button type="button" data-taal="en" aria-pressed="false" lang="en">EN</button>
     </div>
-    <div class="balk" style="margin-top:10px"><i id="balk"></i></div>
-    <div class="wolk" id="wolk" style="margin-top:8px"></div>
   </div>
 
-  <div class="kaart">
-    <div class="regel">
-      <div class="waar" id="waar">&nbsp;</div>
-      <div class="tekst" id="tekst">&nbsp;</div>
+  <!-- 1. het startscherm: één keer, met de naam -->
+  <section class="start" id="start" hidden>
+    <div>
+      <h1 id="start-titel"></h1>
+      <p class="sub" id="start-sub"></p>
+    </div>
+    <ol class="stappen">
+      <li><span class="nr">1</span><span data-en="A quiet room, door closed">Een stille kamer, deur dicht</span></li>
+      <li><span class="nr">2</span><span data-en="Phone about 20 cm from your mouth">Telefoon op een hand afstand van je mond</span></li>
+      <li><span class="nr">3</span><span data-en="Tap the red button, speak, tap again">Tik op de rode knop, praat, tik nog eens</span></li>
+    </ol>
+    <label><span data-en="Your first name">Je voornaam</span><input id="sessie" autocomplete="given-name" autocapitalize="words" maxlength="40"></label>
+    <button class="knop groen" id="start-knop" type="button" data-en="Start">Beginnen</button>
+    <button class="link" id="start-meer" type="button" data-en="How does it work? (more info)">Hoe werkt het? (meer uitleg)</button>
+  </section>
+
+  <!-- 2. het werk: één regel -->
+  <main class="werk" id="werk" hidden>
+    <div class="kaart regel">
+      <div class="waar" id="waar"></div>
+      <div class="tekst" id="tekst"></div>
       <div class="ar" id="ar" hidden></div>
       <div class="zeg" id="zeg" hidden></div>
       <div class="terug" id="terug" hidden></div>
-      <div class="regie" id="regie"></div>
+      <div class="tip" id="regie" hidden></div>
+      <div class="opm-klaar" id="opm-klaar" hidden></div>
       <div class="stand" id="stand"></div>
-      <div class="opm" id="opm" hidden>
-        <div class="opm-klaar" id="opm-klaar" hidden></div>
-        <button class="opm-open" id="opm-open" type="button" data-en="Something not right? Tell us">Klopt dit niet? Zeg het even</button>
-        <div class="opm-paneel" id="opm-paneel" hidden>
-          <div class="kop" data-en="What's not right? (tap one or more, then type how you'd say or write it)">Wat klopt er niet? (tik er een of meer aan, en typ hoe jij het zegt of schrijft)</div>
-          <div class="opm-kies">
-            <button class="knop licht klein" data-soort="schrijfwijze" type="button" data-en="Spelling is off">Anders geschreven</button>
-            <button class="knop licht klein" data-soort="anders" type="button" data-en="We say it differently">Wij zeggen het anders</button>
-            <button class="knop licht klein" data-soort="betekenis" type="button" data-en="Meaning is off">Betekenis klopt niet</button>
-            <button class="knop licht klein" data-soort="onbekend" type="button" data-en="I don't know this word">Ken ik niet</button>
-          </div>
-          <textarea id="opm-tekst" maxlength="1000" autocomplete="off" rows="2" placeholder="Hoe zeg of schrijf jij het? (mag leeg blijven)" data-en-ph="How would you say or write it? Latin or Arabic letters are both fine (optional)" style="min-height:64px"></textarea>
-          <div class="rij"><button class="knop klein" id="opm-stuur" type="button" data-en="Send">Doorgeven</button><button class="knop licht klein" id="opm-laat" type="button" data-en="Never mind">Laat maar</button></div>
-        </div>
+      <button class="vb" id="voorbeeld" type="button"><i class="tri"></i> <span data-en="Example">Voorbeeld</span></button>
+    </div>
+
+    <div class="opname" id="opname">
+      <div class="ring">
+        <svg viewBox="0 0 132 132" aria-hidden="true"><circle class="spoor" cx="66" cy="66" r="60"></circle><circle class="niveau" id="niveau" cx="66" cy="66" r="60"></circle></svg>
+        <button id="knop" type="button" aria-label="Opnemen / Record"><span class="bol"></span></button>
       </div>
-      <div class="rij">
-        <button class="knop licht klein" id="voorbeeld" type="button"><i class="tri"></i> <span data-en="Hear how it sounds now">Luister hoe het nu klinkt</span></button>
-      </div>
-      <div class="opname">
-        <div class="ring">
-          <svg viewBox="0 0 132 132" aria-hidden="true"><circle class="spoor" cx="66" cy="66" r="60"></circle><circle class="niveau" id="niveau" cx="66" cy="66" r="60"></circle></svg>
-          <button id="knop" type="button" aria-label="Opnemen / Record"><span class="bol"></span></button>
-        </div>
-        <div class="hint" id="hint"></div>
-        <div class="tijd" id="tijd"></div>
-      </div>
-      <div class="take" id="take" hidden>
-        <button class="knop licht speel" id="speel" type="button"><span class="ico"><i class="tri"></i></span> <span data-en="Listen back">Luister terug</span> <span class="duur" id="duur"></span></button>
-        <div class="loop"><i id="loop"></i></div>
-        <div class="rij">
-          <button class="knop licht" id="opnieuw" type="button">&#8635; <span data-en="Try again">Nog een keer</span></button>
-          <button class="knop teal" id="goed" type="button"><span data-en="Good, next">Goed zo, volgende</span> &rarr;</button>
-        </div>
-      </div>
-      <div class="rij">
-        <button class="knop licht klein" id="vorige" type="button">&larr; <span data-en="Previous">Vorige</span></button>
-        <button class="knop licht klein" id="volgende" type="button"><span data-en="Skip">Overslaan</span> &rarr;</button>
+      <div class="tijd" id="tijd"></div>
+      <div class="hint" id="hint"></div>
+    </div>
+
+    <div class="take" id="take" hidden>
+      <button class="speel" id="speel" type="button"><span class="ico"><i class="tri"></i></span> <span data-en="Listen">Luister</span> <span class="duur" id="duur"></span></button>
+      <div class="loop"><i id="loop"></i></div>
+      <div class="hint" id="take-hint" hidden></div>
+      <div class="twee">
+        <button class="knop wit" id="opnieuw" type="button">&#8635; <span data-en="Again">Opnieuw</span></button>
+        <button class="knop groen" id="goed" type="button"><span data-en="Next">Volgende</span> &rarr;</button>
       </div>
     </div>
-  </div>
 
-  <div class="kaart einde" id="einde" hidden>
-    <h2 data-en="That's the audition done. Thank you!">Klaar met de proefopname. Dank je wel!</h2>
-    <p data-en="All your recordings have reached us. We'll listen carefully and let you know soon. You can still go back to any line and record it again; only the last recording counts.">Al je opnames zijn bij ons binnen. We luisteren goed en laten snel van ons horen. Je kunt nog terug naar elke regel en hem opnieuw opnemen; alleen de laatste opname telt.</p>
-  </div>
-
-  <div class="status stil" id="status">Even kijken wat deze browser kan&hellip;</div>
-
-  <div class="kaart dun">
-    <div class="rij" style="justify-content:space-between;margin-bottom:8px">
-      <h3 style="font-size:1rem" data-en="All lines">Alle regels</h3>
-      <button class="knop klein" id="bewaarknop" type="button">Alles opslaan als zip</button>
+    <div class="onder">
+      <button class="link" id="vorige" type="button">&larr; <span data-en="Back">Terug</span></button>
+      <span id="opm"><button class="link" id="opm-open" type="button" data-en="Something wrong?">Klopt iets niet?</button></span>
+      <button class="link" id="volgende" type="button"><span data-en="Skip">Overslaan</span> &rarr;</button>
     </div>
-    <div class="plank" id="plank"></div>
-    <p class="klein-tekst" id="uitleg-opslag" style="margin:8px 0 0">Alles wat je opneemt blijft op dit apparaat staan, ook als je de pagina sluit. Ben je klaar (of klaar voor vandaag), tik dan op <b>Alles opslaan als zip</b> en stuur dat bestand op.</p>
-  </div>
+  </main>
 
-  <div class="kaart algemeen" id="algemeen" hidden>
-    <h3 data-en="Anything else you'd like to tell us?">Wil je ons nog iets laten weten?</h3>
-    <p data-en="About the words, the spelling, the Darija in general, or how recording went. Write in English, Darija or Arabic, whatever is easiest.">Over de woorden, de schrijfwijze, het Darija in het algemeen, of hoe het opnemen ging.</p>
-    <textarea id="alg-tekst" maxlength="1500" placeholder="Type here…" data-en-ph="Type here…"></textarea>
-    <div class="rij"><button class="knop klein" id="alg-stuur" type="button" data-en="Send to the team">Versturen</button><span class="klein-tekst" id="alg-klaar"></span></div>
-  </div>
+  <!-- 3. klaar (proefopname) -->
+  <section class="werk" id="einde" hidden>
+    <div class="kaart einde">
+      <h2 data-en="Done. Thank you!">Klaar. Dank je wel!</h2>
+      <p data-en="We've received all your recordings and will get back to you soon.">Al je opnames zijn binnen. We laten snel van ons horen.</p>
+      <div id="einde-alg"></div>
+      <button class="link" id="einde-terug" type="button" data-en="Go back to the lines">Terug naar de regels</button>
+    </div>
+  </section>
+</div>
 
-  <div class="kaart" id="uitleg-en" hidden>
-    <details open>
-      <summary>How to record</summary>
-      <ol>
-        <li><b>A quiet room,</b> door closed, no fridge, fan or street noise. A small room with curtains, or even a wardrobe full of clothes, sounds best. Before your first recording the studio listens to the room for one second and tells you if it is quiet enough.</li>
-        <li><b>Phone or laptop</b> about 20 cm (a hand's length) from your mouth, slightly to the side rather than straight in front, so the <i>p</i> and <i>b</i> don't pop.</li>
-        <li><b>Leave a little silence</b> before and after each line: tap, breathe, say it, wait a second, tap.</li>
-        <li><b>Words and short sentences:</b> say them once, at a normal pace, the way you would at home. No explanation, no "umm" before it.</li>
-        <li><b>Storybook pages:</b> read them like a bedtime story: calm, warm, a bit of expression in the dialogue.</li>
-        <li><b>Listen back</b> with the big button. Not happy? Tap <i>Try again</i>. Only your last recording counts.</li>
-        <li><b>"Please record again"</b> on a line means we listened and would like it slightly different. The note is right there.</li>
-        <li>You don't have to do everything at once. Close the page whenever you like; everything is still there when you come back on the same phone or laptop.</li>
-      </ol>
-    </details>
-  </div>
+<div class="status weg" id="status" role="status" aria-live="polite"></div>
 
-  <div class="kaart" id="uitleg-nl">
-    <details open>
-      <summary>Zo neem je op</summary>
-      <ol>
-        <li><b>Stille kamer,</b> deur dicht, geen koelkast of straat op de achtergrond. Een kleine kamer met gordijnen of een kast vol kleren klinkt het beste. De studio luistert eerst even naar de kamer en zegt of het stil genoeg is.</li>
-        <li><b>Telefoon of laptop</b> op ongeveer twintig centimeter van je mond, niet ervoor maar iets ernaast, zodat de <i>p</i> en <i>b</i> niet ploffen.</li>
-        <li><b>Even stil</b> voor en na elke regel: tik, adem, zeg het, wacht een tel, tik.</li>
-        <li><b>Praat tegen één kind van vier</b> dat naast je zit. Warm, rustig, met een lachje. Niet tegen een klas, niet als een omroeper.</li>
-        <li><b>De Darija-woorden</b> zeg je zoals thuis, één keer, gewoon tempo. Geen uitleg erbij.</li>
-        <li><b>Luister terug</b> met de grote knop. Fout gezegd? Tik op <i>Nog een keer</i>. Alleen de laatste opname telt.</li>
-        <li><b>Staat er "Graag opnieuw" bij een regel?</b> Dan heeft het bureau geluisterd en wil het die net iets anders. De aanwijzing staat erbij.</li>
-        <li>Je hoeft niet alles in één keer te doen. Kom je later terug, dan staat alles er nog.</li>
-      </ol>
-    </details>
+<!-- het menu -->
+<div class="scherm" id="menu" hidden>
+  <div class="la" role="dialog" aria-modal="true" aria-labelledby="menu-titel">
+    <div class="la-kop"><h2 id="menu-titel" data-en="Menu">Menu</h2><button class="ikoon kruis" id="menu-dicht" type="button" aria-label="Sluiten / Close">&times;</button></div>
+    <section>
+      <p class="klein"><span data-en="Recording as">Je neemt op als</span> <b id="menu-naam"></b> · <button class="link" id="naam-wijzig" type="button" style="padding:0;min-height:0" data-en="change">wijzig</button></p>
+      <p class="klein" id="wolk"></p>
+    </section>
+    <section id="lijstvak">
+      <h3 data-en="All lines">Alle regels</h3>
+      <div class="filters" id="filters" role="group">
+        <button data-rol="alles" aria-pressed="true" type="button" data-en="All">Alles</button>
+        <button data-rol="juf" aria-pressed="false" type="button">Juf Amina</button>
+        <button data-rol="woord" aria-pressed="false" type="button" data-en="Words">Darija</button>
+        <button data-rol="boek" aria-pressed="false" type="button" data-en="Books">Boekjes</button>
+        <button id="alleen-open" aria-pressed="true" type="button" data-en="Still to do">Nog te doen</button>
+      </div>
+      <div class="plank" id="plank"></div>
+    </section>
+    <section id="uitleg-en" hidden>
+      <h3>How it works</h3>
+      <p><b>Darija Avontuur</b> is a game for Dutch-Moroccan children (4 to 12) learning Moroccan Darija. You record the Darija only; the English is just there so you know the meaning. Don't say it out loud.</p>
+      <ul>
+        <li>Say it the way you say it at home: once, calm and clear, as if to one small child next to you.</li>
+        <li>Storybook pages: read them like a bedtime story.</li>
+        <li>Not happy? Tap <b>Again</b>. Only the last recording counts.</li>
+        <li>Wrong word, spelling or meaning? Tap <b>Something wrong?</b> You are the expert.</li>
+        <li>You can stop any time; everything stays on this phone.</li>
+      </ul>
+      <p>In the Latin spelling, numbers are Arabic sounds:</p>
+      <div class="letters"><span>3 <b>ع</b></span><span>7 <b>ح</b></span><span>gh <b>غ</b></span><span>kh <b>خ</b></span><span>q <b>ق</b></span><span>sh / ch <b>ش</b></span></div>
+    </section>
+    <section id="uitleg-nl">
+      <h3>Hoe werkt het</h3>
+      <ul>
+        <li>Zeg het zoals thuis: één keer, rustig en duidelijk, alsof er één klein kind naast je zit.</li>
+        <li>Juf Amina: warm en rustig, met een klein lachje.</li>
+        <li>Boekjes: voorlezen als een verhaaltje voor het slapengaan.</li>
+        <li>Niet goed? Tik op <b>Opnieuw</b>. Alleen de laatste opname telt.</li>
+        <li>Klopt een woord niet? Tik op <b>Klopt iets niet?</b></li>
+        <li>Je kunt altijd stoppen; alles blijft op dit toestel staan.</li>
+      </ul>
+    </section>
+    <section class="algemeen" id="algemeen" hidden>
+      <h3 data-en="Send us a message">Stuur ons een bericht</h3>
+      <p class="klein" data-en="About the words, the spelling or anything else. English, Darija or Arabic is fine.">Over de woorden, de schrijfwijze of iets anders.</p>
+      <textarea id="alg-tekst" maxlength="1500"></textarea>
+      <div style="display:flex;gap:10px;align-items:center"><button class="knop klein" id="alg-stuur" type="button" data-en="Send">Versturen</button><span class="klein" id="alg-klaar"></span></div>
+    </section>
+    <section>
+      <button class="knop wit klein" id="bewaarknop" type="button">Zip</button>
+      <p class="klein" id="uitleg-opslag"></p>
+    </section>
+  </div>
+</div>
+
+<!-- het blad "klopt iets niet?" -->
+<div class="scherm blad" id="opm-paneel" hidden>
+  <div class="la" role="dialog" aria-modal="true" aria-labelledby="opm-titel">
+    <div class="la-kop"><h2 id="opm-titel" data-en="What's wrong?">Wat klopt er niet?</h2><button class="ikoon kruis" id="opm-laat" type="button" aria-label="Sluiten / Close">&times;</button></div>
+    <div class="kies">
+      <button data-soort="schrijfwijze" type="button" data-en="Spelling">Schrijfwijze</button>
+      <button data-soort="anders" type="button" data-en="We say it differently">Wij zeggen het anders</button>
+      <button data-soort="betekenis" type="button" data-en="Meaning">Betekenis</button>
+      <button data-soort="onbekend" type="button" data-en="Don't know this word">Ken ik niet</button>
+    </div>
+    <textarea id="opm-tekst" maxlength="1000" placeholder="Hoe zeg of schrijf jij het?" data-en-ph="How would you say or write it?"></textarea>
+    <button class="knop groen" id="opm-stuur" type="button" data-en="Send">Versturen</button>
   </div>
 </div>
 
@@ -319,14 +326,17 @@ function vertaal(){
     el.placeholder=TAAL==='en'?el.dataset.enPh:el.dataset.nlPh;
   });
   document.querySelectorAll('.taal [data-taal]').forEach(function(b){ b.setAttribute('aria-pressed',b.dataset.taal===TAAL?'true':'false'); });
-  E('welkom').hidden=TAAL!=='en';
   E('uitleg-en').hidden=TAAL!=='en'; E('uitleg-nl').hidden=TAAL==='en';
+  E('start-titel').textContent=PROEFMODUS?L('Hallo! Een korte proefopname','Hi! A short audition'):L('Stemstudio','Voice studio');
+  E('start-sub').textContent=PROEFMODUS?L(PROEF.length+' korte Darija-regels voor een kinderspel. Ongeveer tien minuten.',PROEF.length+' short Darija lines for a children\'s game. About ten minutes.')
+                                       :L('Neem de woorden en verhaaltjes op voor Darija Avontuur.','Record Darija words and stories for a children\'s game.');
+  E('menu-naam').textContent=E('sessie').value.trim()||'?';
   document.querySelector('.filters [data-rol="juf"]').hidden=TAAL==='en';
   if(TAAL==='en'&&rolFilter==='juf'){ rolFilter='alles'; document.querySelectorAll('.filters [data-rol]').forEach(function(x){x.setAttribute('aria-pressed',x.dataset.rol==='alles'?'true':'false');}); }
-  E('bewaarknop').textContent=OPSLAG.url?L('Zip (reserve)','Zip (backup)'):L('Alles opslaan als zip','Save everything as zip');
+  E('bewaarknop').textContent=OPSLAG.url?L('Reservekopie (zip)','Backup copy (zip)'):L('Alles opslaan als zip','Save everything as zip');
   E('uitleg-opslag').innerHTML=OPSLAG.url
-    ?L('Elke opname gaat meteen naar het spel en blijft ook op dit apparaat staan. Geen internet? Dan wordt hij verstuurd zodra dat er weer is. De zip is alleen voor als dat echt niet lukt.',
-       'Every recording is sent to us straight away and also stays on this device. No internet? It is sent as soon as you are back online. The zip is only a backup, in case that really doesn\'t work.')
+    ?L('Je opnames gaan vanzelf naar ons. De zip heb je alleen nodig als dat niet lukt.',
+       'Your recordings reach us automatically. You only need the zip if that doesn\'t work.')
     :L('Alles wat je opneemt blijft op dit apparaat staan, ook als je de pagina sluit. Ben je klaar (of klaar voor vandaag), tik dan op <b>Alles opslaan als zip</b> en stuur dat bestand op.',
        'Everything you record stays on this device, even if you close the page. When you are done (or done for today), tap <b>Save everything as zip</b> and send us that file.');
   document.title=L('Stemstudio · Darija Avontuur','Voice studio · Darija Adventure');
@@ -367,7 +377,6 @@ function stand(r){
 function standTekst(s){
   if(s.code==='wacht')return OPSLAG.url?L('Opgenomen, wacht op keuring','Recorded, waiting for review'):L('Opgenomen','Recorded');
   if(s.code==='goed')return L('Goedgekeurd','Approved');
-  if(s.code==='spel')return L('Zit al in het spel','Already in the game');
   return '';
 }
 function zichtbaar(){
@@ -379,6 +388,13 @@ function zichtbaar(){
   });
 }
 function regelNu(){ var z=zichtbaar(); if(!z.length)return null; if(huidig>=z.length)huidig=z.length-1; if(huidig<0)huidig=0; return z[huidig]; }
+/* een aanwijzing alleen als er iets bijzonders is: de standaardzin staat in de uitleg */
+var STANDAARD=['Zeg het zoals je het thuis zegt','Say it the way you say it at home','Voorlezen als een verhaaltje','Read it like a bedtime story','Warm en rustig, tegen één kind van vier'];
+function tipVan(r,en){
+  var t=((en?r.en.aanwijzing:r.aanwijzing)||'').trim();
+  for(var i=0;i<STANDAARD.length;i++) if(t.indexOf(STANDAARD[i])===0) return '';
+  return t;
+}
 function toon(){
   var r=regelNu(), z=zichtbaar();
   var A=actief();
@@ -390,23 +406,22 @@ function toon(){
   toonWolk();
   if(!r){
     E('waar').textContent=''; E('tekst').textContent=alleenOpen?L('Alles is opgenomen. Dank je wel!','Everything is recorded. Thank you!'):L('Niets te zien met deze keuze.','Nothing to show with this choice.');
-    E('ar').hidden=true; E('zeg').hidden=true; E('terug').hidden=true; E('regie').textContent=''; E('stand').textContent=''; E('take').hidden=true; E('voorbeeld').hidden=true;
+    E('ar').hidden=true; E('zeg').hidden=true; E('terug').hidden=true; E('regie').hidden=true; E('stand').textContent=''; E('take').hidden=true; E('voorbeeld').hidden=true; E('opname').hidden=true; E('opm-klaar').hidden=true;
     bouwPlank(); return;
   }
   var s=stand(r);
-  E('voorbeeld').hidden=!VOORBEELD[r.id];
+  E('voorbeeld').hidden=!VOORBEELD[r.id]||PROEFMODUS;   /* bij de proef horen we haar eigen stem, zonder voorbeeld */
   var en=TAAL==='en'&&r.en;
   var groep=en?r.en.groep:r.groep;
-  E('waar').textContent=(PROEFMODUS?L('Proefopname · ','Audition · '):'')+(r.rol==='juf'?'Juf Amina · ':(r.rol==='boek'?L('Voorlezen · ','Read aloud · '):'Darija · '))+groep+' · '+(huidig+1)+' '+L('van','of')+' '+z.length;
+  var soortNaam=r.rol==='juf'?'Juf Amina':(r.rol==='boek'?L('Voorlezen','Read aloud'):(/\s/.test(r.tekst)?L('Zinnetje','Sentence'):L('Woord','Word')));
+  E('waar').textContent=soortNaam+' \u00b7 '+(huidig+1)+' / '+z.length;
   E('tekst').textContent=r.tekst;
   E('ar').hidden=!r.arabisch; E('ar').textContent=r.arabisch||'';
   var zeg=E('zeg'); zeg.className='zeg'+(en?' en':'');
-  if(en){ zeg.hidden=!r.en.betekenis; zeg.innerHTML='English meaning: <b></b> <span class="klein-tekst">(only so you know what it means; don\'t say it)</span>'; zeg.querySelector('b').textContent=r.en.betekenis; }
-  else if(r.rol==='woord'){ zeg.hidden=false; zeg.innerHTML='klinkt als <b></b> · betekent <b></b>'; var bb=zeg.querySelectorAll('b'); bb[0].textContent=r.uitspraak; bb[1].textContent=r.betekenis; }
-  else if(r.rol==='boek'){ zeg.hidden=false; zeg.innerHTML='betekent <b></b>'; zeg.querySelector('b').textContent=r.betekenis; }
-  else zeg.hidden=true;
+  var bet=en?r.en.betekenis:(r.rol==='juf'?'':r.betekenis);
+  zeg.hidden=!bet; zeg.textContent=bet?'= '+bet:'';
   E('terug').hidden=s.code!=='opnieuw'; E('terug').textContent=s.code==='opnieuw'?(s.aanwijzing||L('nog een keer, alsjeblieft','one more time, please')):'';
-  E('regie').textContent=(en?r.en.aanwijzing:r.aanwijzing)||'';
+  var tip=tipVan(r,en); E('regie').hidden=!tip; E('regie').textContent=tip;
   E('stand').textContent=standTekst(s);
   toonOpm(r);
   toonTake(r);
@@ -422,23 +437,23 @@ function toonOpm(r){
   E('opm-paneel').hidden=true; E('opm-open').hidden=false;
   if(m&&m.verwerkt){
     k.hidden=false; k.className='opm-klaar bureau';
-    k.textContent=L('Het bureau heeft je opmerking gezien','The team has seen your comment')+(m.antwoord?': '+m.antwoord:'.');
+    k.textContent=L('Het team heeft je opmerking gezien','The team has seen your comment')+(m.antwoord?': '+m.antwoord:'.');
   }else if(m){
     k.hidden=false; k.className='opm-klaar';
-    k.textContent=L('Doorgegeven','Sent')+(m.door?L(' door ',' by ')+m.door:'')+': '+SOORTNAAM(m.soort)+(m.tekst?' \u2014 \u201c'+m.tekst+'\u201d':'')+'. '+L('Het bureau kijkt ernaar; je mag deze overslaan of opnemen zoals jij het zegt.','We\'ll look into it. You can skip this line, or record it the way you would say it.');
+    k.textContent='\u2713 '+L('Opmerking verstuurd. Neem het op zoals jij het zegt, of sla over.','Comment sent. Record it the way you say it, or skip.');
   }else k.hidden=true;
 }
 function opmOpen(){
   var r=regelNu(); if(!r)return;
   opmSoort=[]; E('opm-tekst').value='';
   E('opm-paneel').querySelectorAll('[data-soort]').forEach(function(b){ b.setAttribute('aria-pressed','false'); });
-  E('opm-paneel').hidden=false; E('opm-open').hidden=true;
+  E('opm-paneel').hidden=false; setTimeout(function(){ E('opm-tekst').focus(); },50);
 }
 async function opmStuur(){
   var r=regelNu(); if(!r)return;
   var tekst=E('opm-tekst').value.trim();
   if(!opmSoort.length&&!tekst){ status(L('Kies een knopje, of typ hoe jij het zegt.','Tap one of the buttons, or type how you would say it.'),'fout'); return; }
-  if(!E('sessie').value.trim()){ status(L('Vul eerst je voornaam in, bovenaan. Dan weten we van wie de opmerking is.','Please fill in your first name at the top first, so we know who the comment is from.'),'fout'); E('sessie').classList.add('mist'); E('sessie').focus(); return; }
+  if(!E('sessie').value.trim()){ status(L('Vul eerst je voornaam in (menu, wijzig).','Please fill in your first name first (menu, change).'),'fout'); return; }
   /* één soort gaat in het veld soort; meer soorten zetten we vooraan in de tekst */
   var soort=opmSoort.length===1?opmSoort[0]:(opmSoort.length?opmSoort[0]:'overig');
   if(opmSoort.length>1) tekst='['+opmSoort.map(SOORTNAAM).join(' + ')+'] '+tekst;
@@ -468,7 +483,7 @@ E('opm-paneel').querySelectorAll('[data-soort]').forEach(function(b){ b.onclick=
 async function algStuur(){
   var tekst=E('alg-tekst').value.trim();
   if(!tekst){ E('alg-tekst').focus(); return; }
-  if(!E('sessie').value.trim()){ status(L('Vul eerst je voornaam in, bovenaan.','Please fill in your first name at the top first.'),'fout'); E('sessie').classList.add('mist'); E('sessie').focus(); return; }
+  if(!E('sessie').value.trim()){ status(L('Vul eerst je voornaam in (menu, wijzig).','Please fill in your first name first (menu, change).'),'fout'); return; }
   E('alg-stuur').disabled=true;
   try{
     var res=await fetch(OPSLAG.url+'/rest/v1/stem_opmerking',{method:'POST',headers:koppen({'Content-Type':'application/json','Prefer':'return=minimal'}),
@@ -483,11 +498,11 @@ E('alg-stuur').onclick=algStuur;
 function toonTake(r){
   var t=takes[r.id], s=stand(r);
   if(t&&s.code==='opnieuw'&&r.id!==vastId)t=null;   /* oude take na "graag opnieuw": niet meer laten zien, anders lijkt hij klaar */
-  E('take').hidden=!t;
+  E('take').hidden=!t; E('opname').hidden=!!t;
   stopSpelen();
-  if(t){ E('duur').textContent=(t.ms/1000).toFixed(1)+' s'; hint(t.let?letTekst(t.let):L('Luister even terug. Goed? Dan door naar de volgende.','Listen back. Happy with it? Then on to the next one.'),!!t.let); }
-  else if(s.code==='opnieuw') hint(L('Neem deze nog een keer op, met de aanwijzing hierboven.','Please record this one again, with the note above.'));
-  else hint(L('Tik op de rode knop, zeg het, tik nog eens.','Tap the red button, say it, tap again.'));
+  var th=E('take-hint'); th.hidden=!(t&&t.let); th.className='hint let'; th.textContent=t&&t.let?letTekst(t.let):'';
+  if(t){ E('duur').textContent=(t.ms/1000).toFixed(1)+' s'; }
+  else hint(L('Tik om op te nemen','Tap to record'));
 }
 /* waarschuwing na een opname: als code bewaard, in de gekozen taal getoond */
 function letTekst(c){
@@ -522,11 +537,15 @@ function bouwPlank(){
     var n=document.createElement('span'); n.className='naam'; n.textContent=r.tekst;
     var g=document.createElement('span'); g.className='grp'; g.textContent=r.rol==='juf'?'juf':(r.rol==='boek'?L('boekje','book'):'darija');
     b.appendChild(v); b.appendChild(n); b.appendChild(g);
-    b.onclick=function(){ huidig=i; toon(); window.scrollTo({top:0,behavior:'smooth'}); };
+    b.onclick=function(){ huidig=i; vastId=null; E('menu').hidden=true; naarWerk(); toon(); window.scrollTo({top:0}); };
     box.appendChild(b);
   });
 }
-function status(tekst,soort){ E('status').textContent=tekst; E('status').className='status'+(soort==='fout'?' fout':(soort==='stil'?' stil':'')); }
+var statusKlok=null;
+function status(tekst,soort){
+  var el=E('status'); el.textContent=tekst; el.className='status'+(soort==='fout'?' fout':'');
+  clearTimeout(statusKlok); statusKlok=setTimeout(function(){ el.classList.add('weg'); }, soort==='fout'?7000:2600);
+}
 
 /* ---------- meten ---------- */
 var meetBuf=null;
@@ -549,7 +568,7 @@ function dB(x){ return 20*Math.log10(Math.max(x,1e-6)); }
 function kamerCheck(){
   return new Promise(function(res){
     var t=Date.now(), w=[];
-    E('knop').classList.add('luistert'); hint(L('Even luisteren naar de kamer…','Listening to the room for a second…'));
+    E('knop').classList.add('luistert'); hint(L('Even stil… ik luister naar de kamer','One second of silence please…'));
     (function lus(){ w.push(rmsNu()); if(Date.now()-t<1000)requestAnimationFrame(lus); else{ w.sort(function(a,b){return a-b;}); res(dB(w[Math.floor(w.length/2)])); } })();
   }).then(function(db){
     E('knop').classList.remove('luistert'); kamer=db;
@@ -579,7 +598,7 @@ function kwaliteit(){
 /* ---------- opnemen ---------- */
 async function start(){
   var r=regelNu(); if(!r)return;
-  if(!E('sessie').value.trim()){ status(L('Vul eerst je voornaam in, bovenaan. Dan weten we van wie de opnames zijn.','Please fill in your first name at the top first, so we know whose recordings these are.'),'fout'); E('sessie').classList.add('mist'); E('sessie').focus(); return; }
+  if(!E('sessie').value.trim()){ E('werk').hidden=true; E('start').hidden=false; E('sessie').classList.add('mist'); E('sessie').focus(); return; }
   var eerste=!stream;
   /* de audio-motor meteen bij de tik aanzetten (vóór er gewacht wordt): een iPhone
      laat hem anders niet lopen, en zonder motor komt er geen opname binnen */
@@ -615,7 +634,7 @@ async function start(){
   bezig=true; t0=Date.now();
   E('knop').classList.add('bezig'); E('knop').setAttribute('aria-label','Stoppen');
   document.querySelector('.ring').classList.add('aan');
-  hint(L('Ik luister…','Recording… tap again when you\'re done')); E('take').hidden=true;
+  hint(L('Tik om te stoppen','Tap to stop')); E('take').hidden=true; E('opname').hidden=false;
   tikker=setInterval(function(){ E('tijd').textContent=((Date.now()-t0)/1000).toFixed(1)+' s'; },100);
   meet();
 }
@@ -834,11 +853,28 @@ E('goed').onclick=function(){
   if(!alleenOpen)huidig++; huidig=Math.max(0,Math.min(huidig,zichtbaar().length-1)); toon(); window.scrollTo({top:0,behavior:'smooth'});
 };
 function toonEinde(ja){
-  E('einde').hidden=!ja;
-  if(ja){ toon(); E('einde').scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(function(){ E('alg-tekst').focus({preventScroll:true}); },600); }
+  E('einde').hidden=!ja; E('werk').hidden=!!ja;
+  if(ja){ if(OPSLAG.url){ E('einde-alg').appendChild(E('algemeen')); E('algemeen').hidden=false; } toon(); window.scrollTo({top:0}); }
+  else if(E('algemeen').parentNode===E('einde-alg')){ E('menu').querySelector('.la').insertBefore(E('algemeen'),E('bewaarknop').parentNode); }
 }
+function naarWerk(){ E('start').hidden=true; if(!E('einde').hidden)toonEinde(false); E('werk').hidden=false; }
+E('einde-terug').onclick=function(){ toonEinde(false); huidig=0; toon(); };
+E('menu-open').onclick=function(){ toon(); E('menu').hidden=false; E('menu-dicht').focus(); };
+E('menu-dicht').onclick=function(){ E('menu').hidden=true; };
+E('menu').onclick=function(e){ if(e.target===E('menu'))E('menu').hidden=true; };
+E('opm-paneel').onclick=function(e){ if(e.target===E('opm-paneel')){ var r=regelNu(); if(r)toonOpm(r); } };
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ E('menu').hidden=true; var r=regelNu(); if(!E('opm-paneel').hidden&&r)toonOpm(r); } });
+function startNaam(){
+  var n=E('sessie').value.trim();
+  if(!n){ E('sessie').classList.add('mist'); E('sessie').focus(); return; }
+  schrijf('stemstudio-sessie',n); E('menu-naam').textContent=n; naarWerk(); toon(); window.scrollTo({top:0});
+}
+E('start-knop').onclick=startNaam;
+E('sessie').onkeydown=function(e){ if(e.key==='Enter')startNaam(); };
+E('start-meer').onclick=function(){ E('menu').hidden=false; E('uitleg-'+TAAL).scrollIntoView({block:'start'}); };
+E('naam-wijzig').onclick=function(){ E('menu').hidden=true; E('werk').hidden=true; E('einde').hidden=true; E('start').hidden=false; E('sessie').focus(); };
 E('volgende').onclick=function(){ vastId=null; huidig=Math.min(huidig+1,Math.max(0,zichtbaar().length-1)); toon(); };
-E('vorige').onclick=function(){ vastId=null; huidig=Math.max(0,huidig-1); toon(); };
+E('vorige').onclick=function(){ if(!E('einde').hidden){ toonEinde(false); toon(); return; } vastId=null; huidig=Math.max(0,huidig-1); toon(); };
 E('bewaarknop').onclick=allesOpslaan;
 document.querySelectorAll('.filters [data-rol]').forEach(function(b){ b.onclick=function(){
   document.querySelectorAll('.filters [data-rol]').forEach(function(x){x.setAttribute('aria-pressed','false');});
@@ -854,21 +890,19 @@ window.addEventListener('online',function(){ laadCloud().then(wachtrij); });
 document.addEventListener('visibilitychange',function(){ if(!document.hidden)laadCloud().then(toon); });
 
 (async function(){
-  if(PROEFMODUS){
-    E('proefkop').hidden=false; E('filters').hidden=true; alleenOpen=false;
-    /* bij de proefopname begint ze bij de eerste regel die nog niet is opgenomen */
-  }
+  if(PROEFMODUS){ E('filters').hidden=true; alleenOpen=false; }
   E('algemeen').hidden=!OPSLAG.url;
   vertaal();
   await opslagLezen(); await laadCloud();
-  if(Object.keys(takes).length) E('welkom-d').open=false;   /* wie terugkomt, heeft de uitleg al gelezen */
-  if(PROEFMODUS){ var z0=zichtbaar(), i0=z0.findIndex(function(r){return !takes[r.id];}); huidig=i0<0?0:i0; if(i0<0)E('einde').hidden=false; }
+  /* het startscherm: zolang er geen naam is, of er op dit toestel nog niets is opgenomen */
+  var eerst=!E('sessie').value.trim()||!Object.keys(takes).length;
+  E('start').hidden=!eerst; E('werk').hidden=eerst;
+  if(PROEFMODUS){ var z0=zichtbaar(), i0=z0.findIndex(function(r){return !takes[r.id];}); huidig=i0<0?0:i0; if(i0<0&&!eerst)toonEinde(true); }
   toon();
   var n=Object.keys(takes).length;
   if(!window.isSecureContext) status(L('Deze pagina staat niet op een beveiligd adres; de browser geeft dan geen microfoon vrij.','This page is not on a secure address, so the browser won\'t give access to the microphone.'),'fout');
   else if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) status(L('Deze browser geeft hier geen microfoon vrij. Open de pagina als gewone tab in Chrome of Safari.','This browser won\'t give access to the microphone here. Open the page as a normal tab in Chrome or Safari.'),'fout');
-  else if(n) status(L('Welkom terug: '+n+' opname'+(n===1?'':'s')+' staan al klaar op dit apparaat.','Welcome back: '+n+' recording'+(n===1?' is':'s are')+' already saved on this device.'),'ok');
-  else status(L('Klaar om op te nemen. Vul je naam in en tik op de rode knop.','Ready to record. Fill in your first name and tap the red button.'),'stil');
+  else if(n) status(L('Welkom terug!','Welcome back!'),'ok');
   wachtrij();
 })();
 </script>
