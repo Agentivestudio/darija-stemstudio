@@ -137,7 +137,9 @@ function lees(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function schrijf(k,v){try{v?localStorage.setItem(k,v):localStorage.removeItem(k);}catch(e){}}
 var SLEUTEL=(function(){ var m=/[#&]s=([^&]+)/.exec(location.hash||''); if(m){ schrijf('stemkeur-sleutel',decodeURIComponent(m[1])); history.replaceState(null,'',location.pathname+location.search); } return lees('stemkeur-sleutel')||''; })();
 if(PORTAAL)SLEUTEL='';
-window.addEventListener('message',function(e){ if(!PORTAAL||PORTAAL_HERKOMST.indexOf(e.origin)<0&&!/^http:\/\/localhost(:\d+)?$/.test(e.origin))return; if(!e.data||e.data.type!=='stem-token')return; var eerste=!TOKEN; TOKEN=e.data.token||''; if(eerste&&TOKEN&&window.__start){ var f=window.__start; window.__start=null; f(); } });
+window.addEventListener('message',function(e){ if(!PORTAAL||PORTAAL_HERKOMST.indexOf(e.origin)<0&&!/^http:\/\/localhost(:\d+)?$/.test(e.origin))return; if(!e.data||e.data.type!=='stem-token')return; var eerste=!TOKEN, oud=TOKEN; TOKEN=e.data.token||''; if(!TOKEN||(!eerste&&TOKEN===oud))return;
+  if(eerste&&window.__start){ var f=window.__start; window.__start=null; f(); }
+  else if(window.__fout){ window.__fout=false; E('inhoud').innerHTML=''; E('tabs').hidden=false; start(); } });
 
 /* ---------- opslag ---------- */
 function koppen(x){ var h={'apikey':OPSLAG.sleutel,'Authorization':'Bearer '+(TOKEN||OPSLAG.sleutel)}; for(var k in (x||{}))h[k]=x[k]; return h; }
@@ -514,8 +516,12 @@ async function start(){
     E('tabs').hidden=true; E('menu-open').hidden=true;
     var k=el('div','kaart c'); k.appendChild(el('h2','','Open je eigen keurlink')); k.appendChild(el('div','bet','Deze pagina werkt met een persoonlijke link. Vraag Omar om jouw keurlink en open die op dit toestel.')); E('inhoud').appendChild(k); return;
   }
+  var metToken=TOKEN;
   try{ await laad(); teken(); }
   catch(e){
+    if(PORTAAL&&TOKEN&&TOKEN!==metToken){ E('inhoud').innerHTML=''; E('tabs').hidden=false; return start(); }
+    window.__fout=true;
+    if(PORTAAL){ try{ window.parent.postMessage({type:'stem-klaar'},'*'); }catch(x){} }
     E('tabs').hidden=true;
     var k2=el('div','kaart c'); k2.appendChild(el('h2','',e.status===400||/sleutel/.test(e.message||'')?(PORTAAL?'Geen toegang tot keuren':'Deze keurlink werkt niet (meer)'):'Geen verbinding'));
     k2.appendChild(el('div','bet',(/sleutel/.test(e.message||'')?(PORTAAL?'Alleen beheerders kunnen keuren. Log opnieuw in of vraag Omar om de rol.':'Vraag Omar om een nieuwe keurlink.'):'Controleer je internet en probeer het zo nog eens.')));
