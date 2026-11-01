@@ -262,6 +262,19 @@ function home(box){
     box.appendChild(l);
   });
   box.appendChild(knop('wit klein','+ Spreekster of keurder uitnodigen',function(){naar('uitnodigen');}));
+  /* alle opnames per naam: ook van de oude link en van tests, zodat je ziet wat echt is */
+  box.appendChild(el('div','sec','Alle opnames, per naam'));
+  var per={}; D.takes.forEach(function(t){ var p=per[t.sessie]=per[t.sessie]||{n:0,laatst:t.gemaakt,eerst:t.gemaakt}; p.n++; if(t.gemaakt>p.laatst)p.laatst=t.gemaakt; if(t.gemaakt<p.eerst)p.eerst=t.gemaakt; });
+  var namen=Object.keys(per).sort(function(a,b){ return per[b].laatst>per[a].laatst?1:-1; });
+  if(!namen.length) box.appendChild(el('div','kaart leeg','Nog geen opnames.'));
+  namen.forEach(function(sl){
+    var m=D.mensen.find(function(x){return x.slug===sl;}), x=per[sl];
+    var test=/^test/i.test(sl)||(m&&/^test/i.test(m.naam));
+    var soort=test?['test','p-zand']:(m?(m.actief?['eigen link','p-groen']:['ingetrokken','p-zand']):['oude link','p-blauw']);
+    var l=el('div','lijn'); l.appendChild(el('div','av'+(m&&!test?'':' uit'),(m?m.naam:sl).charAt(0).toUpperCase()));
+    var n=el('div','n',m?m.naam:sl.replace(/_/g,' ')); n.appendChild(el('small','',x.n+' opname'+(x.n===1?'':'s')+' \u00b7 laatst '+datum(x.laatst)+(m||test?'':' \u00b7 te vinden onder Alle regels (lijst)'))); l.appendChild(n);
+    l.appendChild(el('span','pil '+soort[1],soort[0])); box.appendChild(l);
+  });
   /* keurders */
   box.appendChild(el('div','sec','Keurders'));
   var vandaag=new Date().toDateString();
