@@ -4,174 +4,116 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Keuren · Darija Avontuur</title>
+<meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700;800&family=Amiri:wght@400;700&display=swap">
 <style>
-/* De keurpagina: wat de spreekster instuurt, luister je hier terug en keur
-   je goed of vraag je opnieuw, met een aanwijzing. Alleen wie de link met
-   sleutel heeft, kan keuren; zonder sleutel kun je alleen luisteren. */
-:root{
-  --lucht:#BDE3F2; --zand:#F7E7CC; --papier:#FFFAF0; --inkt:#3B2A0C; --inkt-zacht:#6B5744;
-  --brass:#F0B23F; --brass-dark:#B07D1E; --tile:#2AA79E; --tile-deep:#12706C; --clay:#C4643C;
-  --rood:#E2574C; --rood-deep:#B03F35; --ok:#5FBF6A; --ok-deep:#3E8F48; --rand:rgba(59,42,12,.16);
-}
-*{box-sizing:border-box}
+/* De keurpagina: overzicht, keuren één voor één, de proef, opmerkingen,
+   uitnodigen, opdrachten en het logboek. Eén scherm tegelijk. */
+:root{--zand:#F7E7CC;--papier:#FFFAF0;--inkt:#3B2A0C;--zacht:#7A6652;--brass:#F0B23F;--brass-d:#B07D1E;--tile:#2AA79E;--tile-d:#12706C;
+  --clay:#C4643C;--rood:#E2574C;--rood-d:#B03F35;--ok:#3E9B4F;--ok-d:#2b7339;--rand:rgba(59,42,12,.14)}
+*{box-sizing:border-box}[hidden]{display:none!important}
 html,body{margin:0}
-body{background:linear-gradient(180deg,#BDE3F2 0%,#DDEFF6 30%,#F7E7CC 100%) fixed;color:var(--inkt);
-  font-family:Nunito,system-ui,sans-serif;font-size:16px;line-height:1.5;
-  min-height:100dvh;padding-block:16px calc(env(safe-area-inset-bottom,0px) + 96px);padding-left:16px;padding-right:16px;-webkit-font-smoothing:antialiased}
+body{background:linear-gradient(180deg,#CFEAF4 0%,#F7E7CC 60%) fixed;color:var(--inkt);font-family:Nunito,system-ui,sans-serif;font-size:16px;line-height:1.45;min-height:100dvh;-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:"Baloo 2",sans-serif;font-weight:800;margin:0;text-wrap:balance}
-.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-h1{font-size:1.45rem;color:var(--clay)} h1 small{display:block;font-family:Nunito;font-weight:700;font-size:.8rem;color:var(--inkt-zacht);letter-spacing:.06em;text-transform:uppercase}
-.kaart{background:var(--papier);border-radius:20px;padding:16px 18px;box-shadow:0 10px 30px rgba(80,50,20,.14)}
-.kaart.dun{padding:12px 16px}
-.rij{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.knop{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:1rem;color:var(--inkt);background:var(--brass);border:0;border-radius:999px;
-  padding:10px 18px;cursor:pointer;min-height:44px;box-shadow:0 4px 0 var(--brass-dark);display:inline-flex;align-items:center;gap:8px;transition:transform .1s,box-shadow .1s}
-.knop:active{transform:translateY(3px);box-shadow:0 1px 0 var(--brass-dark)}
-.knop:disabled{opacity:.4;cursor:default}
-.knop.licht{background:#fff;box-shadow:0 4px 0 rgba(59,42,12,.2)} .knop.licht:active{box-shadow:0 1px 0 rgba(59,42,12,.2)}
-.knop.goed{background:var(--ok);color:#fff;box-shadow:0 4px 0 var(--ok-deep)} .knop.goed:active{box-shadow:0 1px 0 var(--ok-deep)}
-.knop.rood{background:var(--rood);color:#fff;box-shadow:0 4px 0 var(--rood-deep)} .knop.rood:active{box-shadow:0 1px 0 var(--rood-deep)}
-.knop.klein{font-size:.85rem;min-height:36px;padding:6px 12px}
-.knop.speelt{outline:3px solid var(--tile)}
-.tri{display:inline-block;width:0;height:0;border-style:solid;border-width:5px 0 5px 9px;border-color:transparent transparent transparent currentColor;flex:none}
-.knop.speelt .tri{border-width:0;width:9px;height:10px;background:currentColor}
-.tabs{display:flex;gap:8px;flex-wrap:wrap}
-.tabs .knop{font-size:.85rem;min-height:36px;padding:6px 12px;background:#fff;box-shadow:0 3px 0 rgba(59,42,12,.15)}
-.tabs .knop[aria-pressed="true"]{background:var(--brass);box-shadow:0 3px 0 var(--brass-dark)}
-.tabs .knop b{font-variant-numeric:tabular-nums}
-.status{font-size:.9rem;padding:10px 14px;border-radius:12px;background:#E3F5F3;color:var(--tile-deep);font-weight:700}
-.status.fout{background:#FBE3E0;color:#8E2B22}
-.status.stil{background:var(--zand);color:var(--inkt-zacht)}
-
-/* een regel */
-.regel{display:flex;flex-direction:column;gap:8px}
-.regel .waar{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tile-deep);font-weight:800;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.regel .tekst{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:1.35rem;line-height:1.2;color:var(--inkt)}
-.regel .ar{font-family:Amiri,serif;font-size:1.3rem;color:var(--tile-deep);direction:rtl;text-align:left}
-.regel .zeg{font-size:.9rem;color:var(--inkt-zacht)} .regel .zeg b{color:var(--inkt)}
-.regel .regie{font-size:.9rem;color:var(--inkt-zacht)} .regel .regie::before{content:"Regie · ";font-weight:800;color:var(--clay)}
-.regel .van{font-size:.85rem;color:var(--inkt-zacht)}
-.regel .stand{font-size:.85rem;font-weight:800;padding:4px 10px;border-radius:999px;background:rgba(59,42,12,.08);color:var(--inkt-zacht);align-self:flex-start}
-.regel .stand.goed{background:#E2F5E4;color:var(--ok-deep)} .regel .stand.opnieuw{background:#FBE3E0;color:#8E2B22} .regel .stand.wacht{background:#E3F5F3;color:var(--tile-deep)} .regel .stand.spel{background:#E3F5F3;color:var(--tile-deep)}
-.regel .keur{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--rand);padding-top:10px;margin-top:2px}
-.chips{display:flex;gap:6px;flex-wrap:wrap}
-.chips button{font:inherit;font-size:.85rem;font-weight:700;border:1.5px solid var(--rand);background:#fff;border-radius:999px;padding:6px 12px;color:var(--inkt);cursor:pointer}
-.chips button[aria-pressed="true"]{background:var(--zand);border-color:var(--clay)}
-textarea{font:inherit;width:100%;min-height:56px;padding:8px 12px;border:1.5px solid var(--rand);border-radius:12px;background:#fff;color:var(--inkt);resize:vertical}
-.klein-tekst{font-size:.8rem;color:var(--inkt-zacht)}
-/* wie keurt: rechtsboven als chip, en een vak dat om de naam vraagt zolang die er niet is */
-.wie-chip{display:inline-flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--brass);border-radius:999px;padding:6px 8px 6px 14px;font-weight:800;box-shadow:0 3px 0 var(--brass-dark)}
-.wie-chip small{font-weight:700;color:var(--inkt-zacht);font-size:.78rem;letter-spacing:.04em;text-transform:uppercase}
-.wie-chip button{font:inherit;font-size:.8rem;font-weight:800;border:0;background:var(--zand);color:var(--inkt);border-radius:999px;padding:5px 10px;cursor:pointer}
-.wie-chip.leeg{border-color:var(--rood);box-shadow:0 3px 0 var(--rood-deep);color:#8E2B22}
-#naamvak{border:3px solid var(--brass);box-shadow:0 10px 30px rgba(80,50,20,.14),0 0 0 6px rgba(240,178,63,.22)}
-#naamvak.schud{animation:schud .5s}
-@keyframes schud{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-#naamin{font:inherit;font-size:1.15rem;font-weight:800;flex:1;min-width:10em;padding:12px 14px;border:2px solid var(--rand);border-radius:14px;background:#fff;color:var(--inkt)}
-/* de drie stappen */
-.stappen{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0;padding:0;list-style:none}
-.stappen li{background:var(--zand);border-radius:14px;padding:10px 12px;font-size:.85rem;line-height:1.35}
-.stappen li b{display:block;font-family:"Baloo 2",sans-serif;font-size:1.05rem;color:var(--clay)}
-@media (max-width:440px){.stappen{grid-template-columns:1fr}}
-/* zoeken en filteren */
-.zoek{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.zoek input{font:inherit;flex:1;min-width:11em;padding:8px 12px;border:1.5px solid var(--rand);border-radius:12px;background:#fff;color:var(--inkt)}
-.zoek .chips button[aria-pressed="true"]{background:var(--tile);border-color:var(--tile-deep);color:#fff}
-/* per regel: twee duidelijke luisterrijen, te keuren en ter vergelijking */
-.luister{display:flex;flex-direction:column;gap:6px;background:rgba(59,42,12,.04);border-radius:14px;padding:10px 12px}
-.luister .lbl{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--inkt-zacht)}
-.luister.nieuw{background:#FFF1E4;border:1.5px solid #F0C9A6} .luister.nieuw .lbl{color:var(--clay)}
-.luister .rij{align-items:center}
-.luister .knop{background:#fff}
-.luister.nieuw .knop{background:var(--brass);box-shadow:0 4px 0 var(--brass-dark)}
-.luister .uitleg{font-size:.85rem;color:var(--inkt-zacht)}
-.knop.goed small,.knop.rood small{display:block;font-family:Nunito;font-weight:700;font-size:.72rem;opacity:.9;line-height:1.1}
-.knop.goed,.knop.rood{flex-direction:column;align-items:flex-start;gap:0;padding:8px 18px}
-.leeg{text-align:center;color:var(--inkt-zacht);padding:24px 0}
-/* opmerkingen van de spreekster */
-.regel .opmerking{background:#FFF1E4;border:1px solid #F0C9A6;color:var(--inkt);border-radius:12px;padding:8px 12px;font-size:.9rem}
-.regel .opmerking b{color:var(--clay)}
-.opm-kop{display:flex;flex-direction:column;gap:8px}
-.opm-kop p{margin:0}
-.opm-item .soort{display:inline-block;font-size:.8rem;font-weight:800;padding:3px 10px;border-radius:999px;background:#FFF1E4;color:var(--clay);border:1px solid #F0C9A6}
-.opm-item .quote{font-size:1.05rem;font-weight:700;color:var(--inkt)}
-.opm-item .wie{font-size:.85rem;color:var(--inkt-zacht)}
-.opm-item input.antw{font:inherit;flex:1;min-width:12em;padding:8px 12px;border:1.5px solid var(--rand);border-radius:12px;background:#fff;color:var(--inkt)}
-.opm-item.af{opacity:.55}
-/* proefopname */
-.proef-kop h2{font-size:1.25rem;color:var(--tile-deep)}
-.proef-kop p{margin:6px 0 0;font-size:.95rem}
-.proef-kop ul{margin:6px 0 0;padding-left:20px;font-size:.95rem}
-.proef-wie{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.proef-wie button{font:inherit;font-weight:800;border:0;border-radius:999px;padding:8px 14px;background:#fff;box-shadow:0 3px 0 rgba(59,42,12,.15);cursor:pointer}
-.proef-wie button[aria-pressed="true"]{background:var(--tile);color:#fff}
-.en-bet{font-size:.9rem;color:var(--inkt-zacht)} .en-bet b{color:var(--inkt)}
-.alg-item{background:var(--zand);border-radius:14px;padding:10px 14px;font-size:.95rem;white-space:pre-wrap}
+button{font:inherit;color:inherit}
+.app{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px calc(env(safe-area-inset-bottom,0px) + 90px);display:flex;flex-direction:column;gap:12px}
+.top{display:flex;align-items:center;gap:10px}
+.top h1{flex:1;font-size:1.4rem;color:var(--clay)}
+.ik{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.8);display:grid;place-items:center;cursor:pointer;font-weight:800;flex:none}
+.wie{font-size:.8rem;font-weight:700;color:var(--zacht)} .wie b{color:var(--inkt)}
+.tabs{display:flex;gap:4px;background:rgba(255,255,255,.65);border-radius:14px;padding:4px}
+.tabs button{flex:1;border:0;background:none;border-radius:10px;padding:9px 4px;font-weight:800;font-size:.84rem;color:var(--zacht);cursor:pointer;white-space:nowrap}
+.tabs button[aria-pressed="true"]{background:#fff;color:var(--inkt);box-shadow:0 2px 0 rgba(59,42,12,.12)}
+.tabs b{background:var(--rood);color:#fff;border-radius:99px;padding:0 6px;font-size:.7rem;margin-left:3px}
+.tabs b.nul{background:rgba(59,42,12,.18)}
+.kaart{background:var(--papier);border-radius:20px;padding:16px;box-shadow:0 8px 22px rgba(80,50,20,.1)}
+.c{text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
+.waar{font-size:.7rem;font-weight:800;letter-spacing:.1em;color:var(--tile-d);text-transform:uppercase}
+.woord{font-family:"Baloo 2";font-weight:800;font-size:clamp(1.6rem,7vw,2.2rem);line-height:1.1}
+.woord.lang{font-size:1.25rem;line-height:1.25}
+.ar{font-family:Amiri,serif;font-size:1.45rem;color:var(--tile-d);line-height:1.4;direction:rtl}
+.bet{color:var(--zacht);font-size:.92rem}
+.mini{font-size:.78rem;color:var(--zacht);font-weight:700}
+.knop{font-family:"Baloo 2";font-weight:800;font-size:1.02rem;border:0;border-radius:14px;padding:11px 14px;min-height:50px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--brass);box-shadow:0 4px 0 var(--brass-d);transition:transform .1s,box-shadow .1s}
+.knop:active{transform:translateY(3px);box-shadow:0 1px 0 var(--brass-d)} .knop:disabled{opacity:.45;cursor:default}
+.wit{background:#fff;box-shadow:0 4px 0 rgba(59,42,12,.18)} .groen{background:var(--tile);color:#fff;box-shadow:0 4px 0 var(--tile-d)}
+.ok{background:var(--ok);color:#fff;box-shadow:0 4px 0 var(--ok-d)} .nee{background:var(--rood);color:#fff;box-shadow:0 4px 0 var(--rood-d)}
+.wa{background:#25D366;color:#fff;box-shadow:0 4px 0 #1a9e4b}
+.klein{font-size:.88rem;min-height:40px;padding:7px 12px;border-radius:12px}
+.knop:focus-visible,.ik:focus-visible,.tabs button:focus-visible{outline:3px solid var(--tile);outline-offset:2px}
+.twee{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.speel{display:inline-flex;gap:8px;align-items:center;justify-content:center;background:#fff;border:0;border-radius:99px;padding:9px 14px;min-height:46px;font-weight:800;box-shadow:0 3px 0 rgba(59,42,12,.15);cursor:pointer}
+.speel i{width:26px;height:26px;border-radius:50%;background:var(--tile);color:#fff;display:grid;place-items:center;font-size:.62rem;font-style:normal;flex:none}
+.speel.ai i{background:#9DB8C7} .speel.speelt i{background:var(--rood)}
+.grootgetal{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.gg{background:var(--papier);border-radius:16px;padding:12px;box-shadow:0 4px 12px rgba(80,50,20,.08);border:0;text-align:left;cursor:pointer}
+.gg b{font-family:"Baloo 2";font-size:1.8rem;display:block;line-height:1}.gg span{font-size:.78rem;font-weight:700;color:var(--zacht)}
+.gg.rood b{color:var(--rood)} .gg.blauw b{color:var(--tile-d)} .gg.klei b{color:var(--clay)}
+.sec{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--zacht);margin-top:6px}
+.lijn{display:flex;align-items:center;gap:10px;background:var(--papier);border-radius:14px;padding:10px 12px;box-shadow:0 4px 12px rgba(80,50,20,.08)}
+.av{width:36px;height:36px;border-radius:50%;background:var(--tile);color:#fff;display:grid;place-items:center;font-family:"Baloo 2";font-size:1.05rem;flex:none}
+.av.k{background:var(--clay)} .av.uit{background:#B9AE9F}
+.lijn .n{flex:1;min-width:0;font-weight:800;font-size:.95rem} .lijn .n small{display:block;font-weight:700;color:var(--zacht);font-size:.76rem}
+.pil{font-size:.7rem;font-weight:800;border-radius:99px;padding:3px 9px;white-space:nowrap}
+.p-rood{background:#FBE3E0;color:#8E2B22}.p-blauw{background:#E3F0F5;color:#2C6377}.p-groen{background:#E3F3E6;color:var(--ok-d)}.p-zand{background:var(--zand)}
+.balk{height:7px;border-radius:9px;background:rgba(59,42,12,.1);overflow:hidden}.balk i{display:block;height:100%;background:var(--tile);width:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:1.5px solid var(--rand);background:#fff;border-radius:99px;padding:7px 12px;min-height:40px;font-weight:700;font-size:.88rem;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--brass);border-color:var(--brass-d)}
+input,textarea,select{font:inherit;width:100%;padding:11px 13px;border:1.5px solid var(--rand);border-radius:12px;background:#fff;color:var(--inkt)}
+textarea{min-height:70px;resize:vertical}
+label.v{display:flex;flex-direction:column;gap:5px;font-size:.78rem;font-weight:800;color:var(--zacht);text-transform:uppercase;letter-spacing:.06em}
+.opm{background:#FCEBD9;border-radius:10px;padding:7px 10px;font-size:.86rem;font-weight:700;text-align:left}
+.leeg{text-align:center;color:var(--zacht);font-weight:700;padding:26px 16px}
+.klaar{color:var(--ok);font-weight:800}
+.status{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translateX(-50%);width:min(520px,calc(100% - 32px));background:var(--inkt);color:#fff;border-radius:14px;padding:12px 16px;
+  font-size:.92rem;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:40;transition:opacity .3s}
+.status.fout{background:#8E2B22}.status.info{background:#2C6377}.status.weg{opacity:0;pointer-events:none}
+.scherm{position:fixed;inset:0;z-index:30;background:rgba(40,28,10,.35);display:flex}
+.la{background:var(--papier);width:min(400px,88%);height:100%;overflow-y:auto;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 24px;display:flex;flex-direction:column;gap:6px}
+.la button.m{border:0;background:none;text-align:left;padding:12px 10px;border-radius:12px;font-weight:800;cursor:pointer;font-size:1rem}
+.la button.m:hover{background:var(--zand)}
+.la a.m{display:block;padding:12px 10px;border-radius:12px;font-weight:800;color:var(--inkt);text-decoration:none}
+.hist{display:flex;flex-direction:column;gap:6px;width:100%;text-align:left}
+.log{display:flex;gap:10px;align-items:baseline;font-size:.88rem;padding:7px 0;border-bottom:1px solid rgba(59,42,12,.08)}
+.log time{flex:none;width:86px;color:var(--zacht);font-weight:700;font-size:.78rem;font-variant-numeric:tabular-nums}
+.log b{font-weight:800}
+.vink{color:var(--ok);font-weight:800}
+.kies{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow-y:auto}
+.kies label{display:flex;gap:10px;align-items:center;background:#fff;border-radius:12px;padding:10px 12px;font-weight:700;cursor:pointer}
+.kies input{width:20px;height:20px;flex:none}
+.kies small{display:block;color:var(--zacht);font-weight:700}
+.link{word-break:break-all;background:#fff;border:1.5px dashed var(--rand);border-radius:12px;padding:10px;font-size:.85rem}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>Keuren<small>Darija Avontuur · opnames van de spreekster</small></h1>
-    <div class="wie-chip leeg" id="wie"><small>Je keurt als</small><span id="wie-naam">nog geen naam</span><button type="button" id="wie-wijzig">wijzig</button></div>
-  </header>
-
-  <div class="kaart" id="naamvak">
-    <h3 style="font-size:1.1rem;margin-bottom:4px">Eerst even: wie keurt er?</h3>
-    <p class="klein-tekst" style="margin:0 0 10px">Je voornaam komt bij elk oordeel te staan, zodat we zien wie wat heeft gekeurd. Dit vraagt de pagina één keer per telefoon.</p>
-    <div class="rij">
-      <input id="naamin" placeholder="je voornaam" autocomplete="given-name" autocapitalize="words" maxlength="40">
-      <button class="knop" id="naamok" type="button">Verder</button>
-    </div>
-  </div>
-
-  <div class="kaart">
-    <ol class="stappen">
-      <li><b>1 · Luister</b>naar de <b style="display:inline;font:inherit;color:var(--inkt)">nieuwe opname</b>: dat is wat de spreekster heeft ingesproken en wat gekeurd moet worden.</li>
-      <li><b>2 · Vergelijk</b>met <b style="display:inline;font:inherit;color:var(--inkt)">zo klinkt het nu in het spel</b>: de stem die er nu in zit (meestal de AI-stem).</li>
-      <li><b>3 · Keur</b><b style="display:inline;font:inherit;color:var(--ok-deep)">Goed</b> = deze opname komt in het spel. <b style="display:inline;font:inherit;color:#8E2B22">Opnieuw</b> = nog een keer inspreken, met een aanwijzing.</li>
-    </ol>
-  </div>
-
-  <div class="kaart dun">
-    <div class="tabs" role="tablist">
-      <button class="knop" data-tab="wacht" aria-pressed="true" type="button">Te keuren: nieuwe opnames <b id="n-wacht">0</b></button>
-      <button class="knop" data-tab="opnieuw" aria-pressed="false" type="button">Opnieuw gevraagd <b id="n-opnieuw">0</b></button>
-      <button class="knop" data-tab="goed" aria-pressed="false" type="button">Goedgekeurd <b id="n-goed">0</b></button>
-      <button class="knop" data-tab="alles" aria-pressed="false" type="button">Alle regels <b id="n-alles">0</b></button>
-      <button class="knop" data-tab="opm" aria-pressed="false" type="button">Opmerkingen van de spreekster <b id="n-opm">0</b></button>
-      <button class="knop" data-tab="proef" aria-pressed="false" type="button">Proefopname <b id="n-proef">0</b></button>
-    </div>
-    <div class="zoek" id="zoekvak" style="margin-top:10px">
-      <input id="zoekin" type="search" placeholder="Zoek een woord of zin…" autocomplete="off">
-      <div class="chips" id="rolchips">
-        <button type="button" data-rol="" aria-pressed="true">alles</button>
-        <button type="button" data-rol="juf" aria-pressed="false">juf Amina</button>
-        <button type="button" data-rol="woord" aria-pressed="false">Darija</button>
-        <button type="button" data-rol="boek" aria-pressed="false">boekjes</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="status stil" id="status">Even ophalen wat er is&hellip;</div>
-
-  <div class="kaart" id="sleutelvak" hidden>
-    <h3 style="font-size:1rem;margin-bottom:6px">Keuren aanzetten</h3>
-    <p class="klein-tekst" style="margin:0 0 10px">Luisteren kan altijd. Om te kunnen keuren heeft deze browser de keursleutel nodig; die staat in de keurlink van het bureau (het stuk na <b>#s=</b>). Elke browser vraagt er één keer om.</p>
-    <div class="rij">
-      <input id="sleutelin" type="text" placeholder="keursleutel" autocomplete="off" autocapitalize="off" spellcheck="false" style="flex:1;min-width:12em;font:inherit;padding:10px 12px;border:1.5px solid var(--rand);border-radius:12px;background:#fff;color:var(--inkt)">
-      <button class="knop" id="sleutelok" type="button">Aanzetten</button>
-    </div>
-  </div>
-
-  <div id="lijst" style="display:flex;flex-direction:column;gap:12px"></div>
-
-  <div class="kaart dun">
-    <p class="klein-tekst" style="margin:0"><b>Goed om te weten.</b> Elke opname die de spreekster in haar studio instuurt, komt hier onder <b>Te keuren</b> binnen. Bij <b>Opnieuw</b> kies je een aanwijzing; die ziet zij meteen in haar studio bij die regel. Wat je goedkeurt, haalt het bureau binnen, maakt het schoon en zet het in het spel. Onder <b>Alle regels</b> kun je ook een regel die al in het spel zit opnieuw laten inspreken. Vindt de spreekster dat een woord niet klopt, dan tikt ze dat in haar studio aan; dat komt hier onder <b>Opmerkingen van de spreekster</b> binnen: lees, tik <b>Kopieer alles</b>, stuur het naar het bureau en zet elke opmerking op <b>Verwerkt</b>. Meerdere mensen mogen keuren: iedereen met de keurlink vult zijn eigen naam in, en elk oordeel staat meteen bij iedereen op de pagina.</p>
+<div class="app">
+  <div class="top"><h1 id="titel">Stemstudio</h1><button class="ik" id="menu-open" type="button" aria-label="Menu">☰</button></div>
+  <div class="wie" id="wie"></div>
+  <nav class="tabs" id="tabs" aria-label="Onderdelen">
+    <button type="button" data-tab="home" aria-pressed="true">Overzicht</button>
+    <button type="button" data-tab="nieuw" aria-pressed="false">Nieuw<b id="t-nieuw" class="nul">0</b></button>
+    <button type="button" data-tab="proef" aria-pressed="false">Proef<b id="t-proef" class="nul">0</b></button>
+    <button type="button" data-tab="opm" aria-pressed="false">Opmerkingen<b id="t-opm" class="nul">0</b></button>
+  </nav>
+  <main id="inhoud" style="display:flex;flex-direction:column;gap:12px"></main>
+</div>
+<div class="status weg" id="status" role="status" aria-live="polite"></div>
+<div class="scherm" id="menu" hidden>
+  <div class="la" role="dialog" aria-modal="true" aria-label="Menu">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h2>Menu</h2><button class="ik" id="menu-dicht" type="button" aria-label="Sluiten">&times;</button></div>
+    <button class="m" type="button" data-naar="home">Overzicht</button>
+    <button class="m" type="button" data-naar="nieuw">Keuren</button>
+    <button class="m" type="button" data-naar="proef">Proefopnames</button>
+    <button class="m" type="button" data-naar="opm">Opmerkingen en voorstellen</button>
+    <button class="m" type="button" data-naar="uitnodigen">+ Iemand uitnodigen</button>
+    <button class="m" type="button" data-naar="opdracht">+ Opdracht geven</button>
+    <button class="m" type="button" data-naar="logboek">Logboek</button>
+    <a class="m" href="beoordelen-lijst.html">Alle regels (lijst)</a>
+    <a class="m" href="stand.html">De stand van het spel</a>
   </div>
 </div>
 
@@ -181,388 +123,383 @@ var VOORBEELD={"khobz": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2
 var PROEF=["pn-bakkerij", "khobz", "msemen", "baghrir", "sfenj", "harsha", "batbout", "chebakia", "halwa", "dbakken", "boek-khobz-0", "boek-khobz-1", "boek-khobz-2", "boek-khobz-3", "boek-khobz-4", "boek-khobz-5", "boek-khobz-6", "boek-khobz-7"];
 var OPSLAG={"url": "https://dmcaafkhshjtsdmzqhxl.supabase.co", "sleutel": "sb_publishable_GsEIW0F-9Eok2QQl1oR55g_o9PdwXl8", "bucket": "stem"};
 if(!OPSLAG||typeof OPSLAG!=='object')OPSLAG={url:"",sleutel:"",bucket:"stem"};
+var STUDIO_URL=location.href.replace(/[#?].*$/,'').replace(/[^\/]*$/,'');
 var E=function(id){return document.getElementById(id);};
-var CHIPS=['Warmer','Rustiger','Vrolijker','Duidelijker','Iets langzamer','Iets sneller','Te veel ruis','Anders uitgesproken'];
+var REGEL={}; REGELS.forEach(function(r){REGEL[r.id]=r;});
+var CHIPS=['Warmer','Rustiger','Duidelijker','Langzamer','Anders uitgesproken','Ruis'];
 
-/* de sleutel zit in de link (#s=...). We bewaren hem op dit apparaat en halen hem uit de adresbalk. */
-var SLEUTEL=(function(){
-  var m=/[#&]s=([^&]+)/.exec(location.hash||'');
-  if(m){ try{localStorage.setItem('stemkeur-sleutel',decodeURIComponent(m[1]));}catch(e){} history.replaceState(null,'',location.pathname+location.search); }
-  try{ return localStorage.getItem('stemkeur-sleutel')||''; }catch(e){ return ''; }
-})();
-var DOOR=(function(){ try{ return (localStorage.getItem('stemkeur-naam')||'').trim(); }catch(e){ return ''; } })();
-/* de naam is verplicht: zonder naam geen oordeel. Rechtsboven staat wie er keurt;
-   zolang er geen naam is, staat het naamvak bovenaan open. */
-function naamToon(){
-  var chip=E('wie'); E('wie-naam').textContent=DOOR||'nog geen naam'; chip.className='wie-chip'+(DOOR?'':' leeg');
-  E('naamvak').hidden=!!DOOR;
-}
-function naamZet(n){ DOOR=(n||'').trim().slice(0,40); try{ DOOR?localStorage.setItem('stemkeur-naam',DOOR):localStorage.removeItem('stemkeur-naam'); }catch(e){} naamToon(); }
-/* mag er gekeurd worden? anders het naamvak laten zien en even schudden */
-function naamNodig(){
-  if(DOOR)return false;
-  E('naamvak').hidden=false; E('naamvak').classList.remove('schud'); void E('naamvak').offsetWidth; E('naamvak').classList.add('schud');
-  E('naamvak').scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(function(){ E('naamin').focus(); },350);
-  status('Vul eerst je voornaam in (bovenaan), dan kun je keuren.','fout');
-  return true;
-}
-function sleutelBewaren(k){ SLEUTEL=k; try{ k?localStorage.setItem('stemkeur-sleutel',k):localStorage.removeItem('stemkeur-sleutel'); }catch(e){} }
-/* kijken of een sleutel klopt zonder iets te schrijven: met een onmogelijk
-   oordeel geeft de opslag "oordeel moet goed of opnieuw zijn" bij een goede
-   sleutel, en "geen geldige keursleutel" bij een verkeerde */
-async function sleutelKlopt(k){
-  try{
-    var r=await fetch(OPSLAG.url+'/rest/v1/rpc/stem_beoordeel',{method:'POST',headers:koppen({'Content-Type':'application/json'}),
-      body:JSON.stringify({p_sleutel:k,p_regel:'toets',p_take:'',p_oordeel:'toets'})});
-    var t=await r.text();
-    return !/keursleutel/.test(t);
-  }catch(e){ return false; }
-}
+/* ---------- de sleutel uit de link (#s=...) ---------- */
+function lees(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function schrijf(k,v){try{v?localStorage.setItem(k,v):localStorage.removeItem(k);}catch(e){}}
+var SLEUTEL=(function(){ var m=/[#&]s=([^&]+)/.exec(location.hash||''); if(m){ schrijf('stemkeur-sleutel',decodeURIComponent(m[1])); history.replaceState(null,'',location.pathname+location.search); } return lees('stemkeur-sleutel')||''; })();
 
-var cloud={takes:{},alle:{},oordeel:{},opm:{},opmAlle:[],ok:false};   /* takes: laatste take per regel; alle: alle takes per regel; oordeel: laatste oordeel per regel */
-var tab='wacht', spelend=null, blobs={};
-
-function koppen(extra){ var h={'apikey':OPSLAG.sleutel,'Authorization':'Bearer '+OPSLAG.sleutel}; for(var k in (extra||{}))h[k]=extra[k]; return h; }
+/* ---------- opslag ---------- */
+function koppen(x){ var h={'apikey':OPSLAG.sleutel,'Authorization':'Bearer '+OPSLAG.sleutel}; for(var k in (x||{}))h[k]=x[k]; return h; }
 async function api(pad,opts){
   opts=opts||{}; opts.headers=koppen(Object.assign({'Accept':'application/json'},opts.headers||{}));
   var r=await fetch(OPSLAG.url+pad,opts);
-  if(!r.ok){ var t=''; try{ t=(await r.json()).message||''; }catch(e){} throw new Error('opslag antwoordt '+r.status+(t?': '+t:'')); }
-  var tekst=await r.text(); return tekst?JSON.parse(tekst):null;
+  if(!r.ok){ var t=''; try{ t=(await r.json()).message||''; }catch(e){} var f=new Error(t||('opslag antwoordt '+r.status)); f.status=r.status; throw f; }
+  var x=await r.text(); return x?JSON.parse(x):null;
 }
+function rpc(naam,args){ return api('/rest/v1/rpc/'+naam,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({p_sleutel:SLEUTEL},args||{}))}); }
+
+var D={ik:'',mensen:[],takes:[],oordeel:[],opm:[],besluit:[],pakken:[],opdracht:[],gebeurtenis:[],log:[]};
 async function laad(){
-  if(!OPSLAG.url){ status('De opslag staat nog niet aan (bron/stem/opslag.json is leeg).','fout'); return; }
-  try{
-    var uit=await Promise.all([
-      api('/rest/v1/stem_takes?select=pad,sessie,regel_id,take,gemaakt,bytes,mime&order=gemaakt.desc&limit=1000'),
-      api('/rest/v1/stem_oordeel?select=regel_id,take,oordeel,aanwijzing,door,gemaakt&order=gemaakt.desc&limit=1000'),
-      api('/rest/v1/stem_opmerking?select=id,regel_id,door,soort,tekst,gemaakt,verwerkt,antwoord&order=gemaakt.desc&limit=500')]);
-    cloud.takes={}; cloud.alle={}; cloud.oordeel={}; cloud.opm={}; cloud.opmAlle=uit[2];
-    uit[0].forEach(function(x){ if(!cloud.takes[x.regel_id])cloud.takes[x.regel_id]=x; (cloud.alle[x.regel_id]=cloud.alle[x.regel_id]||[]).push(x); });
-    uit[1].forEach(function(x){ if(!cloud.oordeel[x.regel_id])cloud.oordeel[x.regel_id]=x; });
-    uit[2].forEach(function(x){ if(!x.verwerkt&&!cloud.opm[x.regel_id])cloud.opm[x.regel_id]=x; });   /* laatste open opmerking per regel */
-    cloud.ok=true;
-    status(SLEUTEL?'Verbonden. Luister en keur.':'Luisteren kan; keuren nog niet — vul de keursleutel hieronder in.',SLEUTEL?'ok':'stil');
-    E('sleutelvak').hidden=!!SLEUTEL;
-  }catch(e){ cloud.ok=false; status('Ophalen lukte niet: '+(e&&e.message?e.message:'?'),'fout'); }
-}
-/* dezelfde regels als in de studio */
-function stand(r){
-  var t=cloud.takes[r.id], o=cloud.oordeel[r.id];
-  var tt=t?Date.parse(t.gemaakt)||0:0, ot=o?Date.parse(o.gemaakt)||0:0;
-  if(o&&ot>tt) return o.oordeel==='opnieuw'?{code:'opnieuw',aanwijzing:o.aanwijzing||'',take:o.take}:{code:'goed',take:o.take};
-  if(tt) return {code:'wacht',take:t.pad};
-  if(r.status==='in spel') return {code:'spel'};
-  return {code:'open'};
-}
-var STANDNAAM={open:'nog niet opgenomen',wacht:'te keuren',goed:'goedgekeurd',opnieuw:'opnieuw gevraagd',spel:'in het spel'};
-var SOORT={schrijfwijze:'anders geschreven',anders:'wij zeggen het anders',onbekend:'kent het woord niet',overig:'opmerking',betekenis:'betekenis klopt niet',uitspraak:'uitspraak',algemeen:'algemene feedback'};
-var REGEL={}; REGELS.forEach(function(r){ REGEL[r.id]=r; });
-/* algemene feedback heeft geen regel: een nep-regel zodat het overal netjes staat */
-REGEL['algemeen']={id:'algemeen',tekst:'Algemene feedback',nr:'–',rol:'',groep:'Studio'};
-REGEL['algemeen-proef']={id:'algemeen-proef',tekst:'Na de proefopname',nr:'–',rol:'',groep:'Proefopname'};
-function status(tekst,soort){ E('status').textContent=tekst; E('status').className='status'+(soort==='fout'?' fout':(soort==='stil'?' stil':'')); }
-function datum(iso){ var d=new Date(iso); if(isNaN(d))return ''; return d.toLocaleDateString('nl-NL',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'}); }
-function naam(s){ return (s||'').replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();}); }
-
-/* ---------- luisteren ---------- */
-/* Takes spelen via de audio-motor, op gelijk volume (piek op -1 dB): zo hoor je
-   een zachte telefoonopname net zo hard als wat er nu in het spel zit. */
-var speler=new Audio(), ac=null, bron=null, pcm={};
-function stopAlles(){
-  speler.pause();
-  if(bron){ try{bron.stop();}catch(e){} bron=null; }
-  if(spelend)spelend.classList.remove('speelt'); spelend=null;
-}
-async function speel(knop,src){
-  if(spelend===knop){ stopAlles(); return; }
-  stopAlles();
-  spelend=knop; knop.classList.add('speelt');
-  try{
-    if(src.indexOf('takes/')===0){
-      if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();
-      if(ac.state==='suspended')await ac.resume();
-      if(!pcm[src]){
-        var r=await fetch(OPSLAG.url+'/storage/v1/object/authenticated/'+OPSLAG.bucket+'/'+src,{headers:koppen()});
-        if(!r.ok)throw new Error('ophalen lukte niet ('+r.status+')');
-        var buf=await ac.decodeAudioData(await r.arrayBuffer()), x=buf.getChannelData(0), pk=0, i;
-        for(i=0;i<x.length;i++){ var v=Math.abs(x[i]); if(v>pk)pk=v; }
-        pcm[src]={buf:buf,gain:Math.min(Math.pow(10,30/20), pk>0?Math.pow(10,-1/20)/pk:1)};
-      }
-      if(spelend!==knop)return;
-      var b=ac.createBufferSource(), g=ac.createGain(); b.buffer=pcm[src].buf; g.gain.value=pcm[src].gain;
-      b.connect(g); g.connect(ac.destination); bron=b;
-      b.onended=function(){ if(bron===b){ bron=null; if(spelend===knop){knop.classList.remove('speelt'); spelend=null;} } };
-      b.start();
-    }else{
-      speler.src=src; await speler.play();
-    }
-  }catch(e){ status('Afspelen lukte niet: '+(e&&e.message?e.message:'?'),'fout'); knop.classList.remove('speelt'); spelend=null; }
-}
-speler.onended=function(){ if(spelend)spelend.classList.remove('speelt'); spelend=null; };
-
-/* ---------- keuren ---------- */
-async function keur(r,take,oordeel,aanwijzing){
-  if(!SLEUTEL){ status('Keuren kan alleen met de link met sleutel.','fout'); return false; }
-  if(naamNodig())return false;
-  try{
-    await api('/rest/v1/rpc/stem_beoordeel',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({p_sleutel:SLEUTEL,p_regel:r.id,p_take:take||'',p_oordeel:oordeel,p_aanwijzing:aanwijzing||'',p_door:DOOR||''})});
-    cloud.oordeel[r.id]={regel_id:r.id,take:take||'',oordeel:oordeel,aanwijzing:aanwijzing||'',door:DOOR,gemaakt:new Date().toISOString()};
-    status(oordeel==='goed'?'Goedgekeurd: '+r.tekst:'Opnieuw gevraagd: '+r.tekst+(aanwijzing?' ('+aanwijzing+')':''),'ok');
-    return true;
-  }catch(e){
-    var m=(e&&e.message)||'';
-    if(/keursleutel|42501|401|403/.test(m)){ sleutelBewaren(''); E('sleutelvak').hidden=false; status('De keursleutel klopt niet (meer). Vul hem hieronder opnieuw in.','fout'); teken(); }
-    else status('Opslaan lukte niet: '+m,'fout');
-    return false;
-  }
+  var u=await Promise.all([
+    rpc('stem_keurder'),
+    api('/rest/v1/stem_takes?select=pad,sessie,regel_id,gemaakt&order=gemaakt.desc&limit=5000'),
+    api('/rest/v1/stem_oordeel?select=regel_id,take,oordeel,aanwijzing,door,gemaakt&order=gemaakt.desc&limit=5000'),
+    api('/rest/v1/stem_opmerking?select=id,regel_id,door,soort,tekst,gemaakt,verwerkt,antwoord,voorstel_latijn,voorstel_ar,voorstel_take&order=gemaakt.desc&limit=1000'),
+    api('/rest/v1/stem_besluit?select=opmerking_id,besluit,antwoord,door,gemaakt&order=gemaakt.desc&limit=1000'),
+    api('/rest/v1/stem_pakken?select=take,door,tot&tot=gt.'+encodeURIComponent(new Date().toISOString())+'&order=gemaakt.desc&limit=500'),
+    api('/rest/v1/stem_opdracht?select=id,slug,naam,soort,regels,door,gemaakt&order=gemaakt.asc&limit=1000'),
+    api('/rest/v1/stem_gebeurtenis?select=soort,wie,wat,door,gemaakt&order=gemaakt.desc&limit=1000')]);
+  D.ik=u[0].naam; D.mensen=u[0].mensen||[]; D.takes=u[1]; D.oordeel=u[2]; D.opm=u[3]; D.besluit=u[4]; D.pakken=u[5]; D.opdracht=u[6]; D.gebeurtenis=u[7];
+  afleiden();
 }
 
-/* ---------- tekenen ---------- */
-function tel(){
-  var n={wacht:0,opnieuw:0,goed:0,alles:REGELS.length,opm:cloud.opmAlle.filter(function(x){return !x.verwerkt;}).length};
-  REGELS.forEach(function(r){ var c=stand(r).code; if(n[c]!==undefined)n[c]++; });
-  E('n-proef').textContent=proefSessies().length;
-  E('n-wacht').textContent=n.wacht; E('n-opnieuw').textContent=n.opnieuw; E('n-goed').textContent=n.goed; E('n-alles').textContent=n.alles; E('n-opm').textContent=n.opm;
+/* ---------- afleiden: wie, wat, welke stapel ---------- */
+var A={};
+function spreeksters(){ return D.mensen.filter(function(m){return m.rol==='spreekster';}); }
+function besluitVan(slug){ var g=D.gebeurtenis.find(function(x){return x.soort==='proefbesluit'&&x.wie===slug;}); return g?g.wat:''; }
+function afleiden(){
+  var oT={}, pT={};
+  D.oordeel.forEach(function(o){ if(!o.take)return; if(o.oordeel==='goed'||o.oordeel==='opnieuw'){ if(!oT[o.take])oT[o.take]=o; } else if(!pT[o.take])pT[o.take]=o; });
+  var laatste={};   /* slug|regel -> nieuwste take */
+  D.takes.forEach(function(t){ var k=t.sessie+'|'+t.regel_id; if(!laatste[k])laatste[k]=t; });
+  var bezig={}; D.pakken.forEach(function(p){ if(!bezig[p.take])bezig[p.take]=p; });
+  var sp={}; spreeksters().forEach(function(m){ sp[m.slug]=m; });
+  var proefRegels={}; D.opdracht.forEach(function(o){ if(o.soort==='proef'){ (proefRegels[o.slug]=proefRegels[o.slug]||{}); o.regels.forEach(function(r){proefRegels[o.slug][r]=1;}); } });
+  var nieuw=[], proef={};
+  Object.keys(laatste).forEach(function(k){
+    var t=laatste[k], m=sp[t.sessie]; if(!m||!REGEL[t.regel_id])return;
+    var aan=besluitVan(t.sessie)==='aannemen';
+    if(!aan&&proefRegels[t.sessie]&&proefRegels[t.sessie][t.regel_id]){ (proef[t.sessie]=proef[t.sessie]||[]).push(t); return; }
+    if(!aan)return;   /* nog niet aangenomen en geen proefregel: wacht */
+    if(oT[t.pad])return;
+    nieuw.push(t);
+  });
+  nieuw.sort(function(a,b){ return Date.parse(a.gemaakt)-Date.parse(b.gemaakt); });
+  var bes={}; D.besluit.forEach(function(b){ if(!bes[b.opmerking_id])bes[b.opmerking_id]=b; });
+  var opmOpen=D.opm.filter(function(m){ return !bes[m.id]&&!m.verwerkt&&m.soort!=='algemeen'; });
+  var algemeen=D.opm.filter(function(m){ return m.soort==='algemeen'; });
+  var proefTeKeuren=0;
+  Object.keys(proef).forEach(function(s){ var b=besluitVan(s); if(b==='nee')return; proef[s].forEach(function(t){ if(!pT[t.pad])proefTeKeuren++; }); });
+  A={oT:oT,pT:pT,bezig:bezig,nieuw:nieuw,proef:proef,proefRegels:proefRegels,opmOpen:opmOpen,algemeen:algemeen,bes:bes,proefTeKeuren:proefTeKeuren,laatste:laatste};
 }
-/* het kopje boven een regel: wie spreekt, en waar hij bij hoort (niet twee keer hetzelfde) */
-function kopje(r){ var wie=(r.rol==='juf'?'Juf Amina':(r.rol==='boek'?'Voorlezen':'Darija')); var g=r.groep||''; return (g&&g!==wie)?wie+' · '+g:wie; }
+function vrijVoorMij(t){ var b=A.bezig[t.pad]; return !b||b.door===D.ik||Date.parse(b.tot)<Date.now(); }
+
+/* ---------- kleine hulpjes ---------- */
 function el(tag,cls,tekst){ var e=document.createElement(tag); if(cls)e.className=cls; if(tekst!==undefined)e.textContent=tekst; return e; }
-function kaart(r){
-  var s=stand(r), t=cloud.takes[r.id], o=cloud.oordeel[r.id];
-  var k=el('div','kaart'), b=el('div','regel'); k.appendChild(b);
-  var waar=el('div','waar'); waar.appendChild(el('span','',kopje(r))); waar.appendChild(el('span','','#'+r.nr)); b.appendChild(waar);
-  b.appendChild(el('div','tekst',r.tekst));
-  if(r.arabisch)b.appendChild(el('div','ar',r.arabisch));
-  if(r.rol==='woord'){ var z=el('div','zeg'); z.innerHTML='klinkt als <b>'+r.uitspraak+'</b> · betekent <b>'+r.betekenis+'</b>'; b.appendChild(z); }
-  else if(r.rol==='boek'){ var z=el('div','zeg'); z.innerHTML='betekent <b>'+r.betekenis+'</b>'; b.appendChild(z); }
-  if(r.aanwijzing)b.appendChild(el('div','regie',r.aanwijzing));
-  var m=cloud.opm[r.id]; if(m){ var om=el('div','opmerking'); om.innerHTML='<b>Opmerking van '+esc(m.door||'de spreekster')+':</b> '+esc(SOORT[m.soort]||m.soort)+(m.tekst?' \u2014 \u201c'+esc(m.tekst)+'\u201d':'')+' <span class="klein-tekst">(zie Opmerkingen)</span>'; b.appendChild(om); }
-  var st=el('div','stand '+s.code,STANDNAAM[s.code]+(s.code==='opnieuw'&&s.aanwijzing?' · '+s.aanwijzing:'')+(o&&o.door&&(s.code==='goed'||s.code==='opnieuw')?' · '+o.door:''));
-  b.appendChild(st);
-  /* 1. de nieuwe opname van de spreekster (dit is wat gekeurd wordt) */
-  if(t){
-    var L1=el('div','luister nieuw'); L1.appendChild(el('div','lbl',s.code==='wacht'?'Te keuren · nieuwe opname van de spreekster':'Opname van de spreekster'));
-    var rij=el('div','rij');
-    var p=el('button','knop klein'); p.type='button'; p.innerHTML='<i class="tri"></i> Luister naar de opname'; p.onclick=function(){speel(p,t.pad);}; rij.appendChild(p);
-    rij.appendChild(el('span','van','ingesproken door '+naam(t.sessie)+' · '+datum(t.gemaakt)+((cloud.alle[r.id]||[]).length>1?' · take '+(cloud.alle[r.id]||[]).length:'')));
-    L1.appendChild(rij); b.appendChild(L1);
-  }
-  /* 2. ter vergelijking: zo klinkt het nu in het spel */
-  var L2=el('div','luister'); L2.appendChild(el('div','lbl','Ter vergelijking · zo klinkt het nu in het spel'));
-  if(VOORBEELD[r.id]){
-    var rij2=el('div','rij');
-    var q=el('button','knop licht klein'); q.type='button'; q.innerHTML='<i class="tri"></i> Zo klinkt het nu in het spel'; q.onclick=function(){speel(q,VOORBEELD[r.id]);}; rij2.appendChild(q);
-    rij2.appendChild(el('span','uitleg',r.status==='in spel'?'de opname die nu in het spel zit':'de AI-stem die er nu in zit, tot de spreekster het heeft ingesproken'));
-    L2.appendChild(rij2);
-  }else L2.appendChild(el('div','uitleg','Nog niets in het spel voor deze regel.'));
-  b.appendChild(L2);
-
-  /* keuren */
-  var keurbox=el('div','keur'); b.appendChild(keurbox);
-  var knoppen=el('div','rij'); keurbox.appendChild(knoppen);
-  var open=null;
-  function opnieuwVak(){
-    if(open){ open.remove(); open=null; return; }
-    open=el('div','rij'); open.style.flexDirection='column'; open.style.alignItems='stretch';
-    var chips=el('div','chips'), gekozen=[];
-    CHIPS.forEach(function(c){ var cb=el('button','',c); cb.type='button'; cb.setAttribute('aria-pressed','false');
-      cb.onclick=function(){ var aan=cb.getAttribute('aria-pressed')==='true'; cb.setAttribute('aria-pressed',aan?'false':'true'); if(aan)gekozen=gekozen.filter(function(x){return x!==c;}); else gekozen.push(c); };
-      chips.appendChild(cb); });
-    var ta=el('textarea'); ta.placeholder='Of in je eigen woorden: bijvoorbeeld "meer alsof je het tegen één kind zegt"';
-    var stuur=el('button','knop rood klein','Opnieuw vragen'); stuur.type='button';
-    stuur.onclick=async function(){
-      var aanw=gekozen.concat(ta.value.trim()?[ta.value.trim()]:[]).join(', ');
-      stuur.disabled=true;
-      if(await keur(r,t?t.pad:'',  'opnieuw',aanw)){ teken(); } else stuur.disabled=false;
-    };
-    open.appendChild(chips); open.appendChild(ta); open.appendChild(stuur);
-    keurbox.appendChild(open);
-  }
-  if(s.code==='wacht'||s.code==='goed'||s.code==='opnieuw'){
-    if(t&&s.code!=='goed'){ var g=el('button','knop goed'); g.type='button'; g.innerHTML='Goed \u2713<small>deze opname komt in het spel</small>'; g.disabled=!SLEUTEL; if(!SLEUTEL)g.title='Vul eerst de keursleutel in'; g.onclick=async function(){ if(naamNodig())return; g.disabled=true; if(await keur(r,t.pad,'goed',''))teken(); else g.disabled=false; }; knoppen.appendChild(g); }
-    if(s.code!=='opnieuw'){ var n=el('button','knop rood'); n.type='button'; n.innerHTML='Opnieuw \u21ba<small>nog een keer inspreken</small>'; n.disabled=!SLEUTEL; if(!SLEUTEL)n.title='Vul eerst de keursleutel in'; n.onclick=function(){ if(naamNodig())return; opnieuwVak(); }; knoppen.appendChild(n); }
-    else if(t&&s.take!==t.pad){ /* opnieuw gevraagd, maar er is een nieuwere take: staat dan onder Te keuren */ }
-  }else if(s.code==='spel'||s.code==='open'){
-    var n2=el('button','knop licht klein','Opnieuw laten inspreken ↺'); n2.type='button'; n2.disabled=!SLEUTEL; if(!SLEUTEL)n2.title='Vul eerst de keursleutel in'; n2.onclick=function(){ if(naamNodig())return; opnieuwVak(); }; knoppen.appendChild(n2);
-  }
-  if(!knoppen.childNodes.length)keurbox.remove();
+function knop(cls,tekst,fn){ var b=el('button','knop '+cls,tekst); b.type='button'; b.onclick=fn; return b; }
+function naamVan(slug){ var m=D.mensen.find(function(x){return x.slug===slug;}); return m?m.naam:(slug||'?').replace(/_/g,' '); }
+function datum(iso){ var d=new Date(iso); if(isNaN(d))return ''; var nu=new Date(); var dag=d.toDateString()===nu.toDateString()?'vandaag':d.toLocaleDateString('nl-NL',{day:'numeric',month:'short'}); return dag+' '+d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'}); }
+var klok=null;
+function status(t,soort){ var s=E('status'); s.textContent=t; s.className='status'+(soort?' '+soort:''); clearTimeout(klok); klok=setTimeout(function(){s.classList.add('weg');},soort==='fout'?7000:2800); }
+function regelKaart(r,extra){
+  var k=el('div','kaart c');
+  if(extra&&extra.waar)k.appendChild(el('div','waar',extra.waar));
+  var w=el('div','woord'+(r.tekst.length>26?' lang':''),r.tekst); k.appendChild(w);
+  if(r.arabisch)k.appendChild(el('div','ar',r.arabisch));
+  if(r.betekenis)k.appendChild(el('div','bet',r.betekenis+(r.en&&r.en.betekenis?' · '+r.en.betekenis:'')));
   return k;
 }
-function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 
-/* ---------- opmerkingen van de spreekster ---------- */
-function opmTekst(m){
-  var r=REGEL[m.regel_id]||{tekst:m.regel_id,nr:'?',rol:'',groep:''};
-  return r.tekst+(r.uitspraak?' ('+r.uitspraak+')':'')+' #'+r.nr+' \u2014 '+(m.door||'?')+', '+datum(m.gemaakt)+': '+(SOORT[m.soort]||m.soort)+(m.tekst?' \u2014 \u201c'+m.tekst+'\u201d':'');
-}
-function opmAlles(){
-  var open=cloud.opmAlle.filter(function(x){return !x.verwerkt;});
-  var d=new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
-  return 'Opmerkingen uit de stemstudio, '+d+'\n'+(open.length?open.map(function(m,i){return (i+1)+'. '+opmTekst(m);}).join('\n'):'(geen open opmerkingen)')+'\n';
-}
-async function opmAf(m,antwoord){
-  if(!SLEUTEL){ status('Verwerkt zetten kan alleen met de link met sleutel.','fout'); return false; }
-  if(naamNodig())return false;
+/* ---------- afspelen (op gelijk volume) ---------- */
+var ac=null, bron=null, spelend=null, buf={}, speler=new Audio();
+function stop(){ speler.pause(); if(bron){try{bron.stop();}catch(e){} bron=null;} if(spelend)spelend.classList.remove('speelt'); spelend=null; }
+async function speel(knopEl,src){
+  if(spelend===knopEl){ stop(); return; } stop(); spelend=knopEl; knopEl.classList.add('speelt');
   try{
-    await api('/rest/v1/rpc/stem_opmerking_af',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({p_sleutel:SLEUTEL,p_id:m.id,p_antwoord:antwoord||''})});
-    m.verwerkt=new Date().toISOString(); m.antwoord=antwoord||'';
-    cloud.opm={}; cloud.opmAlle.forEach(function(x){ if(!x.verwerkt&&!cloud.opm[x.regel_id])cloud.opm[x.regel_id]=x; });
-    status('Verwerkt: '+((REGEL[m.regel_id]||{}).tekst||m.regel_id),'ok');
-    return true;
-  }catch(e){
-    var t=(e&&e.message)||'';
-    if(/keursleutel|42501|401|403/.test(t)){ sleutelBewaren(''); E('sleutelvak').hidden=false; status('De keursleutel klopt niet (meer). Vul hem hieronder opnieuw in.','fout'); teken(); }
-    else status('Opslaan lukte niet: '+t,'fout');
-    return false;
-  }
+    if(/^(takes|voorstel)\//.test(src)){
+      if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)(); if(ac.state==='suspended')await ac.resume();
+      if(!buf[src]){ var r=await fetch(OPSLAG.url+'/storage/v1/object/authenticated/'+OPSLAG.bucket+'/'+src,{headers:koppen()}); if(!r.ok)throw new Error('ophalen lukte niet ('+r.status+')');
+        var b=await ac.decodeAudioData(await r.arrayBuffer()), x=b.getChannelData(0), pk=0; for(var i=0;i<x.length;i++){var v=Math.abs(x[i]); if(v>pk)pk=v;}
+        buf[src]={b:b,g:Math.min(Math.pow(10,30/20),pk>0?Math.pow(10,-1/20)/pk:1)}; }
+      if(spelend!==knopEl)return;
+      var s=ac.createBufferSource(), g=ac.createGain(); s.buffer=buf[src].b; g.gain.value=buf[src].g; s.connect(g); g.connect(ac.destination); bron=s;
+      s.onended=function(){ if(bron===s){ bron=null; if(spelend===knopEl){knopEl.classList.remove('speelt'); spelend=null;} } }; s.start();
+    }else{ speler.src=src; speler.onended=function(){ if(spelend===knopEl){knopEl.classList.remove('speelt'); spelend=null;} }; await speler.play(); }
+  }catch(e){ status('Afspelen lukte niet: '+(e.message||'?'),'fout'); knopEl.classList.remove('speelt'); spelend=null; }
 }
-function tekenOpm(box){
-  var open=cloud.opmAlle.filter(function(x){return !x.verwerkt;}), af=cloud.opmAlle.filter(function(x){return x.verwerkt;});
-  var kop=el('div','kaart dun'), ok=el('div','opm-kop'); kop.appendChild(ok);
-  ok.appendChild(el('p','klein-tekst',open.length?'Dit vond de spreekster niet kloppen. Kopieer alles en stuur het naar het bureau; zet daarna elke opmerking op Verwerkt.':'Geen open opmerkingen. Alles is doorgestuurd en verwerkt.'));
-  var rij=el('div','rij');
-  var kop1=el('button','knop','Kopieer alles voor het bureau'); kop1.type='button'; kop1.disabled=!open.length;
-  kop1.onclick=async function(){
-    var t=opmAlles();
-    try{ await navigator.clipboard.writeText(t); status('Gekopieerd: '+open.length+' opmerking'+(open.length===1?'':'en')+'. Plak het in een bericht aan het bureau.','ok'); }
-    catch(e){ var ta=el('textarea'); ta.value=t; ok.appendChild(ta); ta.select(); status('Kopi\u00ebren mocht niet automatisch; selecteer de tekst hieronder.','stil'); }
-  };
-  rij.appendChild(kop1);
-  if(navigator.share){ var deel=el('button','knop licht','Delen\u2026'); deel.type='button'; deel.disabled=!open.length; deel.onclick=function(){ navigator.share({title:'Opmerkingen stemstudio',text:opmAlles()}).catch(function(){}); }; rij.appendChild(deel); }
-  ok.appendChild(rij); box.appendChild(kop);
-  open.concat(af.slice(0,20)).forEach(function(m){
-    var r=REGEL[m.regel_id]||{tekst:m.regel_id,nr:'?',rol:'',groep:''};
-    var k=el('div','kaart opm-item'+(m.verwerkt?' af':'')), b=el('div','regel'); k.appendChild(b);
-    var waar=el('div','waar'); waar.appendChild(el('span','',kopje(r))); waar.appendChild(el('span','','#'+r.nr)); b.appendChild(waar);
-    b.appendChild(el('div','tekst',r.tekst));
-    if(r.arabisch)b.appendChild(el('div','ar',r.arabisch));
-    if(r.rol==='woord'){ var z=el('div','zeg'); z.innerHTML='klinkt als <b>'+esc(r.uitspraak)+'</b> · betekent <b>'+esc(r.betekenis)+'</b>'; b.appendChild(z); }
-    var so=el('div'); so.appendChild(el('span','soort',SOORT[m.soort]||m.soort)); b.appendChild(so);
-    if(m.tekst)b.appendChild(el('div','quote','\u201c'+m.tekst+'\u201d'));
-    b.appendChild(el('div','wie',(m.door||'?')+' · '+datum(m.gemaakt)+(m.verwerkt?' · verwerkt '+datum(m.verwerkt):'')));
-    var rij2=el('div','rij');
-    if(VOORBEELD[m.regel_id]){ var q=el('button','knop licht klein'); q.type='button'; q.innerHTML='<i class="tri"></i> Zo klinkt het nu in het spel'; q.onclick=function(){speel(q,VOORBEELD[m.regel_id]);}; rij2.appendChild(q); }
-    var t=cloud.takes[m.regel_id]; if(t){ var p=el('button','knop licht klein'); p.type='button'; p.innerHTML='<i class="tri"></i> Opname van de spreekster'; p.onclick=function(){speel(p,t.pad);}; rij2.appendChild(p); }
-    if(rij2.childNodes.length)b.appendChild(rij2);
-    if(!m.verwerkt){
-      var kb=el('div','keur'), rij3=el('div','rij'); kb.appendChild(rij3);
-      var antw=el('input','antw'); antw.placeholder='Korte reactie voor de spreekster (mag leeg)'; antw.maxLength=300; rij3.appendChild(antw);
-      var v=el('button','knop goed klein','Verwerkt \u2713'); v.type='button'; v.disabled=!SLEUTEL; if(!SLEUTEL)v.title='Vul eerst de keursleutel in';
-      v.onclick=async function(){ v.disabled=true; if(await opmAf(m,antw.value.trim()))teken(); else v.disabled=false; };
-      rij3.appendChild(v); b.appendChild(kb);
-    }else if(m.antwoord){ b.appendChild(el('div','klein-tekst','Reactie: '+m.antwoord)); }
-    box.appendChild(k);
-  });
-}
+function speelKnop(tekst,src,ai){ var b=el('button','speel'+(ai?' ai':'')); b.type='button'; b.innerHTML='<i>▶</i> '; b.appendChild(document.createTextNode(tekst)); b.onclick=function(){speel(b,src);}; return b; }
 
+/* ---------- schermen ---------- */
+var TAB='home', K={i:0}, P={slug:'',i:0};
+function tabs(){
+  var n=A.nieuw.filter(vrijVoorMij).length, p=A.proefTeKeuren, o=A.opmOpen.length;
+  [['t-nieuw',n],['t-proef',p],['t-opm',o]].forEach(function(x){ E(x[0]).textContent=x[1]; E(x[0]).className=x[1]?'':'nul'; });
+  document.querySelectorAll('#tabs [data-tab]').forEach(function(b){ b.setAttribute('aria-pressed',b.dataset.tab===TAB?'true':'false'); });
+}
+function naar(t){ TAB=t; stop(); E('menu').hidden=true; teken(); window.scrollTo({top:0}); }
 function teken(){
-  tel();
-  var box=E('lijst'); box.innerHTML='';
-  E('zoekvak').hidden=(tab==='opm'||tab==='proef');
-  if(tab==='opm'){ tekenOpm(box); return; }
-  if(tab==='proef'){ tekenProef(box); return; }
-  var rs=REGELS.filter(function(r){ return tab==='alles'||stand(r).code===tab; });
-  if(ROL)rs=rs.filter(function(r){ return r.rol===ROL; });
-  if(ZOEK)rs=rs.filter(function(r){ return ((r.tekst||'')+' '+(r.uitspraak||'')+' '+(r.betekenis||'')+' '+(r.groep||'')+' '+(r.arabisch||'')).toLowerCase().indexOf(ZOEK)>=0; });
-  if(!rs.length){ box.appendChild(el('div','kaart leeg',(ZOEK||ROL)?'Niets gevonden met dit zoekwoord of filter.':(tab==='wacht'?'Niets te keuren. Alles wat de spreekster instuurde, is bekeken.':'Niets hier.'))); return; }
-  if(rs.length>150){ box.appendChild(el('div','kaart leeg',rs.length+' regels; de eerste 150 staan hieronder. Zoek of filter om er sneller bij te zijn.')); rs=rs.slice(0,150); }
-  rs.forEach(function(r){ box.appendChild(kaart(r)); });
+  tabs(); var box=E('inhoud'); box.innerHTML='';
+  E('wie').innerHTML=''; E('wie').appendChild(document.createTextNode('Je keurt als ')); E('wie').appendChild(el('b','',D.ik));
+  ({home:home,nieuw:keuren,proef:proefLijst,proefk:proefKeuren,opm:opmerkingen,uitnodigen:uitnodigen,opdracht:opdrachtGeven,logboek:logboek})[TAB](box);
 }
-/* ---------- proefopname: per spreekster de proefset, naast de stem die er nu in zit ---------- */
-var PROEFWIE='';
-function proefSessies(){
-  var w={};
-  PROEF.forEach(function(id){ (cloud.alle[id]||[]).forEach(function(t){ w[t.sessie]=w[t.sessie]||{}; if(!w[t.sessie][id])w[t.sessie][id]=t; }); });
-  return Object.keys(w).map(function(k){ var n=Object.keys(w[k]).length, laatst=0; Object.keys(w[k]).forEach(function(i){ laatst=Math.max(laatst,Date.parse(w[k][i].gemaakt)||0); }); return {sessie:k,takes:w[k],n:n,laatst:laatst}; })
-    .sort(function(a,b){ return b.laatst-a.laatst; });
+
+function home(box){
+  var g=el('div','grootgetal');
+  [['rood',A.nieuw.filter(vrijVoorMij).length,'te keuren','nieuw'],['klei',A.proefTeKeuren,'proef','proef'],['blauw',A.opmOpen.length,'opmerkingen','opm']].forEach(function(x){
+    var b=el('button','gg '+x[0]); b.type='button'; b.appendChild(el('b','',String(x[1]))); b.appendChild(el('span','',x[2])); b.onclick=function(){naar(x[3]);}; g.appendChild(b); });
+  box.appendChild(g);
+  if(A.nieuw.filter(vrijVoorMij).length) box.appendChild(knop('ok','▶ Begin met keuren',function(){K.i=0;naar('nieuw');}));
+  /* spreeksters */
+  box.appendChild(el('div','sec','Spreeksters'));
+  var sp=spreeksters();
+  if(!sp.length) box.appendChild(el('div','kaart leeg','Nog niemand uitgenodigd.'));
+  sp.forEach(function(m){
+    var l=el('div','lijn'); var av=el('div','av'+(m.actief?'':' uit'),m.naam.charAt(0).toUpperCase()); l.appendChild(av);
+    var n=el('div','n',m.naam); var b=besluitVan(m.slug);
+    var mijn=D.takes.filter(function(t){return t.sessie===m.slug;});
+    var laatst=mijn[0]?('laatst bezig '+datum(mijn[0].gemaakt)):'nog niet begonnen';
+    n.appendChild(el('small','',(m.actief?'':'ingetrokken · ')+(b==='aannemen'?'aangenomen · ':(b?('proef: '+b+' · '):''))+laatst)); l.appendChild(n);
+    var te=A.nieuw.filter(function(t){return t.sessie===m.slug;}).length+((A.proef[m.slug]||[]).filter(function(t){return !A.pT[t.pad];}).length);
+    if(te)l.appendChild(el('span','pil p-rood',te+' te keuren'));
+    box.appendChild(l);
+  });
+  box.appendChild(knop('wit klein','+ Spreekster of keurder uitnodigen',function(){naar('uitnodigen');}));
+  /* keurders */
+  box.appendChild(el('div','sec','Keurders'));
+  var vandaag=new Date().toDateString();
+  var keurders=[D.ik];
+  D.mensen.forEach(function(m){ if(m.rol==='keurder'&&m.actief&&keurders.indexOf(m.naam)<0)keurders.push(m.naam); });
+  D.pakken.concat(D.oordeel.slice(0,200)).forEach(function(x){ if(x.door&&keurders.indexOf(x.door)<0&&!spreeksters().some(function(m){return m.naam===x.door;}))keurders.push(x.door); });
+  keurders.forEach(function(k){
+    var l=el('div','lijn'); l.appendChild(el('div','av k',k.charAt(0).toUpperCase()));
+    var n=el('div','n',k+(k===D.ik?' (jij)':'')); var nv=D.oordeel.filter(function(o){return o.door===k&&new Date(o.gemaakt).toDateString()===vandaag;}).length;
+    var bz=D.pakken.find(function(p){return p.door===k&&Date.parse(p.tot)>Date.now();});
+    n.appendChild(el('small','',(bz?'keurt nu · ':'')+'vandaag '+nv+' gekeurd')); l.appendChild(n);
+    if(bz&&k!==D.ik)l.appendChild(el('span','pil p-groen','bezig'));
+    box.appendChild(l);
+  });
+  /* het spel */
+  box.appendChild(el('div','sec','Echte stem in het spel'));
+  var groepen={}; REGELS.forEach(function(r){ if(r.rol==='juf')return; var g=r.groep; groepen[g]=groepen[g]||{n:0,echt:0}; groepen[g].n++; if(r.status==='in spel')groepen[g].echt++; });
+  var gk=Object.keys(groepen).filter(function(g){return !/^Boekje/.test(g);}).slice(0,24);
+  gk.forEach(function(g){ var x=groepen[g]; var l=el('div','lijn'); var n=el('div','n',g); n.appendChild(el('small','',x.echt+' van '+x.n+' echte stem')); l.appendChild(n);
+    var bk=el('div','balk'); bk.style.width='80px'; var i=el('i'); i.style.width=(100*x.echt/x.n)+'%'; bk.appendChild(i); l.appendChild(bk); box.appendChild(l); });
 }
-function tekenProef(box){
-  var ss=proefSessies();
-  var kop=el('div','kaart proef-kop');
-  kop.appendChild(el('h2','','Proefopname: past deze stem?'));
-  kop.appendChild(el('p','','Een nieuwe spreekster spreekt eerst één plek in, zoals een kind die in het spel hoort: de bakkerij (de naam megbaza, de acht woorden en een zinnetje) en het boekje Yassin w l-khobz ('+PROEF.length+' regels). Luister ze hier na elkaar, telkens naast de stem die er nu in zit.'));
-  var ul=el('ul'); ['Klinkt ze warm en vriendelijk, alsof ze tegen één kind praat?','Is ze goed verstaanbaar, ook bij de keelklanken (3awd, 7na)?','Klinkt het als gewoon Marokkaans Darija van thuis, niet als Standaard-Arabisch?','Leest ze een bladzijde levendig voor, met gevoel in de dialoog?','Is de opname schoon: geen galm, geen ruis, geen ploffen?'].forEach(function(t){ ul.appendChild(el('li','',t)); });
-  kop.appendChild(el('p','','Waar let je op:')); kop.appendChild(ul);
-  kop.appendChild(el('p','klein-tekst','Goed ✓ zet een opname echt in het spel (in de nacht). Twijfel je nog over de stem, luister dan alleen en kies daarna. Opnieuw stuurt haar een aanwijzing, die ze in haar studio ziet.'));
-  box.appendChild(kop);
-  if(!ss.length){ box.appendChild(el('div','kaart leeg','Nog geen proefopname binnen. Stuur de spreekster de proeflink; zodra ze iets inspreekt, staat het hier.')); return; }
-  if(!PROEFWIE||!ss.some(function(x){return x.sessie===PROEFWIE;})) PROEFWIE=ss[0].sessie;
-  var wie=el('div','proef-wie');
-  ss.forEach(function(x){ var b=el('button','',naam(x.sessie)+' · '+x.n+'/'+PROEF.length); b.type='button'; b.setAttribute('aria-pressed',x.sessie===PROEFWIE?'true':'false'); b.onclick=function(){ PROEFWIE=x.sessie; teken(); }; wie.appendChild(b); });
-  kop.appendChild(wie);
-  var cur=ss.filter(function(x){return x.sessie===PROEFWIE;})[0];
-  /* algemene feedback van deze spreekster */
-  var alg=cloud.opmAlle.filter(function(m){ return (m.regel_id==='algemeen-proef'||m.regel_id==='algemeen')&&(m.door||'').toLowerCase().replace(/[^a-z0-9\-]/g,'_')===PROEFWIE; });
-  if(alg.length){ var ak=el('div','kaart'); ak.appendChild(el('h3','','Wat '+naam(PROEFWIE)+' erbij schreef'));
-    alg.forEach(function(m){ ak.appendChild(el('div','alg-item',m.tekst.replace(/ \(EN\)$/,''))); ak.appendChild(el('div','klein-tekst',datum(m.gemaakt))); }); box.appendChild(ak); }
-  PROEF.forEach(function(id,i){
-    var r=REGEL[id]; if(!r)return;
-    var t=cur.takes[id];
-    var k=el('div','kaart'), b=el('div','regel'); k.appendChild(b);
-    var waar=el('div','waar'); waar.appendChild(el('span','',(i+1)+' van '+PROEF.length+' · '+kopje(r))); waar.appendChild(el('span','','#'+r.nr)); b.appendChild(waar);
-    b.appendChild(el('div','tekst',r.tekst));
-    if(r.arabisch)b.appendChild(el('div','ar',r.arabisch));
-    var z=el('div','zeg'); z.innerHTML='betekent <b>'+esc(r.betekenis)+'</b>'+(r.en&&r.en.betekenis?' <span class="en-bet">· Engels: <b>'+esc(r.en.betekenis)+'</b></span>':''); b.appendChild(z);
-    var m=cloud.opm[id]; if(m){ var om=el('div','opmerking'); om.innerHTML='<b>Opmerking van '+esc(m.door||'de spreekster')+':</b> '+esc(SOORT[m.soort]||m.soort)+(m.tekst?' — “'+esc(m.tekst)+'”':''); b.appendChild(om); }
-    var rij=el('div','rij');
-    if(t){ var p=el('button','knop klein'); p.type='button'; p.innerHTML='<i class="tri"></i> '+esc(naam(PROEFWIE)); p.onclick=function(){speel(p,t.pad);}; rij.appendChild(p); }
-    else rij.appendChild(el('span','uitleg','Deze regel heeft '+naam(PROEFWIE)+' (nog) niet ingesproken.'));
-    if(VOORBEELD[id]){ var q=el('button','knop licht klein'); q.type='button'; q.innerHTML='<i class="tri"></i> Zo klinkt het nu'; q.onclick=function(){speel(q,VOORBEELD[id]);}; rij.appendChild(q); }
-    b.appendChild(rij);
-    if(t){
-      var s=stand(r), o=cloud.oordeel[id];
-      var eigen=s.take===t.pad||(s.code==='wacht'&&cloud.takes[id]&&cloud.takes[id].pad===t.pad);
-      if(o&&o.take===t.pad) b.appendChild(el('div','stand '+(o.oordeel==='goed'?'goed':'opnieuw'),(o.oordeel==='goed'?'goedgekeurd':'opnieuw gevraagd'+(o.aanwijzing?' · '+o.aanwijzing:''))+(o.door?' · '+o.door:'')));
-      else{
-        var kb=el('div','keur'), kn=el('div','rij'); kb.appendChild(kn);
-        var g=el('button','knop goed klein'); g.type='button'; g.innerHTML='Goed ✓'; g.disabled=!SLEUTEL; g.onclick=async function(){ if(naamNodig())return; g.disabled=true; if(await keur(r,t.pad,'goed',''))teken(); else g.disabled=false; };
-        var n=el('button','knop rood klein'); n.type='button'; n.innerHTML='Opnieuw ↺'; n.disabled=!SLEUTEL;
-        var vak=null;
-        n.onclick=function(){ if(naamNodig())return;
-          if(vak){ vak.remove(); vak=null; return; }
-          vak=el('div','rij'); var a=el('input','antw'); a.placeholder='Aanwijzing voor '+naam(PROEFWIE)+' (bijv. warmer, langzamer)'; a.maxLength=300; a.style.cssText='flex:1;min-width:12em;font:inherit;padding:8px 12px;border:1.5px solid var(--rand);border-radius:12px';
-          var st=el('button','knop rood klein','Opnieuw vragen'); st.type='button';
-          st.onclick=async function(){ st.disabled=true; if(await keur(r,t.pad,'opnieuw',a.value.trim()))teken(); else st.disabled=false; };
-          vak.appendChild(a); vak.appendChild(st); kb.appendChild(vak); a.focus(); };
-        kn.appendChild(g); kn.appendChild(n); b.appendChild(kb);
-      }
-    }
-    box.appendChild(k);
+
+/* één voor één keuren */
+async function keuren(box){
+  var q=A.nieuw.filter(vrijVoorMij);
+  if(!q.length){ box.appendChild(el('div','kaart leeg','Niets te keuren. Alles wat binnenkwam, is bekeken.')); return; }
+  if(K.i>=q.length)K.i=0;
+  var t=q[K.i], r=REGEL[t.regel_id];
+  var bezet=''; try{ bezet=await rpc('stem_pak',{p_take:t.pad}); }catch(e){}
+  if(bezet){ status(bezet+' keurt deze al. Volgende.','info'); await laad(); teken(); return; }
+  var top=el('div',''); var bk=el('div','balk'); var i=el('i'); i.style.width=(100*(K.i)/q.length)+'%'; bk.appendChild(i); top.appendChild(bk);
+  top.appendChild(el('div','mini',naamVan(t.sessie)+' · '+(K.i+1)+' van '+q.length)); box.appendChild(top);
+  var k=regelKaart(r,{waar:(r.rol==='boek'?'Bladzijde':'Woord')+' · '+r.groep}); box.appendChild(k);
+  var sp=el('div','twee'); var hk=speelKnop(naamVan(t.sessie),t.pad); sp.appendChild(hk);
+  if(VOORBEELD[r.id])sp.appendChild(speelKnop('Nu',VOORBEELD[r.id],true)); k.appendChild(sp);
+  k.appendChild(el('div','mini','Ingesproken '+datum(t.gemaakt)));
+  var m=D.opm.find(function(x){return x.regel_id===r.id&&!A.bes[x.id]&&!x.verwerkt;});
+  if(m){ var o=el('div','opm'); o.textContent=naamVan(m.door)+': '+m.soort+(m.voorstel_latijn?' · "'+m.voorstel_latijn+'"':'')+(m.tekst?' · '+m.tekst.replace(/ \(EN\)$/,''):''); k.appendChild(o); }
+  var tw=el('div','twee'); box.appendChild(tw);
+  tw.appendChild(knop('ok','✓ Goed',function(){ oordeel(t,'goed',''); }));
+  tw.appendChild(knop('nee','↺ Opnieuw',function(){ opnieuwBlad(t); }));
+  var nav=el('div','twee'); nav.appendChild(knop('wit klein','← Vorige',function(){K.i=Math.max(0,K.i-1);teken();})); nav.appendChild(knop('wit klein','Later →',function(){K.i++;teken();})); box.appendChild(nav);
+  setTimeout(function(){ if(TAB==='nieuw')speel(hk,t.pad); },250);
+}
+async function oordeel(t,o,aanw,klaar){
+  try{ await rpc('stem_keur',{p_regel:t.regel_id,p_take:t.pad,p_oordeel:o,p_aanwijzing:aanw||''});
+    status(o==='goed'?'✓ Goedgekeurd':(o==='opnieuw'?'Opnieuw gevraagd':(o==='mooi'?'👍':'👎')),'');
+  }catch(e){ var tx=e.message||''; if(/al gekeurd/.test(tx)){ status(tx.replace('al gekeurd door','Al gekeurd door')+'. Volgende.','info'); } else { status('Opslaan lukte niet: '+tx,'fout'); return; } }
+  await laad(); if(klaar)klaar(); teken();
+}
+function opnieuwBlad(t){
+  var s=el('div','scherm'); s.style.alignItems='flex-end'; s.style.justifyContent='center';
+  var la=el('div','la'); la.style.height='auto'; la.style.width='min(560px,100%)'; la.style.borderRadius='22px 22px 0 0'; la.style.gap='10px'; s.appendChild(la);
+  la.appendChild(el('h3','','Wat moet anders?'));
+  var gek=[]; var ch=el('div','chips'); CHIPS.forEach(function(c){ var b=el('button','',c); b.type='button'; b.setAttribute('aria-pressed','false'); b.onclick=function(){ var i=gek.indexOf(c); if(i>=0)gek.splice(i,1); else gek.push(c); b.setAttribute('aria-pressed',gek.indexOf(c)>=0?'true':'false'); }; ch.appendChild(b); }); la.appendChild(ch);
+  var ta=el('textarea'); ta.placeholder='Of typ zelf iets (mag leeg). Zij ziet het in het Engels of Nederlands, zoals je het schrijft.'; ta.maxLength=280; la.appendChild(ta);
+  var tw=el('div','twee'); la.appendChild(tw);
+  tw.appendChild(knop('wit','Annuleer',function(){s.remove();}));
+  tw.appendChild(knop('nee','Opnieuw vragen',function(){ var a=gek.map(function(c){return ({Warmer:'warmer',Rustiger:'calmer',Duidelijker:'clearer',Langzamer:'slower','Anders uitgesproken':'pronounced differently',Ruis:'background noise'})[c]||c;}).concat(ta.value.trim()?[ta.value.trim()]:[]).join(', '); s.remove(); oordeel(t,'opnieuw',a); }));
+  s.onclick=function(e){ if(e.target===s)s.remove(); };
+  document.body.appendChild(s);
+}
+
+/* de proef */
+function proefLijst(box){
+  var slugs=Object.keys(A.proef);
+  if(!slugs.length){ box.appendChild(el('div','kaart leeg','Nog geen proefopname binnen. Nodig een spreekster uit (menu); haar proef komt hier.')); return; }
+  slugs.forEach(function(s){
+    var tk=A.proef[s], tot=0; D.opdracht.forEach(function(o){ if(o.slug===s&&o.soort==='proef')tot=Math.max(tot,o.regels.length); });
+    var gekeurd=tk.filter(function(t){return A.pT[t.pad];}).length, b=besluitVan(s);
+    var l=el('div','kaart'); l.style.display='flex'; l.style.flexDirection='column'; l.style.gap='8px';
+    var kop=el('div','lijn'); kop.style.boxShadow='none'; kop.style.padding='0'; kop.appendChild(el('div','av',naamVan(s).charAt(0)));
+    var n=el('div','n',naamVan(s)); n.appendChild(el('small','',tk.length+' van '+(tot||tk.length)+' ingesproken · '+gekeurd+' beluisterd')); kop.appendChild(n);
+    if(b)kop.appendChild(el('span','pil '+(b==='aannemen'?'p-groen':'p-zand'),b)); l.appendChild(kop);
+    var alg=A.algemeen.filter(function(m){ return (m.door||'').toLowerCase().replace(/[^a-z0-9\-]/g,'_')===s||m.door===naamVan(s); });
+    alg.slice(0,3).forEach(function(m){ var o=el('div','opm'); o.style.background='var(--zand)'; o.textContent=naamVan(s)+' schreef: "'+m.tekst.replace(/ \(EN\)$/,'')+'"'; l.appendChild(o); });
+    l.appendChild(knop(gekeurd<tk.length?'ok':'wit','▶ '+(gekeurd<tk.length?'Beluister de proef':'Nog eens beluisteren'),function(){ P.slug=s; P.i=Math.min(gekeurd,tk.length-1); naar('proefk'); }));
+    box.appendChild(l);
   });
 }
-document.querySelectorAll('.tabs [data-tab]').forEach(function(b){ b.onclick=function(){
-  document.querySelectorAll('.tabs [data-tab]').forEach(function(x){x.setAttribute('aria-pressed','false');});
-  b.setAttribute('aria-pressed','true'); tab=b.dataset.tab; teken(); window.scrollTo({top:0}); }; });
-document.addEventListener('visibilitychange',function(){ if(!document.hidden)laad().then(teken); });
-
-E('sleutelok').onclick=async function(){
-  var k=E('sleutelin').value.trim().replace(/^.*#s=/,'');
-  if(!k){ E('sleutelin').focus(); return; }
-  E('sleutelok').disabled=true; status('Even kijken of de sleutel klopt…','stil');
-  if(await sleutelKlopt(k)){
-    sleutelBewaren(k); E('sleutelvak').hidden=true; E('sleutelin').value='';
-    status('Keuren staat aan. Luister en keur.','ok'); teken();
-  }else{
-    status('Die sleutel klopt niet. Kijk in de keurlink naar het stuk na #s=','fout');
+function proefKeuren(box){
+  var s=P.slug, tk=(A.proef[s]||[]).slice();
+  var volg={}; D.opdracht.forEach(function(o){ if(o.slug===s&&o.soort==='proef')o.regels.forEach(function(r,i){ if(volg[r]===undefined)volg[r]=i; }); });
+  tk.sort(function(a,b){ return (volg[a.regel_id]||0)-(volg[b.regel_id]||0); });
+  if(!tk.length){ naar('proef'); return; }
+  if(P.i>=tk.length){
+    var k=el('div','kaart c'); k.appendChild(el('h2','','Neem je '+naamVan(s)+' aan?'));
+    var mooi=tk.filter(function(t){return A.pT[t.pad]&&A.pT[t.pad].oordeel==='mooi';}).length;
+    k.appendChild(el('div','bet',mooi+' van '+tk.length+' vond je mooi. Bij aannemen worden die mooie opnames gewone, goedgekeurde opnames.'));
+    var b=besluitVan(s); if(b)k.appendChild(el('div','mini','Eerder besloten: '+b));
+    k.appendChild(knop('ok','Ja, aannemen',function(){ besluit(s,'aannemen'); }));
+    var tw=el('div','twee'); tw.appendChild(knop('wit klein','Nog een proef',function(){ besluit(s,'nog een proef'); })); tw.appendChild(knop('wit klein','Nee, bedankt',function(){ besluit(s,'nee'); })); k.appendChild(tw);
+    k.appendChild(knop('wit klein','← Terug naar de opnames',function(){P.i=0;teken();}));
+    box.appendChild(k); return;
   }
-  E('sleutelok').disabled=false;
-};
-E('sleutelin').onkeydown=function(e){ if(e.key==='Enter')E('sleutelok').click(); };
-E('naamin').value=DOOR; naamToon();
-E('naamok').onclick=function(){ var n=E('naamin').value.trim(); if(!n){ E('naamin').focus(); return; } naamZet(n); status('Dank je, '+DOOR+'. Luister en keur.','ok'); teken(); };
-E('naamin').onkeydown=function(e){ if(e.key==='Enter')E('naamok').click(); };
-E('wie-wijzig').onclick=function(){ E('naamvak').hidden=false; E('naamin').value=DOOR; E('naamvak').scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(function(){ E('naamin').focus(); E('naamin').select(); },350); };
-/* zoeken en filteren */
-var ZOEK='', ROL='';
-E('zoekin').oninput=function(){ ZOEK=E('zoekin').value.trim().toLowerCase(); teken(); };
-document.querySelectorAll('#rolchips button').forEach(function(b){ b.onclick=function(){
-  document.querySelectorAll('#rolchips button').forEach(function(x){x.setAttribute('aria-pressed','false');});
-  b.setAttribute('aria-pressed','true'); ROL=b.dataset.rol; teken(); }; });
-/* ?tab=proef in de link opent meteen het tabblad Proefopname */
-(function(){ var t=new URLSearchParams(location.search).get('tab'); if(t){ var b=document.querySelector('.tabs [data-tab="'+t+'"]'); if(b){ document.querySelectorAll('.tabs [data-tab]').forEach(function(x){x.setAttribute('aria-pressed','false');}); b.setAttribute('aria-pressed','true'); tab=t; } } })();
-(async function(){ await laad(); teken(); })();
+  var t=tk[P.i], r=REGEL[t.regel_id], al=A.pT[t.pad];
+  var top=el('div',''); var bk=el('div','balk'); var i=el('i'); i.style.width=(100*P.i/tk.length)+'%'; bk.appendChild(i); top.appendChild(bk);
+  top.appendChild(el('div','mini','Proef '+naamVan(s)+' · '+(P.i+1)+' van '+tk.length)); box.appendChild(top);
+  var k2=regelKaart(r,{}); box.appendChild(k2);
+  var sp=el('div','twee'); var hk=speelKnop(naamVan(s),t.pad); sp.appendChild(hk); if(VOORBEELD[r.id])sp.appendChild(speelKnop('Nu',VOORBEELD[r.id],true)); k2.appendChild(sp);
+  if(al) k2.appendChild(el('div','mini',(al.oordeel==='mooi'?'👍 mooi':'👎 minder')+' · '+al.door));
+  var m=D.opm.find(function(x){return x.regel_id===r.id&&(x.door||'').toLowerCase().replace(/[^a-z0-9\-]/g,'_')===s;});
+  if(m){ var o=el('div','opm'); o.textContent=naamVan(s)+': '+m.soort+(m.voorstel_latijn?' · "'+m.voorstel_latijn+'"':'')+(m.tekst?' · '+m.tekst.replace(/ \(EN\)$/,''):''); k2.appendChild(o); }
+  var tw=el('div','twee'); box.appendChild(tw);
+  if(!al){ tw.appendChild(knop('ok','👍 Mooi',function(){ oordeel(t,'mooi','',function(){P.i++;}); })); tw.appendChild(knop('nee','👎 Minder',function(){ oordeel(t,'minder','',function(){P.i++;}); })); }
+  var nav=el('div','twee'); nav.appendChild(knop('wit klein','← Vorige',function(){P.i=Math.max(0,P.i-1);teken();})); nav.appendChild(knop('wit klein',al?'Volgende →':'Later →',function(){P.i++;teken();})); box.appendChild(nav);
+  setTimeout(function(){ if(TAB==='proefk')speel(hk,t.pad); },250);
+}
+async function besluit(s,b){
+  try{ var n=await rpc('stem_proefbesluit',{p_slug:s,p_besluit:b}); status(b==='aannemen'?(naamVan(s)+' is aangenomen. '+n+' opname'+(n===1?'':'s')+' goedgekeurd.'):'Opgeslagen: '+b,''); await laad(); naar('proef'); }
+  catch(e){ status('Opslaan lukte niet: '+(e.message||'?'),'fout'); }
+}
+
+/* opmerkingen en voorstellen */
+function opmerkingen(box){
+  var lijst=A.opmOpen;
+  if(!lijst.length) box.appendChild(el('div','kaart leeg','Geen open opmerkingen.'));
+  lijst.forEach(function(m){
+    var r=REGEL[m.regel_id]||{id:m.regel_id,tekst:m.regel_id,arabisch:'',betekenis:'',groep:''};
+    var k=regelKaart(r,{waar:naamVan(m.door)+' · '+datum(m.gemaakt)}); box.appendChild(k);
+    var o=el('div','opm'); o.textContent=m.soort+(m.tekst?': '+m.tekst.replace(/ \(EN\)$/,''):''); k.appendChild(o);
+    if(m.voorstel_latijn||m.voorstel_ar){ var v=el('div','',''); v.style.width='100%';
+      var tw0=el('div','twee'); var a=el('div',''); a.appendChild(el('div','mini','Nu')); a.appendChild(el('div','woord lang',r.tekst)); var b=el('div',''); b.appendChild(el('div','mini','Haar voorstel')); var bw=el('div','woord lang',m.voorstel_latijn||''); bw.style.color='var(--tile-d)'; b.appendChild(bw); if(m.voorstel_ar)b.appendChild(el('div','ar',m.voorstel_ar)); tw0.appendChild(a); tw0.appendChild(b); v.appendChild(tw0); k.appendChild(v); }
+    var sp=el('div','twee'); if(VOORBEELD[r.id])sp.appendChild(speelKnop('Nu',VOORBEELD[r.id],true)); if(m.voorstel_take)sp.appendChild(speelKnop('Haar versie',m.voorstel_take)); if(sp.childNodes.length)k.appendChild(sp);
+    var antw=el('input'); antw.placeholder='Kort antwoord voor haar (mag leeg)'; antw.maxLength=280; k.appendChild(antw);
+    var tw=el('div','twee'); k.appendChild(tw);
+    tw.appendChild(knop('ok klein',m.voorstel_latijn||m.voorstel_take?'Neem haar versie over':'Klopt, pas aan',function(){ voorstel(m,'overgenomen',antw.value); }));
+    tw.appendChild(knop('wit klein','Houd het zo',function(){ voorstel(m,'zo gelaten',antw.value); }));
+  });
+  if(A.algemeen.length){ box.appendChild(el('div','sec','Berichten')); A.algemeen.slice(0,20).forEach(function(m){ var l=el('div','lijn'); var n=el('div','n',naamVan(m.door)); n.appendChild(el('small','',datum(m.gemaakt))); var p=el('div','',m.tekst.replace(/ \(EN\)$/,'')); p.style.fontWeight='600'; p.style.fontSize='.9rem'; n.appendChild(p); l.appendChild(n); box.appendChild(l); }); }
+}
+async function voorstel(m,b,antw){
+  try{ await rpc('stem_voorstel_besluit',{p_id:m.id,p_besluit:b,p_antwoord:(antw||'').trim()}); status(b==='overgenomen'?'Overgenomen. Het bureau past de tekst aan en zij hoort het.':'Opgeslagen: zo gelaten.',''); await laad(); teken(); }
+  catch(e){ status('Opslaan lukte niet: '+(e.message||'?'),'fout'); }
+}
+
+/* uitnodigen */
+function uitnodigen(box){
+  var k=el('div','kaart'); k.style.display='flex'; k.style.flexDirection='column'; k.style.gap='12px'; box.appendChild(k);
+  k.appendChild(el('h2','','Iemand uitnodigen'));
+  var l1=el('label','v','Naam'); var naam=el('input'); naam.maxLength=40; naam.placeholder='bijv. Fatima'; l1.appendChild(naam); k.appendChild(l1);
+  var rol='spreekster', taal='en';
+  k.appendChild(el('div','sec','Rol'));
+  var r=el('div','chips'); [['spreekster','Spreekster'],['keurder','Keurder (zoals Faysal)']].forEach(function(x){ var b=el('button','',x[1]); b.type='button'; b.setAttribute('aria-pressed',x[0]===rol?'true':'false'); b.onclick=function(){ rol=x[0]; r.querySelectorAll('button').forEach(function(y){y.setAttribute('aria-pressed','false');}); b.setAttribute('aria-pressed','true'); extra.hidden=rol!=='spreekster'; }; r.appendChild(b); }); k.appendChild(r);
+  var extra=el('div',''); extra.style.display='flex'; extra.style.flexDirection='column'; extra.style.gap='10px'; k.appendChild(extra);
+  extra.appendChild(el('div','sec','Taal van haar studio'));
+  var t=el('div','chips'); [['en','English'],['nl','Nederlands']].forEach(function(x){ var b=el('button','',x[1]); b.type='button'; b.setAttribute('aria-pressed',x[0]===taal?'true':'false'); b.onclick=function(){ taal=x[0]; t.querySelectorAll('button').forEach(function(y){y.setAttribute('aria-pressed','false');}); b.setAttribute('aria-pressed','true'); }; t.appendChild(b); }); extra.appendChild(t);
+  var pl=el('label','kies'); var cb=el('input'); cb.type='checkbox'; cb.checked=true; var pt=el('span','','Eerst de proefopname'); pt.appendChild(el('small','','De bakkerij en een boekje, '+PROEF.length+' regels, ongeveer tien minuten')); pl.style.display='flex'; pl.style.gap='10px'; pl.style.alignItems='center'; pl.style.background='#fff'; pl.style.borderRadius='12px'; pl.style.padding='10px 12px'; pl.appendChild(cb); pl.appendChild(pt); extra.appendChild(pl);
+  var uit=el('div',''); uit.style.display='flex'; uit.style.flexDirection='column'; uit.style.gap='10px';
+  k.appendChild(knop('groen','Maak de link',async function(){
+    if(!naam.value.trim()){ naam.focus(); return; }
+    this.disabled=true;
+    try{ var res=await rpc('stem_uitnodigen',{p_naam:naam.value.trim(),p_rol:rol,p_taal:taal,p_proef:(rol==='spreekster'&&cb.checked)?PROEF:null});
+      var link=rol==='spreekster'?(STUDIO_URL+'?k='+encodeURIComponent(res.sleutel)):(STUDIO_URL+'beoordelen.html#s='+encodeURIComponent(res.sleutel));
+      var tekst=rol==='spreekster'?(taal==='en'?('Hi '+naam.value.trim()+'! Here is your personal link to record for Darija Avontuur: '+link+' — please keep it to yourself.'):('Hoi '+naam.value.trim()+'! Dit is je eigen link om op te nemen voor Darija Avontuur: '+link+' (alleen voor jou).'))
+                                       :('Hoi '+naam.value.trim()+'! Dit is je eigen keurlink voor de stemstudio van Darija Avontuur: '+link+' (alleen voor jou).');
+      uit.innerHTML=''; uit.appendChild(el('div','klaar','✓ Link gemaakt voor '+naam.value.trim()));
+      uit.appendChild(el('div','link',link));
+      var wa=el('a','knop wa','Stuur via WhatsApp'); wa.href='https://wa.me/?text='+encodeURIComponent(tekst); wa.target='_blank'; wa.rel='noopener'; wa.style.textDecoration='none'; uit.appendChild(wa);
+      uit.appendChild(knop('wit klein','Kopieer link',async function(){ try{ await navigator.clipboard.writeText(link); status('Gekopieerd',''); }catch(e){ status('Kopiëren mocht niet; houd de link ingedrukt om te kopiëren.','info'); } }));
+      uit.appendChild(el('div','mini','Bewaar de link: hij wordt maar één keer getoond. Kwijt? Maak een nieuwe en trek de oude in.'));
+      await laad(); tabs();
+    }catch(e){ status('Uitnodigen lukte niet: '+(e.message||'?'),'fout'); }
+    this.disabled=false;
+  }));
+  k.appendChild(uit);
+  /* intrekken */
+  var act=D.mensen.filter(function(m){return m.actief;});
+  if(act.length){ box.appendChild(el('div','sec','Toegang')); act.forEach(function(m){ var l=el('div','lijn'); l.appendChild(el('div','av'+(m.rol==='keurder'?' k':''),m.naam.charAt(0))); var n=el('div','n',m.naam); n.appendChild(el('small','',m.rol+' · sinds '+datum(m.gemaakt))); l.appendChild(n);
+    var b=knop('wit klein','Intrekken',async function(){ if(b.dataset.zeker!=='1'){ b.dataset.zeker='1'; b.textContent='Zeker?'; return; } try{ await rpc('stem_intrekken',{p_slug:m.slug}); status('Ingetrokken: '+m.naam,''); await laad(); teken(); }catch(e){ status('Lukte niet: '+(e.message||'?'),'fout'); } });
+    l.appendChild(b); box.appendChild(l); }); }
+}
+
+/* opdracht geven */
+function opdrachtGeven(box){
+  var sp=spreeksters().filter(function(m){return m.actief;});
+  if(!sp.length){ box.appendChild(el('div','kaart leeg','Nodig eerst een spreekster uit.')); return; }
+  var k=el('div','kaart'); k.style.display='flex'; k.style.flexDirection='column'; k.style.gap='10px'; box.appendChild(k);
+  k.appendChild(el('h2','','Opdracht geven'));
+  var keuze=sp[0].slug; var cs=el('div','chips'); sp.forEach(function(m){ var b=el('button','',m.naam); b.type='button'; b.setAttribute('aria-pressed',m.slug===keuze?'true':'false'); b.onclick=function(){ keuze=m.slug; cs.querySelectorAll('button').forEach(function(y){y.setAttribute('aria-pressed','false');}); b.setAttribute('aria-pressed','true'); vul(); }; cs.appendChild(b); }); k.appendChild(cs);
+  var lijst=el('div','kies'); k.appendChild(lijst);
+  var som=el('div','mini'); som.style.textAlign='center'; k.appendChild(som);
+  var gaan=knop('groen','Geef opdracht',null); k.appendChild(gaan);
+  function vul(){
+    lijst.innerHTML=''; var m=sp.find(function(x){return x.slug===keuze;});
+    var groepen=[]; var gz={};
+    REGELS.forEach(function(r){ if(r.rol==='juf'&&m.taal==='en')return; if(!gz[r.groep]){ gz[r.groep]={naam:r.groep,ids:[]}; groepen.push(gz[r.groep]); } gz[r.groep].ids.push(r.id); });
+    var al={}; D.opdracht.forEach(function(o){ if(o.slug===keuze)o.regels.forEach(function(r){al[r]=1;}); });
+    groepen.forEach(function(g){ var open=g.ids.filter(function(i){return REGEL[i].status!=='in spel'&&!al[i];}).length;
+      var lb=el('label',''); var c=el('input'); c.type='checkbox'; c.value=g.naam; c.onchange=tel; var s=el('span','',g.naam); s.appendChild(el('small','',g.ids.length+' regels'+(open<g.ids.length?(' · '+open+' nog nodig'):''))); lb.appendChild(c); lb.appendChild(s); lijst.appendChild(lb); });
+    tel();
+  }
+  function gekozen(){ var ids=[]; lijst.querySelectorAll('input:checked').forEach(function(c){ REGELS.forEach(function(r){ if(r.groep===c.value)ids.push(r.id); }); }); return ids; }
+  function tel(){ var ids=gekozen(); var sec=0; ids.forEach(function(i){ sec+=REGEL[i].rol==='boek'?40:15; }); som.textContent=ids.length?(ids.length+' regels · ongeveer '+Math.max(1,Math.round(sec/60))+' minuten'):'Kies plekken of boekjes'; gaan.disabled=!ids.length; }
+  gaan.onclick=async function(){ var ids=gekozen(); if(!ids.length)return; var namen=[]; lijst.querySelectorAll('input:checked').forEach(function(c){namen.push(c.value.replace(/ ·.*$/,'').replace(/^Boekje: /,''));});
+    gaan.disabled=true; try{ await rpc('stem_opdracht_geven',{p_slug:keuze,p_naam:namen.slice(0,3).join(', ')+(namen.length>3?' en meer':''),p_regels:ids}); status('Opdracht gegeven aan '+naamVan(keuze)+'. Zij ziet hem meteen.',''); await laad(); naar('home'); }
+    catch(e){ status('Lukte niet: '+(e.message||'?'),'fout'); gaan.disabled=false; } };
+  vul();
+}
+
+/* logboek */
+async function logboek(box){
+  box.appendChild(el('div','mini','Ophalen…'));
+  try{ D.log=await api('/rest/v1/stem_logboek?select=gemaakt,wie,wat,regel_id,extra&order=gemaakt.desc&limit=400'); }catch(e){ box.innerHTML=''; box.appendChild(el('div','kaart leeg','Het logboek ophalen lukte niet.')); return; }
+  box.innerHTML='';
+  var wie=['Alles']; D.log.forEach(function(l){ var n=naamVan(l.wie); if(l.wie&&wie.indexOf(n)<0)wie.push(n); });
+  var f='Alles'; var cs=el('div','chips'); wie.slice(0,8).forEach(function(w){ var b=el('button','',w); b.type='button'; b.setAttribute('aria-pressed',w===f?'true':'false'); b.onclick=function(){ f=w; cs.querySelectorAll('button').forEach(function(y){y.setAttribute('aria-pressed','false');}); b.setAttribute('aria-pressed','true'); vul(); }; cs.appendChild(b); }); box.appendChild(cs);
+  var zoek=el('input'); zoek.type='search'; zoek.placeholder='Zoek een woord (bijv. khobz)'; zoek.oninput=vul; box.appendChild(zoek);
+  var k=el('div','kaart'); box.appendChild(k);
+  var WAT={ingesproken:'sprak in',goed:'keurde goed',opnieuw:'vroeg opnieuw',mooi:'vond mooi (proef)',minder:'vond minder (proef)',opmerking:'had een opmerking bij',overgenomen:'nam het voorstel over bij','zo gelaten':'liet zo:',gezien:'zag de opmerking bij',uitgenodigd:'nodigde uit:',opdracht:'gaf een opdracht aan',proefbesluit:'besloot over de proef van',ingetrokken:'trok de toegang in van',live:'zette live:'};
+  function vul(){ k.innerHTML=''; var z=zoek.value.trim().toLowerCase(); var n=0;
+    D.log.forEach(function(l){ if(n>=200)return; var w=naamVan(l.wie); if(f!=='Alles'&&w!==f)return; var r=REGEL[l.regel_id]; var wat=(r?r.tekst:naamVan(l.regel_id));
+      if(z&&(wat+' '+(l.extra||'')).toLowerCase().indexOf(z)<0)return; n++;
+      var d=el('div','log'); d.appendChild(el('time','',datum(l.gemaakt))); var s=el('span',''); s.appendChild(el('b','',w||'?')); s.appendChild(document.createTextNode(' '+(WAT[l.wat]||l.wat)+' '+wat+(l.extra&&!/^takes\//.test(l.extra)?' · '+l.extra.replace(/ \(EN\)$/,''):''))); d.appendChild(s); k.appendChild(d); });
+    if(!n)k.appendChild(el('div','leeg','Niets gevonden.')); }
+  vul();
+}
+
+/* ---------- menu en opstart ---------- */
+E('menu-open').onclick=function(){ E('menu').hidden=false; };
+E('menu-dicht').onclick=function(){ E('menu').hidden=true; };
+E('menu').onclick=function(e){ if(e.target===E('menu'))E('menu').hidden=true; };
+document.querySelectorAll('#menu [data-naar]').forEach(function(b){ b.onclick=function(){ naar(b.dataset.naar); }; });
+document.querySelectorAll('#tabs [data-tab]').forEach(function(b){ b.onclick=function(){ if(b.dataset.tab==='nieuw')K.i=0; naar(b.dataset.tab); }; });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape')E('menu').hidden=true; });
+document.addEventListener('visibilitychange',function(){ if(!document.hidden&&SLEUTEL&&TAB!=='uitnodigen'&&TAB!=='opdracht')laad().then(teken).catch(function(){}); });
+
+(async function(){
+  if(!SLEUTEL){
+    E('tabs').hidden=true; E('menu-open').hidden=true;
+    var k=el('div','kaart c'); k.appendChild(el('h2','','Open je eigen keurlink')); k.appendChild(el('div','bet','Deze pagina werkt met een persoonlijke link. Vraag Omar om jouw keurlink en open die op dit toestel.')); E('inhoud').appendChild(k); return;
+  }
+  try{ await laad(); teken(); }
+  catch(e){
+    E('tabs').hidden=true;
+    var k2=el('div','kaart c'); k2.appendChild(el('h2','',e.status===400||/sleutel/.test(e.message||'')?'Deze keurlink werkt niet (meer)':'Geen verbinding'));
+    k2.appendChild(el('div','bet',(/sleutel/.test(e.message||'')?'Vraag Omar om een nieuwe keurlink.':'Controleer je internet en probeer het zo nog eens.')));
+    if(/sleutel/.test(e.message||'')) schrijf('stemkeur-sleutel','');
+    E('inhoud').appendChild(k2);
+  }
+})();
 </script>
 </body>
 </html>
