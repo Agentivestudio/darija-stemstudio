@@ -949,7 +949,7 @@ function thuis(){
   if(antw.length){
     var a=el('div','opd blauw'); var ka=el('div','kop',L('Antwoorden van het team','Answers from the team')); ka.appendChild(el('span','pil p-blauw',String(antw.length))); a.appendChild(ka);
     antw.forEach(function(m){ var r=REGELS.find(function(x){return x.id===m.regel_id;}); var bs=cloud.besluit[m.id]||{};
-      var t=(r?r.tekst:m.regel_id)+(m.voorstel_latijn?' \u2192 '+m.voorstel_latijn:'')+': '+(bs.besluit==='overgenomen'?L('we nemen jouw versie over, dank je!','we took your version, thank you!'):(bs.besluit==='zo gelaten'?L('we houden het zo','we keep it as it is'):L('gezien','seen')))+((bs.antwoord||m.antwoord)?' \u00b7 '+(bs.antwoord||m.antwoord):'');
+      var t=(r?r.tekst:(m.soort==='algemeen'?L('Je bericht','Your message'):m.regel_id))+(m.voorstel_latijn?' \u2192 '+m.voorstel_latijn:'')+': '+(bs.besluit==='overgenomen'?L('we nemen jouw versie over, dank je!','we took your version, thank you!'):(bs.besluit==='zo gelaten'?L('we houden het zo','we keep it as it is'):L('gelezen, dank je wel!','read, thank you!')))+((bs.antwoord||m.antwoord)?' \u00b7 '+(bs.antwoord||m.antwoord):'');
       a.appendChild(el('div','antw',t)); });
     box.appendChild(a);
   }

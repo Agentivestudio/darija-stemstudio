@@ -441,8 +441,8 @@ function opmerkingen(box){
       var p=el('div','',m.tekst.replace(/ \(EN\)$/,'')); p.style.fontWeight='600'; p.style.fontSize='.95rem'; k.appendChild(p);
       if(m.verwerkt){ if(m.antwoord){ var a=el('div','bet','Antwoord: '+m.antwoord); k.appendChild(a); } }
       else {
-        var antw=el('input'); antw.placeholder='Kort antwoord voor haar, in het Engels (mag leeg)'; antw.maxLength=280; k.appendChild(antw);
-        k.appendChild(knop('ok klein','Beantwoord en rond af',async function(){ try{ await rpc('stem_opmerking_af',{p_id:m.id,p_antwoord:antw.value.trim()}); status('Afgerond. Zij ziet je antwoord in haar studio.',''); await laad(); teken(); }catch(e){ status('Opslaan lukte niet: '+(e.message||'?'),'fout'); } }));
+        var antw=el('input'); antw.placeholder='Antwoord voor haar, in het Engels (mag leeg: dan ziet ze "read, thank you!")'; antw.maxLength=280; k.appendChild(antw);
+        k.appendChild(knop('ok klein','Rond af',async function(){ try{ await rpc('stem_opmerking_af',{p_id:m.id,p_antwoord:antw.value.trim()}); status('Afgerond. Zij ziet je antwoord in haar studio.',''); await laad(); teken(); }catch(e){ status('Opslaan lukte niet: '+(e.message||'?'),'fout'); } }));
       }
       box.appendChild(k);
     }); }
