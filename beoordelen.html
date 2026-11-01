@@ -183,8 +183,9 @@ function afleiden(){
   });
   nieuw.sort(function(a,b){ return Date.parse(a.gemaakt)-Date.parse(b.gemaakt); });
   var bes={}; D.besluit.forEach(function(b){ if(!bes[b.opmerking_id])bes[b.opmerking_id]=b; });
-  var opmOpen=D.opm.filter(function(m){ return !bes[m.id]&&!m.verwerkt&&m.soort!=='algemeen'; });
-  var algemeen=D.opm.filter(function(m){ return m.soort==='algemeen'; });
+  var testDoor=function(m){ return /^test[ _]/i.test(m.door||''); };   /* opmerkingen van testaccounts tellen niet mee */
+  var opmOpen=D.opm.filter(function(m){ return !bes[m.id]&&!m.verwerkt&&m.soort!=='algemeen'&&!testDoor(m); });
+  var algemeen=D.opm.filter(function(m){ return m.soort==='algemeen'&&!testDoor(m); });
   var proefTeKeuren=0;
   Object.keys(proef).forEach(function(s){ var b=besluitVan(s); if(b==='nee')return; proef[s].forEach(function(t){ if(!pT[t.pad])proefTeKeuren++; }); });
   A={oT:oT,pT:pT,bezig:bezig,nieuw:nieuw,proef:proef,proefRegels:proefRegels,opmOpen:opmOpen,algemeen:algemeen,bes:bes,proefTeKeuren:proefTeKeuren,laatste:laatste};
