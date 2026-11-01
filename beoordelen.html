@@ -161,7 +161,7 @@ async function laad(){
 /* ---------- afleiden: wie, wat, welke stapel ---------- */
 var A={};
 /* testaccounts van het bureau (naam begint met "TEST ") en hun opnames tellen nergens mee, als ze zijn ingetrokken */
-function isTest(m){ return /^TEST /.test(m.naam||'')&&!m.actief; }
+function isTest(m){ return /^test /i.test(m.naam||'')&&!m.actief; }
 function spreeksters(){ return D.mensen.filter(function(m){return m.rol==='spreekster'&&!isTest(m);}); }
 function besluitVan(slug){ var g=D.gebeurtenis.find(function(x){return x.soort==='proefbesluit'&&x.wie===slug;}); return g?g.wat:''; }
 function afleiden(){
