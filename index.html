@@ -849,7 +849,7 @@ async function wachtrij(){
   for(var i=0;i<ids.length;i++){ if(await stuur(ids[i],takes[ids[i]]))n++; else break; }
   wachtrijBezig=false;
   if(n)status(n+' '+L('opname'+(n===1?'':'s')+' alsnog verstuurd naar het spel.','recording'+(n===1?'':'s')+' sent after all.'),'ok');
-  toon();
+  if(!bezig)toon();
 }
 
 /* ---------- zip (blijft werken, ook zonder internet) ---------- */
@@ -1008,6 +1008,8 @@ document.querySelectorAll('.taal [data-taal]').forEach(function(b){ b.onclick=fu
   var u=new URL(location.href); u.searchParams.set('lang',TAAL); history.replaceState(null,'',u);
 }; });
 window.addEventListener('online',function(){ laadCloud().then(wachtrij); });
+/* lukte versturen niet (storing, slecht netwerk), dan elke 30 seconden opnieuw proberen; nooit midden in een opname */
+setInterval(function(){ if(!bezig&&!wachtrijBezig&&Object.keys(takes).some(function(id){return !takes[id].pad;})) wachtrij().then(function(){ if(ME&&!E('thuis').hidden)thuis(); }); },30000);
 document.addEventListener('visibilitychange',function(){ if(!document.hidden)laadCloud().then(function(){ toon(); if(ME&&!E('thuis').hidden)thuis(); }); });
 
 (async function(){

@@ -160,7 +160,9 @@ async function laad(){
 
 /* ---------- afleiden: wie, wat, welke stapel ---------- */
 var A={};
-function spreeksters(){ return D.mensen.filter(function(m){return m.rol==='spreekster';}); }
+/* testaccounts van het bureau (naam begint met "TEST ") en hun opnames tellen nergens mee, als ze zijn ingetrokken */
+function isTest(m){ return /^TEST /.test(m.naam||'')&&!m.actief; }
+function spreeksters(){ return D.mensen.filter(function(m){return m.rol==='spreekster'&&!isTest(m);}); }
 function besluitVan(slug){ var g=D.gebeurtenis.find(function(x){return x.soort==='proefbesluit'&&x.wie===slug;}); return g?g.wat:''; }
 function afleiden(){
   var oT={}, pT={};
@@ -264,7 +266,8 @@ function home(box){
   var vandaag=new Date().toDateString();
   var keurders=[D.ik];
   D.mensen.forEach(function(m){ if(m.rol==='keurder'&&m.actief&&keurders.indexOf(m.naam)<0)keurders.push(m.naam); });
-  D.pakken.concat(D.oordeel.slice(0,200)).forEach(function(x){ if(x.door&&keurders.indexOf(x.door)<0&&!spreeksters().some(function(m){return m.naam===x.door;}))keurders.push(x.door); });
+  var testNamen=D.mensen.filter(isTest).map(function(m){return m.naam;});
+  D.pakken.concat(D.oordeel.slice(0,200)).forEach(function(x){ if(x.door&&keurders.indexOf(x.door)<0&&testNamen.indexOf(x.door)<0&&!/^TEST /.test(x.door)&&!spreeksters().some(function(m){return m.naam===x.door;}))keurders.push(x.door); });
   keurders.forEach(function(k){
     var l=el('div','lijn'); l.appendChild(el('div','av k',k.charAt(0).toUpperCase()));
     var n=el('div','n',k+(k===D.ik?' (jij)':'')); var nv=D.oordeel.filter(function(o){return o.door===k&&new Date(o.gemaakt).toDateString()===vandaag;}).length;
@@ -426,7 +429,7 @@ function uitnodigen(box){
   }));
   k.appendChild(uit);
   /* intrekken */
-  var act=D.mensen.filter(function(m){return m.actief;});
+  var act=D.mensen.filter(function(m){return m.actief&&!/^TEST /.test(m.naam);});
   if(act.length){ box.appendChild(el('div','sec','Toegang')); act.forEach(function(m){ var l=el('div','lijn'); l.appendChild(el('div','av'+(m.rol==='keurder'?' k':''),m.naam.charAt(0))); var n=el('div','n',m.naam); n.appendChild(el('small','',m.rol+' · sinds '+datum(m.gemaakt))); l.appendChild(n);
     var b=knop('wit klein','Intrekken',async function(){ if(b.dataset.zeker!=='1'){ b.dataset.zeker='1'; b.textContent='Zeker?'; return; } try{ await rpc('stem_intrekken',{p_slug:m.slug}); status('Ingetrokken: '+m.naam,''); await laad(); teken(); }catch(e){ status('Lukte niet: '+(e.message||'?'),'fout'); } });
     l.appendChild(b); box.appendChild(l); }); }
@@ -470,7 +473,7 @@ async function logboek(box){
   var k=el('div','kaart'); box.appendChild(k);
   var WAT={ingesproken:'sprak in',goed:'keurde goed',opnieuw:'vroeg opnieuw',mooi:'vond mooi (proef)',minder:'vond minder (proef)',opmerking:'had een opmerking bij',overgenomen:'nam het voorstel over bij','zo gelaten':'liet zo:',gezien:'zag de opmerking bij',uitgenodigd:'nodigde uit:',opdracht:'gaf een opdracht aan',proefbesluit:'besloot over de proef van',ingetrokken:'trok de toegang in van',live:'zette live:'};
   function vul(){ k.innerHTML=''; var z=zoek.value.trim().toLowerCase(); var n=0;
-    D.log.forEach(function(l){ if(n>=200)return; var w=naamVan(l.wie); if(f!=='Alles'&&w!==f)return; var r=REGEL[l.regel_id]; var wat=(r?r.tekst:naamVan(l.regel_id));
+    D.log.forEach(function(l){ if(n>=200)return; var w=naamVan(l.wie); if(/^test[ _]/i.test(w)||/^test_/.test(l.wie||'')||/^test_/.test(l.regel_id||''))return; if(f!=='Alles'&&w!==f)return; var r=REGEL[l.regel_id]; var wat=(r?r.tekst:naamVan(l.regel_id));
       if(z&&(wat+' '+(l.extra||'')).toLowerCase().indexOf(z)<0)return; n++;
       var d=el('div','log'); d.appendChild(el('time','',datum(l.gemaakt))); var s=el('span',''); s.appendChild(el('b','',w||'?')); s.appendChild(document.createTextNode(' '+(WAT[l.wat]||l.wat)+' '+wat+(l.extra&&!/^takes\//.test(l.extra)?' · '+l.extra.replace(/ \(EN\)$/,''):''))); d.appendChild(s); k.appendChild(d); });
     if(!n)k.appendChild(el('div','leeg','Niets gevonden.')); }
