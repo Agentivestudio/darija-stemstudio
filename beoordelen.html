@@ -87,6 +87,23 @@ label.v{display:flex;flex-direction:column;gap:5px;font-size:.78rem;font-weight:
 .kies small{display:block;color:var(--zacht);font-weight:700}
 .link{word-break:break-all;background:#fff;border:1.5px dashed var(--rand);border-radius:12px;padding:10px;font-size:.85rem}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* in het beheer: naadloos, in de huisstijl van het portaal */
+body.portaal{background:#FFF8F1;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;color:#1F1B13}
+body.portaal .top,body.portaal #tabs,body.portaal .grootgetal{display:none}
+body.portaal .app{max-width:680px;margin:0;padding:4px 2px 48px}
+body.portaal .kaart{background:#fff;box-shadow:none;border-radius:14px}
+body.portaal .wie{font-size:.9rem}
+</style>
+<script>/* in het beheer: meteen de juiste stand, nog vóór de (grote) pagina geladen is */
+if(/[?&]portaal=1/.test(location.search)&&window.parent!==window)document.documentElement.className+=' portaal';</script>
+<style>
+html.portaal body{background:#FFF8F1;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;color:#1F1B13}
+html.portaal .top,html.portaal #tabs,html.portaal .grootgetal{display:none}
+html.portaal .app{max-width:680px;margin:0;padding:4px 2px 48px}
+html.portaal #inhoud:empty::before{content:"";display:block;height:220px;border-radius:14px;background:linear-gradient(90deg,#f3eadc 0%,#fbf5ec 50%,#f3eadc 100%);background-size:200% 100%;animation:laden 1.4s ease-in-out infinite}
+html.portaal #inhoud:empty::after{content:"";display:block;height:52px;margin-top:12px;border-radius:14px;background:#f3eadc}
+@keyframes laden{0%{background-position:100% 0}100%{background-position:-100% 0}}
+@media (prefers-reduced-motion:reduce){html.portaal #inhoud:empty::before{animation:none}}
 </style>
 </head>
 <body>
@@ -124,6 +141,7 @@ var PROEF=["pn-bakkerij", "khobz", "msemen", "baghrir", "sfenj", "harsha", "batb
 var OPSLAG={"url": "https://dmcaafkhshjtsdmzqhxl.supabase.co", "sleutel": "sb_publishable_GsEIW0F-9Eok2QQl1oR55g_o9PdwXl8", "bucket": "stem"};
 if(!OPSLAG||typeof OPSLAG!=='object')OPSLAG={url:"",sleutel:"",bucket:"stem"};
 var STUDIO_URL=location.href.replace(/[#?].*$/,'').replace(/[^\/]*$/,'');
+if(/^\/stemapp\//.test(location.pathname))STUDIO_URL='https://agentivestudio.github.io/darija-stemstudio/';   /* in het beheer: links voor buiten moeten zonder inlog werken */
 /* in het beheerportaal: geen sleutel, maar de inlog van het portaal (het portaal stuurt de inlogtoken) */
 var PORTAAL=/[?&]portaal=1/.test(location.search)&&window.parent!==window;
 var PORTAAL_HERKOMST=['https://beheer.darija-avontuur.nl','https://darija-avontuur.nl','https://darija-avontuur.vercel.app'];
@@ -136,8 +154,8 @@ var CHIPS=['Warmer','Rustiger','Duidelijker','Langzamer','Anders uitgesproken','
 function lees(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function schrijf(k,v){try{v?localStorage.setItem(k,v):localStorage.removeItem(k);}catch(e){}}
 var SLEUTEL=(function(){ var m=/[#&]s=([^&]+)/.exec(location.hash||''); if(m){ schrijf('stemkeur-sleutel',decodeURIComponent(m[1])); history.replaceState(null,'',location.pathname+location.search); } return lees('stemkeur-sleutel')||''; })();
-if(PORTAAL)SLEUTEL='';
-window.addEventListener('message',function(e){ if(!PORTAAL||PORTAAL_HERKOMST.indexOf(e.origin)<0&&!/^http:\/\/localhost(:\d+)?$/.test(e.origin))return; if(!e.data||e.data.type!=='stem-token')return; var eerste=!TOKEN, oud=TOKEN; TOKEN=e.data.token||''; if(!TOKEN||(!eerste&&TOKEN===oud))return;
+if(PORTAAL){ SLEUTEL=''; document.body.classList.add('portaal'); }
+window.addEventListener('message',function(e){ if(!PORTAAL||(e.origin!==location.origin&&PORTAAL_HERKOMST.indexOf(e.origin)<0&&!/^http:\/\/localhost(:\d+)?$/.test(e.origin)))return; if(!e.data||e.data.type!=='stem-token')return; var eerste=!TOKEN, oud=TOKEN; TOKEN=e.data.token||''; if(!TOKEN||(!eerste&&TOKEN===oud))return;
   if(eerste&&window.__start){ var f=window.__start; window.__start=null; f(); }
   else if(window.__fout){ window.__fout=false; E('inhoud').innerHTML=''; E('tabs').hidden=false; start(); } });
 
@@ -237,12 +255,15 @@ function speelKnop(tekst,src,ai){ var b=el('button','speel'+(ai?' ai':'')); b.ty
 
 /* ---------- schermen ---------- */
 var TAB='home', K={i:0}, P={slug:'',i:0};
+var TABS_OK=['home','nieuw','proef','opm','uitnodigen','opdracht','logboek'];
+(function(){ var m=/[?&]tab=([a-z]+)/.exec(location.search); if(m&&TABS_OK.indexOf(m[1])>=0)TAB=m[1]; })();
+function meldPortaal(t){ if(PORTAAL){ try{ window.parent.postMessage({type:'stem-tab',tab:t},location.origin===window.parent.location.origin?location.origin:'*'); }catch(e){ try{ window.parent.postMessage({type:'stem-tab',tab:t},'*'); }catch(x){} } } }
 function tabs(){
   var n=A.nieuw.filter(vrijVoorMij).length, p=A.proefTeKeuren, o=A.opmOpen.length;
   [['t-nieuw',n],['t-proef',p],['t-opm',o]].forEach(function(x){ E(x[0]).textContent=x[1]; E(x[0]).className=x[1]?'':'nul'; });
   document.querySelectorAll('#tabs [data-tab]').forEach(function(b){ b.setAttribute('aria-pressed',b.dataset.tab===TAB?'true':'false'); });
 }
-function naar(t){ TAB=t; stop(); E('menu').hidden=true; teken(); window.scrollTo({top:0}); }
+function naar(t){ TAB=t; stop(); E('menu').hidden=true; teken(); window.scrollTo({top:0}); meldPortaal(t); }
 function teken(){
   tabs(); var box=E('inhoud'); box.innerHTML='';
   E('wie').innerHTML=''; E('wie').appendChild(document.createTextNode('Je keurt als ')); E('wie').appendChild(el('b','',D.ik));
@@ -406,14 +427,25 @@ function opmerkingen(box){
     var k=regelKaart(r,{waar:naamVan(m.door)+' · '+datum(m.gemaakt)}); box.appendChild(k);
     var o=el('div','opm'); o.textContent=m.soort+(m.tekst?': '+m.tekst.replace(/ \(EN\)$/,''):''); k.appendChild(o);
     if(m.voorstel_latijn||m.voorstel_ar){ var v=el('div','',''); v.style.width='100%';
-      var tw0=el('div','twee'); var a=el('div',''); a.appendChild(el('div','mini','Nu')); a.appendChild(el('div','woord lang',r.tekst)); var b=el('div',''); b.appendChild(el('div','mini','Haar voorstel')); var bw=el('div','woord lang',m.voorstel_latijn||''); bw.style.color='var(--tile-d)'; b.appendChild(bw); if(m.voorstel_ar)b.appendChild(el('div','ar',m.voorstel_ar)); tw0.appendChild(a); tw0.appendChild(b); v.appendChild(tw0); k.appendChild(v); }
+      var tw0=el('div','twee'); var a=el('div',''); a.appendChild(el('div','mini','Nu')); a.appendChild(el('div','woord lang',r.tekst)); var b=el('div',''); b.appendChild(el('div','mini',m.door==='bureau'?'Voorstel van het bureau':'Haar voorstel')); var bw=el('div','woord lang',m.voorstel_latijn||''); bw.style.color='var(--tile-d)'; b.appendChild(bw); if(m.voorstel_ar)b.appendChild(el('div','ar',m.voorstel_ar)); tw0.appendChild(a); tw0.appendChild(b); v.appendChild(tw0); k.appendChild(v); }
     var sp=el('div','twee'); if(VOORBEELD[r.id])sp.appendChild(speelKnop('Nu',VOORBEELD[r.id],true)); if(m.voorstel_take)sp.appendChild(speelKnop('Haar versie',m.voorstel_take)); if(sp.childNodes.length)k.appendChild(sp);
-    var antw=el('input'); antw.placeholder='Kort antwoord voor haar (mag leeg)'; antw.maxLength=280; k.appendChild(antw);
+    var antw=el('input'); antw.placeholder=m.door==='bureau'?'Notitie (mag leeg)':'Kort antwoord voor haar (mag leeg)'; antw.maxLength=280; k.appendChild(antw);
     var tw=el('div','twee'); k.appendChild(tw);
-    tw.appendChild(knop('ok klein',m.voorstel_latijn||m.voorstel_take?'Neem haar versie over':'Klopt, pas aan',function(){ voorstel(m,'overgenomen',antw.value); }));
+    tw.appendChild(knop('ok klein',m.door==='bureau'?'Neem over':(m.voorstel_latijn||m.voorstel_take?'Neem haar versie over':'Klopt, pas aan'),function(){ voorstel(m,'overgenomen',antw.value); }));
     tw.appendChild(knop('wit klein','Houd het zo',function(){ voorstel(m,'zo gelaten',antw.value); }));
   });
-  if(A.algemeen.length){ box.appendChild(el('div','sec','Berichten')); A.algemeen.slice(0,20).forEach(function(m){ var l=el('div','lijn'); var n=el('div','n',naamVan(m.door)); n.appendChild(el('small','',datum(m.gemaakt))); var p=el('div','',m.tekst.replace(/ \(EN\)$/,'')); p.style.fontWeight='600'; p.style.fontSize='.9rem'; n.appendChild(p); l.appendChild(n); box.appendChild(l); }); }
+  if(A.algemeen.length){ box.appendChild(el('div','sec','Berichten'));
+    A.algemeen.slice(0,30).forEach(function(m){
+      var k=el('div','kaart'); k.style.display='flex'; k.style.flexDirection='column'; k.style.gap='8px';
+      var kop=el('div','n',naamVan(m.door)); kop.appendChild(el('small','',datum(m.gemaakt)+(m.verwerkt?' · afgerond':' · nieuw'))); k.appendChild(kop);
+      var p=el('div','',m.tekst.replace(/ \(EN\)$/,'')); p.style.fontWeight='600'; p.style.fontSize='.95rem'; k.appendChild(p);
+      if(m.verwerkt){ if(m.antwoord){ var a=el('div','bet','Antwoord: '+m.antwoord); k.appendChild(a); } }
+      else {
+        var antw=el('input'); antw.placeholder='Kort antwoord voor haar, in het Engels (mag leeg)'; antw.maxLength=280; k.appendChild(antw);
+        k.appendChild(knop('ok klein','Beantwoord en rond af',async function(){ try{ await rpc('stem_opmerking_af',{p_id:m.id,p_antwoord:antw.value.trim()}); status('Afgerond. Zij ziet je antwoord in haar studio.',''); await laad(); teken(); }catch(e){ status('Opslaan lukte niet: '+(e.message||'?'),'fout'); } }));
+      }
+      box.appendChild(k);
+    }); }
 }
 async function voorstel(m,b,antw){
   try{ await rpc('stem_voorstel_besluit',{p_id:m.id,p_besluit:b,p_antwoord:(antw||'').trim()}); status(b==='overgenomen'?'Overgenomen. Het bureau past de tekst aan en zij hoort het.':'Opgeslagen: zo gelaten.',''); await laad(); teken(); }
