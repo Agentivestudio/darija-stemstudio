@@ -267,7 +267,7 @@ function home(box){
   var keurders=[D.ik];
   D.mensen.forEach(function(m){ if(m.rol==='keurder'&&m.actief&&keurders.indexOf(m.naam)<0)keurders.push(m.naam); });
   var testNamen=D.mensen.filter(isTest).map(function(m){return m.naam;});
-  D.pakken.concat(D.oordeel.slice(0,200)).forEach(function(x){ if(x.door&&keurders.indexOf(x.door)<0&&testNamen.indexOf(x.door)<0&&!/^TEST /.test(x.door)&&!spreeksters().some(function(m){return m.naam===x.door;}))keurders.push(x.door); });
+  D.pakken.concat(D.oordeel.slice(0,200)).forEach(function(x){ if(x.door&&keurders.indexOf(x.door)<0&&testNamen.indexOf(x.door)<0&&!/^test /i.test(x.door)&&!spreeksters().some(function(m){return m.naam===x.door;}))keurders.push(x.door); });
   keurders.forEach(function(k){
     var l=el('div','lijn'); l.appendChild(el('div','av k',k.charAt(0).toUpperCase()));
     var n=el('div','n',k+(k===D.ik?' (jij)':'')); var nv=D.oordeel.filter(function(o){return o.door===k&&new Date(o.gemaakt).toDateString()===vandaag;}).length;
@@ -429,7 +429,7 @@ function uitnodigen(box){
   }));
   k.appendChild(uit);
   /* intrekken */
-  var act=D.mensen.filter(function(m){return m.actief&&!/^TEST /.test(m.naam);});
+  var act=D.mensen.filter(function(m){return m.actief&&!/^test /i.test(m.naam);});
   if(act.length){ box.appendChild(el('div','sec','Toegang')); act.forEach(function(m){ var l=el('div','lijn'); l.appendChild(el('div','av'+(m.rol==='keurder'?' k':''),m.naam.charAt(0))); var n=el('div','n',m.naam); n.appendChild(el('small','',m.rol+' · sinds '+datum(m.gemaakt))); l.appendChild(n);
     var b=knop('wit klein','Intrekken',async function(){ if(b.dataset.zeker!=='1'){ b.dataset.zeker='1'; b.textContent='Zeker?'; return; } try{ await rpc('stem_intrekken',{p_slug:m.slug}); status('Ingetrokken: '+m.naam,''); await laad(); teken(); }catch(e){ status('Lukte niet: '+(e.message||'?'),'fout'); } });
     l.appendChild(b); box.appendChild(l); }); }
